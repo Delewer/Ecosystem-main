@@ -1,0 +1,203 @@
+{% extends "unitexapp/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- Секция приветствия -->
+<div class="welcome-section">
+    <div class="shapes-container">
+        <div class="shape shape-wave"></div>
+        <div class="shape shape-hexagon"></div>
+        <div class="shape shape-circle"></div>
+    </div>
+    <div class="welcome-content">
+        <h1>Descoperă-ți creativitatea cu cele mai bune cursuri IT!</h1>
+        <p>UnITex este o școală de IT din Ungheni pentru copii cu vârste între 7 și 17 ani. Oferim programe educaționale 
+            adaptate fiecărei grupe de vârstă, încurajând creativitatea și abilitățile de rezolvare a problemelor prin activități 
+            interactive și distractive.</p>
+        <a href="#programs" class="btn">Vezi cursurile noastre</a>
+    </div>
+</div>
+<!-- Секция "De ce să alegi UnITex?" -->
+<section class="features-section">
+    <div class="container">
+        <h2>De ce să alegi UnITex?</h2>
+        <div class="features-grid">
+            <div class="feature feature-small-1">
+                <img src="{% static 'images/about-back.jpg' %}" alt="Învățare interactivă">
+                <div class="feature-content">
+                    <h3>Învățare interactivă</h3>
+                    <p>Cursuri atractive și interactive adaptate fiecărei grupe de vârstă.</p>
+                </div>
+            </div>
+            <div class="feature feature-small-2">
+                <img src="{% static 'images/about-back.jpg' %}" alt="Educatori experimentați">
+                <div class="feature-content">
+                    <h3>Educatori experimentați</h3>
+                    <p>Profesori experți dedicați dezvoltării tinerelor talente.</p>
+                </div>
+            </div>
+            <div class="feature feature-medium">
+                <img src="{% static 'images/about-back.jpg' %}" alt="Proiecte din lumea reală">
+                <div class="feature-content">
+                    <h3>Proiecte din lumea reală</h3>
+                    <p>Proiecte practice care pregătesc elevii pentru provocările viitoare.</p>
+                </div>
+            </div>
+            <div class="feature feature-medium-2">
+                <img src="{% static 'images/about-back.jpg' %}" alt="Învățare interactivă">
+                <div class="feature-content">
+                    <h3>Învățare interactivă</h3>
+                    <p>Cursuri atractive și interactive adaptate fiecărei grupe de vârstă.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!--Group age-->
+<div class="age-groups">
+    <div class="age-group">
+        <img src="{% static 'images/age7-9.jpg' %}" alt="Copii cu vârsta între 7 și 9 ani">
+        <div class="age-group-content">
+            <h2>Vârsta 7-9 ani</h2>
+            <p>Introducere în programare prin activități interactive și distractive.</p>
+            <button class="learn-more" data-age-group="7-9 ani">Află mai multe</button>
+        </div>
+    </div>
+    <div class="age-group">
+        <img src="{% static 'images/age10-13.jpg' %}" alt="Copii cu vârsta între 10 și 13 ani">
+        <div class="age-group-content">
+            <h2>Vârsta 10-13 ani</h2>
+            <p>Explorarea conceptelor avansate de programare și crearea proiectelor mai complexe.</p>
+            <button class="learn-more" data-age-group="10-13 ani">Află mai multe</button>
+        </div>
+    </div>
+    <div class="age-group">
+        <img src="{% static 'images/age13-15.jpg' %}" alt="Adolescenți cu vârsta între 13 și 15 ani">
+        <div class="age-group-content">
+            <h2>Vârsta 13-15 ani</h2>
+            <p>Dezvoltarea abilităților intermediare și avansate de programare și lucrul cu aplicații din lumea reală.</p>
+            <button class="learn-more" data-age-group="13-15 ani">Află mai multe</button>
+        </div>
+    </div>
+    <div class="age-group">
+        <img src="{% static 'images/age15-17.jpg' %}" alt="Adolescenți cu vârsta între 15 și 17 ani">
+        <div class="age-group-content">
+            <h2>Vârsta 15-17 ani</h2>
+            <p>Stăpânirea tehnicilor avansate de programare și pregătirea pentru cariere viitoare în tehnologie.</p>
+            <button class="learn-more" data-age-group="15-17 ani">Află mai multe</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="modal-title"></h2>
+        <p id="modal-description"></p>
+    </div>
+</div>
+
+
+
+<!-- Секция "Programele Noastre" -->
+<div id="programs">
+    <div class="programs-section">
+        <div class="cerc"></div>
+        <div class="cerc2"></div>
+        <div class="cerc3"></div>
+        <h2>Programele Noastre</h2>
+        <div class="programs-grid">
+            <div class="program-card">
+                <img src="{% static 'images/python.svg' %}" alt="Python Icon">
+                <div class="program-info">
+                    <strong class="program-title">Programare de bază</strong>
+                    <span>Introducere în Python pentru vârstele 7-9 ani</span>
+                </div>
+            </div>
+            <div class="program-card">
+                <img src="{% static 'images/java-icon.png' %}" alt="Java Icon">
+                <div class="program-info">
+                    <strong class="program-title">Programare avansată</strong>
+                    <span>Dezvoltare Java pentru vârstele 10-13 ani</span>
+                </div>
+            </div>
+            <div class="program-card">
+                <img src="{% static 'images/webdev-icon.png' %}" alt="Web Development Icon">
+                <div class="program-info">
+                    <strong class="program-title">Dezvoltare web</strong>
+                    <span>Crearea site-urilor web interactive pentru vârstele 13-15 ani</span>
+                </div>
+            </div>
+            <div class="program-card">
+                <img src="{% static 'images/mobile-icon.png' %}" alt="Mobile Apps Icon">
+                <div class="program-info">
+                    <strong class="program-title">Aplicații mobile</strong>
+                    <span>Dezvoltare Android și iOS pentru adolescenții de 15-17 ani</span>
+                </div>
+            </div>
+            <div class="program-card">
+                <img src="{% static 'images/arduino-icon.png' %}" alt="Arduino Icon">
+                <div class="program-info">
+                    <strong class="program-title">Robotica cu Arduino</strong>
+                    <span>Construcția și programarea roboților folosind Arduino pentru vârstele 10-15 ani</span>
+                </div>
+            </div>
+            <div class="program-card">
+                <img src="{% static 'images/scratch-icon.svg' %}" alt="Scratch Icon">
+                <div class="program-info">
+                    <strong class="program-title">Programare vizuală</strong>
+                    <span>Învățare prin joacă pentru vârstele 7-12 ani folosind Scratch</span>
+                </div>
+            </div>
+            <div class="program-card">
+                <img src="{% static 'images/ai-icon.png' %}" alt="AI Icon">
+                <div class="program-info">
+                    <strong class="program-title">Introducere în AI</strong>
+                    <span>Concepte de bază și aplicații ale inteligenței artificiale pentru vârstele 14-17 ani</span>
+                </div>
+            </div>
+            <div class="program-card">
+                <img src="{% static 'images/3d-moddeling.png' %}" alt="Python Icon">
+                <div class="program-info">
+                    <strong class="program-title">Modelarea 3D</strong>
+                    <span>Introducere în modelare 3D pentru vârstele 10-14 ani</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Секция "Înscrie-te acum!" -->
+<div class="signup-section">
+    <form class="form-section">
+        <h2>Înscrie-te acum!</h2>
+        
+        <!-- Поле для имени (только буквы) -->
+        <div class="form-group">
+            <label for="name">Nume:</label>
+            <div class="input-container">
+                <input type="text" id="name" name="name" required>
+            </div>
+        </div>
+
+        <!-- Поле для номера (только цифры) -->
+        <div class="form-group">
+            <label for="phone">Numar:</label>
+            <div class="input-container">
+                <input type="text" id="phone" name="phone" required 
+                    oninput="this.value=this.value.replace(/[^0-9]/g,'')" />
+            </div>
+        </div>
+
+        <button type="submit" class="btn">Trimite</button>
+    </form>
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+{% block title %}Autentificare{% endblock %}
+
+{% block content %}
+    
+<body>
+    <div class="fundal">
+        <div class="container-login">
+            <h1>Autentificare</h1>
+            <div class="middle-3dl">
+                <!-- Placeholder for 3D elements -->
+                <img src="{% static 'images/3d.png' %}" alt="3D Elements">
+            </div>
+            <form class="loginform" method="post">
+                {% csrf_token %}
+                {{ loginform.as_p }}
+                <input type="submit" value="Autentificare"  class="submit-button-login">
+            </form>
+            <p>Nu ai un cont? <a href="{% url 'signup' %}">Înregistrează-te aici</a></p>
+        </div>
+    </div>
+</body>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+{% block title %}Înregistrare{% endblock %}
+
+{% block content %}
+<body>
+    <div class="fundal">
+        <div class="container left-container">
+            <h3>Informații utile pentru înregistrare</h3>
+            <p><strong>Salutare!</strong> Înregistrează-te pentru a beneficia de toate funcționalitățile noastre.</p>
+            <h4>Ce informații sunt necesare?</h4>
+            <ul>
+                <li><strong>Nume de utilizator:</strong> Un nume unic pentru contul tău.</li>
+                <li><strong>Adresă de email:</strong> O adresă de email validă pentru a primi notificări și pentru a reseta parola în cazul în care o uiți.</li>
+                <li><strong>Parolă:</strong> O parolă sigură pentru a-ți proteja contul.</li>
+                <li><strong>Confirmare parolă:</strong> Confirmă că parola introdusă este corectă.</li>
+            </ul>
+        </div>
+        <div class="middle-3d">
+            <!-- Placeholder for 3D elements -->
+            <img src="{% static 'images/3d.png' %}" alt="3D Elements">
+        </div>
+        <div class="container right-container">
+            <h1>Create Account</h1>
+            <form method="post" autocomplete="off">
+                {% csrf_token %}
+                <div class="form-field">
+                    {{ register.username.label_tag }}
+                    {{ register.username }}
+                    {{ register.username.errors }}
+                </div>
+                <div class="form-field">
+                    {{ register.email.label_tag }}
+                    {{ register.email }}
+                    {{ register.email.errors }}
+                </div>
+                
+                <div class="form-field">
+                    {{ register.password1.label_tag }}
+                    {{ register.password1 }}
+                    {{ register.password1.errors }}
+                </div>
+                <div class="form-field">
+                    {{ register.password2.label_tag }}
+                    {{ register.password2 }}
+                    {{ register.password2.errors }}
+                </div>
+                <input type="submit" value="Create Account" class="submit-button">
+            </form>
+            <p>Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+        </div>
+    </div>
+</body>
+{% endblock %}

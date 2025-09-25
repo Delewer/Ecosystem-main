@@ -1,0 +1,110 @@
+<!-- profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom right, #6a11cb, #2575fc);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .home-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #2575fc;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        .home-btn:hover {
+            background-color: #1a5bbf;
+        }
+        .profile-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+        .profile-container h1 {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            color: #4a4a4a;
+        }
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto;
+            display: block;
+            border: 3px solid #2575fc;
+        }
+        .profile-info {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .profile-info strong {
+            color: #6a11cb;
+        }
+        .btn-container {
+            margin-top: 20px;
+        }
+        .btn {
+            background-color: #2575fc;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 0 10px;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #1a5bbf;
+        }
+    </style>
+</head>
+<body>
+    <a href="{% url 'index' %}" class="home-btn">Home</a>
+    <div class="profile-container">
+        <!-- Аватар пользователя -->
+        <img src="https://www.gravatar.com/avatar/?d=mp&s=200" alt="User Avatar" class="avatar">
+
+        <h1>User Profile</h1>
+        <div class="profile-info">
+            <p><strong>Username:</strong> {{ user_profile.user.username }}</p>
+        </div>
+        <div class="profile-info">
+            <p><strong>Bio:</strong> {{ user_profile.bio }}</p>
+        </div>
+        <div class="profile-info">
+            <p><strong>Email:</strong> {{ user_profile.email }}</p>
+        </div>
+        <div class="profile-info">
+            <p><strong>Phone Number:</strong> {{ user_profile.phone_number }}</p>
+        </div>
+        <div class="profile-info">
+            <p><strong>Member Since:</strong> {{ user_profile.user.date_joined|date:"d M Y" }}</p>
+        </div>
+
+        <div class="btn-container">
+            <a href="{% url 'edit_profile' %}" class="btn">Edit Profile</a>
+        </div>
+    </div>
+</body>
+</html>

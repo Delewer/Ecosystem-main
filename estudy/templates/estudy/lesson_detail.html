@@ -1,0 +1,321 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ lesson.title }} · UnITex{% endblock %}
+
+{% block content %}
+{% with palette=lesson.difficulty_palette %}
+<section class="lesson-hero-v2 rounded-5 mb-5 position-relative overflow-hidden" style="background: {{ palette.bg }};">
+    {% if lesson.cover_image %}
+        <div class="lesson-hero-v2__cover" style="background-image: url('{{ lesson.cover_image.url }}');"></div>
+    {% endif %}
+    <div class="lesson-hero-v2__glow"></div>
+    <div class="lesson-hero-v2__content container-lg py-5">
+        <div class="row align-items-center g-4 position-relative">
+            <div class="col-xl-7 text-white">
+                <span class="hero-chip">{{ palette.emoji }} {{ lesson.get_difficulty_display }} · {{ lesson.age_label }}</span>
+                <h1 class="display-5 fw-bold mb-3">{{ lesson.title }}</h1>
+                <p class="lead mb-4">{{ lesson.theory_intro|default:lesson.excerpt|default:lesson.content|truncatechars:220 }}</p>
+                {% if lesson.theory_points %}
+                    <ul class="hero-points">
+                        {% for point in lesson.theory_points %}
+                            <li><i class="fa-solid fa-star me-2"></i>{{ point }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div class="col-xl-5">
+                <div class="hero-card shadow-lg">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="hero-card__pill">
+                                <span class="hero-card__label">Data lecției</span>
+                                <span class="hero-card__value">{{ lesson.date|date:"d MMM" }}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="hero-card__pill">
+                                <span class="hero-card__label">Durată</span>
+                                <span class="hero-card__value">{{ lesson.duration_minutes }} min</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="hero-card__pill">
+                                <span class="hero-card__label">Subiect</span>
+                                <span class="hero-card__value">{{ lesson.subject.name }}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="hero-card__pill">
+                                <span class="hero-card__label">Stare</span>
+                                <span class="hero-card__value {% if progress.completed %}text-success{% endif %}" data-lesson-status>{% if progress.completed %}Finalizată{% else %}În curs{% endif %}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-card__actions mt-4">
+                        <button class="btn btn-lg w-100 {% if progress.completed %}btn-success{% else %}btn-light text-primary{% endif %} toggle-completion" data-complete-href="{% url 'estudy:toggle_lesson_completion' slug=lesson.slug %}">
+                            {% if progress.completed %}<i class="fa-solid fa-check me-2"></i>Bifat deja{% else %}<i class="fa-regular fa-circle-check me-2"></i>Marchează reușita{% endif %}
+                        </button>
+                        <div class="overall-progress mt-3">
+                            <span class="overall-progress__label text-white-50">Progres general</span>
+                            <div class="progress">
+                                <div class="progress-bar" data-progress-bar role="progressbar" style="width: {{ overall_progress.percent }}%" aria-valuenow="{{ overall_progress.percent }}" aria-valuemin="0" aria-valuemax="100"><span data-progress-percent>{{ overall_progress.percent }}</span>%</div>
+                            </div>
+                            <div class="overall-progress__totals text-white-75"><span data-progress-completed>{{ overall_progress.completed }}</span>/<span data-progress-total>{{ overall_progress.total }}</span> lecții finalizate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endwith %}
+
+<div class="container-lg">
+    <div class="row g-4 mb-5">
+        <div class="col-xl-8">
+            {% if enrichment.concept_cards %}
+            <section class="card shadow-sm mb-4 concept-deck">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h2 class="h5 mb-0">Carduri de descoperire</h2>
+                    <span class="badge bg-warning-subtle text-warning">Apasă pentru a vedea magia</span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for card in enrichment.concept_cards %}
+                            <div class="col-md-4">
+                                <div class="concept-card" tabindex="0">
+                                    <div class="concept-card__emoji">{{ card.emoji }}</div>
+                                    <h3 class="concept-card__title">{{ card.title }}</h3>
+                                    <p class="concept-card__text">{{ card.description }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+
+            <article class="card shadow-sm mb-4 lesson-story">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h2 class="h5 mb-0">Povestea lecției</h2>
+                    <span class="badge bg-secondary-subtle text-secondary">Inspiră-te și citește cu atenție</span>
+                </div>
+                <div class="card-body lesson-content">
+                    {{ lesson.content|linebreaks }}
+                </div>
+            </article>
+
+            {% if enrichment.story_steps %}
+            <section class="card shadow-sm mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h2 class="h5 mb-0">Plan de explorare</h2>
+                    <span class="badge bg-info-subtle text-info">Urmează pașii</span>
+                </div>
+                <div class="card-body">
+                    <div class="lesson-journey">
+                        {% for step in enrichment.story_steps %}
+                            <div class="journey-step">
+                                <div class="journey-number">{{ forloop.counter }}</div>
+                                <div class="journey-body">
+                                    <h3 class="h6 mb-1">{{ step.title }}</h3>
+                                    <p class="mb-1">{{ step.detail }}</p>
+                                    <span class="journey-tip"><i class="fa-solid fa-lightbulb me-2"></i>{{ step.tip }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+
+            <section class="card shadow-sm mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h2 class="h5 mb-0">Resurse colorate</h2>
+                    <span class="badge bg-primary-subtle text-primary">{{ lesson.materials.count }} materiale</span>
+                </div>
+                <div class="card-body">
+                    {% if lesson.materials.exists %}
+                        <div class="list-group list-group-flush">
+                            {% for resource in lesson.materials.all %}
+                                <a href="{{ resource.url }}" target="_blank" rel="noopener" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="h6 mb-1">{{ resource.title }}</h3>
+                                        <p class="text-muted small mb-0">{{ resource.get_resource_type_display }}</p>
+                                    </div>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-muted"></i>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Încă nu avem materiale adiționale pentru această lecție.</p>
+                    {% endif %}
+                </div>
+            </section>
+
+            {% if enrichment.code_challenges %}
+            <section class="card shadow-sm mb-4 code-lab">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h2 class="h5 mb-0">Laborator interactiv</h2>
+                    <span class="badge bg-primary text-white">Testează-ți ideile</span>
+                </div>
+                <div class="card-body d-flex flex-column gap-4">
+                    {% for challenge in enrichment.code_challenges %}
+                        <div class="code-challenge" data-code-challenge id="{{ challenge.id }}" data-expected-keywords="{{ challenge.expected_keywords|join:',' }}">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h3 class="h6 fw-semibold mb-1">{{ challenge.title }}</h3>
+                                    <p class="text-muted mb-0">{{ challenge.description }}</p>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-secondary code-reset-btn"><i class="fa-solid fa-rotate-left me-1"></i>Reset</button>
+                            </div>
+                            <textarea class="form-control code-editor" rows="5">{{ challenge.starter }}</textarea>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <button type="button" class="btn btn-outline-success btn-sm code-check-btn"><i class="fa-solid fa-rocket me-2"></i>Verifică</button>
+                                <span class="text-muted small">Sfatură: {{ challenge.hint }}</span>
+                            </div>
+                            <div class="code-feedback text-muted small mt-2"></div>
+                            <div class="alert alert-success mt-3 d-none code-success" role="alert">
+                                <i class="fa-solid fa-party-horn me-2"></i>Bravo! Codul tău trece testul.
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            <section class="card shadow-sm mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h2 class="h5 mb-0">Minigame de întrebări</h2>
+                    <span class="badge bg-success-subtle text-success">Quiz interactiv</span>
+                </div>
+                <div class="card-body">
+                    {% if tests %}
+                        <div class="d-flex flex-column gap-4">
+                            {% for wrapper in tests %}
+                                <div class="quiz-card" data-test-id="{{ wrapper.instance.id }}" data-submit-href="{% url 'estudy:submit_test_attempt' test_id=wrapper.instance.id %}">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <span class="badge bg-primary-subtle text-primary me-2">Întrebarea {{ forloop.counter }}</span>
+                                            {% if wrapper.instance.theory_summary %}
+                                                <span class="text-muted small">Reamintește: {{ wrapper.instance.theory_summary|truncatechars:80 }}</span>
+                                            {% endif %}
+                                        </div>
+                                        {% if wrapper.attempt %}
+                                            <span class="badge {% if wrapper.attempt.is_correct %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %}">
+                                                {% if wrapper.attempt.is_correct %}Corect!{% else %}Mai încearcă{% endif %}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+
+                                    <h3 class="h5 fw-bold mb-3">{{ wrapper.instance.question }}</h3>
+
+                                    <form class="quiz-card__form">
+                                        <div class="d-flex flex-column gap-2">
+                                            {% for answer in wrapper.answers %}
+                                                <label class="quiz-option">
+                                                    <input type="radio" name="answer" value="{{ answer }}" {% if wrapper.attempt and wrapper.attempt.selected_answer == answer %}checked{% endif %}>
+                                                    <span>{{ answer }}</span>
+                                                </label>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="mt-3 d-flex justify-content-between align-items-center">
+                                            <button type="submit" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-paper-plane me-2"></i>Trimite răspunsul</button>
+                                            <div class="quiz-feedback text-muted small"></div>
+                                        </div>
+                                    </form>
+
+                                    {% if wrapper.instance.explanation %}
+                                        <div class="alert alert-info mt-3 quiz-explanation d-none" role="alert">
+                                            <strong>De ce?</strong> {{ wrapper.instance.explanation|linebreaks }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Încă nu există întrebări pentru această lecție.</p>
+                    {% endif %}
+                </div>
+            </section>
+
+            {% if practice and practice.has_pairs %}
+                <section class="card shadow-sm practice-card mb-4" data-practice-station>
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="h5 mb-0">Atelierul creativ</h2>
+                            <p class="text-muted small mb-0">Trage elementele colorate către perechile potrivite.</p>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary practice-reset"><i class="fa-solid fa-rotate-left me-2"></i>Resetează jocul</button>
+                    </div>
+                    <div class="card-body">
+                        {% if practice.intro %}<p class="lead">{{ practice.intro }}</p>{% endif %}
+                        {% if practice.instructions %}<p class="text-muted">{{ practice.instructions }}</p>{% endif %}
+                        <div class="practice-stage row g-4 align-items-start">
+                            <div class="col-lg-5">
+                                <h3 class="h6 text-uppercase text-muted">Piese colorate</h3>
+                                <div class="practice-chips" data-practice-source>
+                                    {% for item in practice.data.draggables %}
+                                        <div class="practice-chip" draggable="true" data-match="{{ item.id }}">
+                                            <span>{{ item.label }}</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-lg-7">
+                                <h3 class="h6 text-uppercase text-muted">Zone de potrivire</h3>
+                                <div class="practice-dropzones">
+                                    {% for target in practice.data.targets %}
+                                        <div class="practice-dropzone" data-accept="{{ target.accepts }}">
+                                            <span class="practice-dropzone__prompt">{{ target.prompt }}</span>
+                                            <div class="practice-dropzone__slot"></div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <p class="practice-feedback text-danger small mt-3 d-none"></p>
+                        <div class="alert alert-success mt-4 d-none practice-success" role="alert">
+                            <i class="fa-solid fa-party-horn me-2"></i>{{ practice.success_message }}
+                        </div>
+                    </div>
+                </section>
+            {% endif %}
+        </div>
+
+        <aside class="col-xl-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h2 class="h5 mb-0">Lecții conexe</h2>
+                </div>
+                <div class="card-body">
+                    {% if related_lessons %}
+                        <div class="list-group list-group-flush">
+                            {% for item in related_lessons %}
+                                <a href="{% url 'estudy:lesson_detail' slug=item.slug %}" class="list-group-item list-group-item-action">
+                                    <h3 class="h6 mb-1">{{ item.title }}</h3>
+                                    <p class="text-muted small mb-0">{{ item.date|date:"d MMM" }} · {{ item.duration_minutes }} min</p>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Nu există alte lecții în acest subiect încă.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h2 class="h6 mb-0">Tips &amp; tricks</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="small text-muted ps-3">
+                        <li>Folosește culori sau stickere pentru a marca ideile preferate.</li>
+                        <li>Împarte teoria cu un prieten și explicați-vă unul altuia ce ați înțeles.</li>
+                        <li>După jocul drag &amp; drop, inventează-ți propria provocare!</li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}

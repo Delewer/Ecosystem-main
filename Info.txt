@@ -1,0 +1,19 @@
+1.am adaugat paginile 
+
+  path('invata-online/', invata_online, name='invata'),
+    path('cursuri/', cursuri, name='cursuri'),
+    path('despre/', despre, name='despre'),
+    path('oportunitati/', oportunitati, name='oportunitati'),
+    path('copii/', copii, name='copii'),
+    
+]
+
+2. Am adaugat static si base html
+3. Am adaugat unele CSS, am Facut comentarii in style.css.
+
+########## Versiunea 4 ####################
+
+1.Am adaugat Sistema de autentificare si logare din pagina principala
+2. Am adaugat profilul ( signals.py, models.py, profile.html, app.py)
+3. Trebuie de continuat dezvoltarea profilului, nu se atribuie profilul automat persoanelor care abia se inregistreaza)
+fdfdf

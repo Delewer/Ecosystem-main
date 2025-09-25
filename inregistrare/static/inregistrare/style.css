@@ -1,0 +1,254 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    overflow: hidden; /* Prevent scrolling */
+}
+
+.fundal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: rgb(131, 181, 202);
+    position: relative;
+}
+
+.middle-3d {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 22%;
+    left: 45%;
+    transform: translate(-50%, -50%);
+    z-index: 2; /* Ensure the 3D element is in front */
+}
+
+.middle-3d img {
+    width: 300px; /* Adjust size as needed */
+    height: auto;
+}
+
+.container {
+    background-color: white;
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 15px; /* Rounded corners */
+    text-align: center;
+    position: absolute;
+    z-index: 1;
+}
+
+.left-container {
+    width: 30%; 
+    height: 75%;
+    left: 10%;
+    top: 10%;
+    background-color: rgb(100, 151, 214);
+    text-align: left;
+}
+
+.right-container {
+    width: 45%; 
+    height: 75%;
+    right: 10%;
+    top: 10%;
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.form-field {
+    width: 65%;
+    margin-bottom: 20px;
+    margin-left: 20px;
+    text-align: left;
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+.form-field input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: #fff;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+}
+
+.form-field input:focus {
+    border-color: #2f2f2f;
+    background-color: #f9f9f9;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.submit-button {
+    width: 50%;
+    padding: 12px;
+    margin: 20px 0;
+    background-color: #2f2f2f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.submit-button:hover {
+    background-color: #000000;
+    transform: scale(1.05);
+}
+
+.submit-button:active {
+    transform: scale(1);
+}
+
+p {
+    font-size: 14px;
+    color: #000000;
+}
+
+p a {
+    color: #2f2f2f;
+    text-decoration: none;
+}
+
+p a:hover {
+    text-decoration: underline;
+}
+
+h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+h4 {
+    font-size: 20px;
+    margin: 15px 0 10px;
+    color: #ffffff;
+}
+
+p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #000000;
+    margin-bottom: 15px;
+}
+
+ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin: 10px 0;
+}
+
+ul li {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #000000;
+    margin-bottom: 10px;
+}
+
+strong {
+    color: #000000;
+}
+.container-login {
+    background-color: rgb(255, 255, 255);
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    text-align: center;
+    width: 350px;
+    position: absolute;
+    top: 15%;
+    left: 35%;
+}
+
+.container-login form {
+    width: 100%;
+    text-align: left;
+}
+
+.container-login form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #000000;
+}
+
+.container-login form input {
+    padding: 12px;
+    border: 1px solid #000000;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: #ffffff;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+    margin-bottom: 20px; /* Space between fields */
+}
+
+.container-login form input:focus {
+    border-color: #000000;
+    background-color: #f9f9f9;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.submit-button-login {
+    width: 30%;
+    padding: 12px;
+    margin: 20px 0;
+    background-color: #000000;
+    color: rgb(0, 0, 0); /* Ensure text is white */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.submit-button-login:hover {
+    background-color: #000000;
+    color: #ffffff; /* Ensure text changes color on hover */
+    transform: scale(1.05);
+}
+
+.submit-button-login:active {
+    transform: scale(1);
+}
+
+.middle-3dl {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 15%;
+    left: 12%;
+    transform: translate(-50%, -50%);
+    z-index: 2; /* Ensure the 3D element is in front */
+}
+
+.middle-3dl img {
+    width: 200px; /* Adjust size as needed */
+    height: auto;
+}

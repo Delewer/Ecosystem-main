@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom right, #6a11cb, #2575fc);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .home-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: #2575fc;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+        .home-btn:hover {
+            background-color: #1a5bbf;
+        }
+        .container {
+            max-width: 700px;
+            max-height: 600px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4a4a4a;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        input[type="text"], input[type="email"], textarea, input[type="file"] {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        textarea {
+            height: 50px;  /* Установлена фиксированная высота для поля bio */
+            resize: none;    
+        }
+
+        button[type="submit"], .cancel-btn {
+            padding: 12px 20px;
+            background-color: #2575fc;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+        button[type="submit"]:hover, .cancel-btn:hover {
+            background-color: #1a5bbf;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .avatar-preview {
+            text-align: center;
+            margin-bottom: 15px;
+            cursor: pointer; /* Делает аватар похожим на кнопку */
+        }
+        .avatar-preview img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #2575fc;
+        }
+
+        /* Скрываем поле для загрузки файла */
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+    <script>
+        function previewAvatar(event) {
+            const output = document.getElementById('avatarPreview');
+            output.src = URL.createObjectURL(event.target.files[0]);
+            output.onload = () => URL.revokeObjectURL(output.src);
+        }
+    </script>
+</head>
+<body>
+    <a href="{% url 'index' %}" class="home-btn">Home</a>
+    <div class="container">
+        <h1>Edit Profile</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Аватар как кнопка -->
+            <div class="avatar-preview">
+                <label for="avatar-upload">
+                    <img id="avatarPreview" src="https://www.gravatar.com/avatar/?d=mp&s=200" alt="Avatar Preview">
+                </label>
+                <input type="file" id="avatar-upload" name="avatar" onchange="previewAvatar(event)">
+            </div>
+
+            <label for="id_phone_number">Phone Number:</label>
+            {{ form.phone_number }}
+            
+            <label for="id_email">Email:</label>
+            {{ form.email }}
+            
+            <label for="id_name">Name:</label>
+            {{ form.name }}
+            
+            <label for="id_bio">Bio:</label>
+            {{ form.bio }}
+            
+            <div class="btn-container">
+                <button type="submit">Save Changes</button>
+                <a href="{% url 'inregistrare_profile' %}" class="cancel-btn">Cancel</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

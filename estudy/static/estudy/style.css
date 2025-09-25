@@ -1,0 +1,601 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --unitex-primary: #2563eb;
+    --unitex-primary-soft: rgba(37, 99, 235, 0.12);
+    --unitex-accent: #f59e0b;
+    --unitex-success: #22c55e;
+    --unitex-surface: #ffffff;
+    --unitex-muted: #6b7280;
+    --unitex-border: rgba(15, 23, 42, 0.08);
+    --unitex-radius-lg: 1.5rem;
+    --unitex-radius-md: 1rem;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f5f7fb;
+    color: #0f172a;
+}
+
+.navbar {
+    backdrop-filter: blur(16px);
+}
+
+.navbar-brand {
+    letter-spacing: 0.08em;
+}
+
+.lesson-hero {
+    background: linear-gradient(135deg, #2563eb, #1e3a8a);
+    box-shadow: 0 25px 50px -12px rgba(37, 99, 235, 0.35);
+}
+
+.lesson-hero .progress {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    height: 12px;
+}
+
+.lesson-hero .progress-bar {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.75));
+    color: #1e3a8a;
+    font-weight: 600;
+}
+
+.progress-thin {
+    height: 12px;
+    border-radius: 999px;
+}
+
+.reward-card {
+    border: 1px solid var(--unitex-border);
+    border-radius: var(--unitex-radius-md);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reward-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 30px -20px rgba(15, 23, 42, 0.4);
+}
+
+.lesson-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--unitex-radius-md);
+    overflow: hidden;
+    background: var(--unitex-surface);
+    border: 1px solid var(--unitex-border);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lesson-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 35px -22px rgba(15, 23, 42, 0.35);
+}
+
+.lesson-card--completed {
+    border-color: rgba(34, 197, 94, 0.35);
+    box-shadow: 0 18px 30px -25px rgba(34, 197, 94, 0.55);
+}
+
+.lesson-card__image {
+    height: 160px;
+    background-size: cover;
+    background-position: center;
+}
+
+.lesson-card__body {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+.lesson-card__body h3 a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.lesson-card__body h3 a:hover {
+    color: var(--unitex-primary);
+}
+
+.lesson-card__footer {
+    border-top: 1px solid rgba(15, 23, 42, 0.05);
+    padding: 1rem 1.5rem;
+    background: #f8fafc;
+}
+
+.timeline {
+    position: relative;
+    padding-left: 1.5rem;
+    margin: 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.45rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, rgba(37, 99, 235, 0.15), rgba(37, 99, 235, 0));
+}
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -0.75rem;
+    top: 0.25rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--unitex-primary);
+    box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.15);
+}
+
+.timeline-date {
+    font-weight: 600;
+    color: var(--unitex-primary);
+    margin-bottom: 0.25rem;
+}
+
+.lesson-detail-header {
+    background: var(--unitex-surface);
+    border-radius: var(--unitex-radius-lg);
+}
+
+.lesson-detail-media {
+    min-height: 260px;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.4));
+}
+
+.lesson-detail-media::after {
+    content: '';
+    display: block;
+    padding-bottom: 56%;
+}
+
+.lesson-hero-v2 {
+    position: relative;
+    padding: 3.5rem 0;
+}
+
+.lesson-hero-v2__cover {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.18;
+}
+
+.lesson-hero-v2__glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.55), transparent 55%);
+    pointer-events: none;
+}
+
+.lesson-hero-v2__content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.25);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+.hero-points {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.75rem;
+}
+
+.hero-points li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.hero-card {
+    background: rgba(255, 255, 255, 0.88);
+    border-radius: 1.5rem;
+    padding: 1.75rem;
+    color: #0f172a;
+}
+
+.hero-card__pill {
+    background: rgba(15, 23, 42, 0.05);
+    border-radius: 1rem;
+    padding: 0.75rem 1rem;
+    height: 100%;
+}
+
+.hero-card__label {
+    display: block;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: rgba(15, 23, 42, 0.55);
+}
+
+.hero-card__value {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.hero-card__actions .progress {
+    background: rgba(37, 99, 235, 0.18);
+    height: 10px;
+    border-radius: 999px;
+}
+
+.hero-card__actions .progress-bar {
+    background: linear-gradient(90deg, #fff, rgba(255, 255, 255, 0.65));
+    color: #1e3a8a;
+    font-weight: 600;
+}
+
+.concept-deck .concept-card {
+    position: relative;
+    background: #ffffff;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    min-height: 180px;
+    box-shadow: 0 20px 35px -28px rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(37, 99, 235, 0.12);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.concept-card:focus,
+.concept-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 26px 45px -28px rgba(59, 130, 246, 0.65);
+}
+
+.concept-card__emoji {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.concept-card__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.concept-card__text {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--unitex-muted);
+}
+
+.concept-card--active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(79, 70, 229, 0.18));
+    border-color: rgba(59, 130, 246, 0.45);
+    transform: translateY(-6px);
+    box-shadow: 0 30px 45px -30px rgba(59, 130, 246, 0.55);
+}
+
+.lesson-journey {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.journey-step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem 1.25rem;
+    border-radius: 1.25rem;
+    border: 1px solid rgba(37, 99, 235, 0.14);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.journey-number {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #1e3a8a);
+    color: #fff;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+}
+
+.journey-tip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: #0f172a;
+    background: rgba(247, 215, 91, 0.25);
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    margin-top: 0.35rem;
+}
+
+.code-lab .code-challenge {
+    border: 1px solid rgba(37, 99, 235, 0.12);
+    border-radius: 1.2rem;
+    padding: 1.25rem;
+    background: rgba(15, 23, 42, 0.02);
+}
+
+.code-lab .code-editor {
+    font-family: 'Fira Code', 'Courier New', monospace;
+    background: rgba(15, 23, 42, 0.9);
+    color: #f8fafc;
+    border: none;
+    border-radius: 0.9rem;
+    padding: 1rem;
+}
+
+.code-lab .code-editor:focus {
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.35);
+}
+
+.code-feedback {
+    min-height: 1.2rem;
+}
+
+.code-success {
+    font-weight: 600;
+}
+
+.info-pill {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--unitex-radius-md);
+    background: rgba(148, 163, 184, 0.1);
+    align-items: center;
+}
+
+.info-pill i {
+    color: var(--unitex-primary);
+    font-size: 1.25rem;
+}
+
+.info-pill__label {
+    display: block;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--unitex-muted);
+}
+
+.info-pill__value {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.lesson-content p {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: #1f2937;
+}
+
+.overall-progress {
+    min-width: 220px;
+}
+
+.overall-progress__label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--unitex-muted);
+}
+
+.overall-progress .progress {
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.15);
+}
+
+.overall-progress__totals {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--unitex-muted);
+}
+
+.quiz-card {
+    border: 1px solid var(--unitex-border);
+    border-radius: var(--unitex-radius-md);
+    padding: 1.5rem;
+    background: var(--unitex-surface);
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+
+.practice-card {
+    border: 1px solid rgba(37, 99, 235, 0.12);
+    border-radius: var(--unitex-radius-md);
+}
+
+.practice-stage {
+    background: rgba(15, 23, 42, 0.02);
+    border-radius: var(--unitex-radius-md);
+    padding: 1.5rem;
+}
+
+.practice-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    min-height: 140px;
+    padding: 1rem;
+    border-radius: 1.25rem;
+    background: rgba(59, 130, 246, 0.08);
+}
+
+.practice-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    box-shadow: 0 8px 18px -12px rgba(37, 99, 235, 0.6);
+    font-weight: 600;
+    cursor: grab;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.practice-chip:active,
+.practice-chip.is-dragging {
+    transform: scale(1.05);
+    box-shadow: 0 14px 30px -18px rgba(37, 99, 235, 0.75);
+}
+
+.practice-chip--ghost {
+    cursor: default;
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.2));
+    border-style: dashed;
+    box-shadow: none;
+}
+
+.practice-dropzones {
+    display: grid;
+    gap: 1rem;
+}
+
+.practice-dropzone {
+    background: #fff;
+    border: 2px dashed rgba(15, 23, 42, 0.12);
+    border-radius: 1.25rem;
+    padding: 1rem 1.25rem;
+    min-height: 96px;
+    transition: border 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.practice-dropzone__prompt {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.practice-dropzone__slot {
+    min-height: 48px;
+}
+
+.practice-dropzone--hover {
+    border-color: rgba(59, 130, 246, 0.65);
+    box-shadow: 0 14px 40px -30px rgba(37, 99, 235, 0.85);
+    transform: translateY(-2px);
+}
+
+.practice-dropzone--filled {
+    border-style: solid;
+    border-color: rgba(22, 163, 74, 0.55);
+    box-shadow: 0 18px 35px -24px rgba(22, 163, 74, 0.6);
+}
+
+.practice-dropzone--error {
+    border-color: rgba(248, 113, 113, 0.9);
+    animation: practice-shake 0.4s;
+}
+
+@keyframes practice-shake {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-4px); }
+    40%, 60% { transform: translateX(4px); }
+}
+
+.quiz-card--success {
+    border-color: rgba(34, 197, 94, 0.35);
+    box-shadow: 0 12px 24px -18px rgba(34, 197, 94, 0.45);
+}
+
+.quiz-card--error {
+    border-color: rgba(248, 113, 113, 0.4);
+}
+
+.quiz-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    border-radius: 0.85rem;
+    cursor: pointer;
+    transition: border 0.2s ease, background 0.2s ease;
+}
+
+.quiz-option:hover {
+    border-color: rgba(37, 99, 235, 0.35);
+    background: rgba(37, 99, 235, 0.04);
+}
+
+.quiz-option input {
+    accent-color: var(--unitex-primary);
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: var(--unitex-radius-md);
+    box-shadow: 0 20px 35px -22px rgba(15, 23, 42, 0.4);
+}
+
+.stat-card__icon {
+    font-size: 1.75rem;
+}
+
+.stat-card__label {
+    display: block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.stat-card__value {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+footer {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+}
+
+@media (max-width: 991px) {
+    .lesson-hero-v2 {
+        padding: 2.75rem 0;
+    }
+}
+
+@media (max-width: 767px) {
+    .lesson-card__image {
+        height: 140px;
+    }
+
+    .hero-card {
+        margin-top: 1.25rem;
+    }
+}

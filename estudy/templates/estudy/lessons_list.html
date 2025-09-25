@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+
+{% block title %}Catalog lecții · UnITex{% endblock %}
+
+{% block content %}
+<section class="lesson-hero rounded-4 p-4 p-lg-5 mb-5">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-6 text-white">
+            <h1 class="display-6 fw-bold">Descoperă lecțiile UnITex</h1>
+            <p class="lead opacity-75 mb-4">Selectează un subiect, urmărește progresul și parcurge lecții interactive gândite pentru copii curioși.</p>
+            <div class="d-flex gap-4 flex-wrap">
+                <div>
+                    <span class="d-block text-uppercase small opacity-75">Lecții finalizate</span>
+                    <span class="fs-3 fw-bold"><span data-progress-completed>{{ progress.completed }}</span>/<span data-progress-total>{{ progress.total }}</span></span>
+                </div>
+                <div>
+                    <span class="d-block text-uppercase small opacity-75">Progres general</span>
+                    <div class="progress progress-thin mt-1">
+                        <div class="progress-bar" data-progress-bar role="progressbar" style="width: {{ progress.percent }}%" aria-valuenow="{{ progress.percent }}" aria-valuemin="0" aria-valuemax="100"><span data-progress-percent>{{ progress.percent }}</span>%</div>
+                    </div>
+                </div>
+                <div>
+                    <span class="d-block text-uppercase small opacity-75">Premii câștigate</span>
+                    <span class="fs-3 fw-bold">{{ rewards|length }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <form method="get" class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <h2 class="h5 mb-3">Filtrează lecțiile</h2>
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-6">
+                            <label for="search" class="form-label">Caută</label>
+                            <input type="search" id="search" name="q" value="{{ filters.query }}" class="form-control" placeholder="Titlu, subiect, cuvânt cheie...">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="subject" class="form-label">Subiect</label>
+                            <select id="subject" name="subject" class="form-select">
+                                <option value="">Toate subiectele</option>
+                                {% for subject in subjects %}
+                                    <option value="{{ subject.id }}" {% if filters.subject == subject.id|stringformat:'s' %}selected{% endif %}>{{ subject.name }} ({{ subject.lesson_total }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="difficulty" class="form-label">Dificultate</label>
+                            <select id="difficulty" name="difficulty" class="form-select">
+                                <option value="">Oricare</option>
+                                {% for value, label in difficulty_choices %}
+                                    <option value="{{ value }}" {% if filters.difficulty == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mt-4">
+                                <input class="form-check-input" type="checkbox" value="1" id="upcoming" name="upcoming" {% if filters.upcoming %}checked{% endif %}>
+                                <label class="form-check-label" for="upcoming">Afișează doar lecțiile viitoare</label>
+                            </div>
+                        </div>
+                        <div class="col-12 text-end">
+                            <a href="{% url 'estudy:lessons_list' %}" class="btn btn-outline-secondary me-2">Resetează</a>
+                            <button type="submit" class="btn btn-primary">Aplică filtre</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% if rewards %}
+    <section class="mb-5">
+        <h2 class="h4 mb-3">Premiile tale</h2>
+        <div class="row g-3">
+            {% for reward in rewards %}
+                <div class="col-sm-6 col-md-4 col-lg-3">
+                    <div class="card shadow-sm reward-card h-100">
+                        {% if reward.image %}
+                            <img src="{{ reward.image.url }}" class="card-img-top" alt="{{ reward.name }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h3 class="h6 fw-bold mb-1">{{ reward.name }}</h3>
+                            <p class="text-muted small mb-0">{{ reward.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}
+
+<section class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">Lecții disponibile</h2>
+        <span class="text-muted small">Ai găsit {{ lessons|length }} lecții potrivite filtrelor curente.</span>
+    </div>
+    {% if lessons %}
+        <div class="row g-4">
+            {% for lesson in lessons %}
+                <div class="col-md-6 col-xl-4">
+                    <article class="lesson-card shadow-sm h-100 {% if lesson.is_completed %}lesson-card--completed{% endif %}" data-lesson-slug="{{ lesson.slug }}">
+                        {% if lesson.cover_image %}
+                            <div class="lesson-card__image" style="background-image: url('{{ lesson.cover_image.url }}');"></div>
+                        {% endif %}
+                        <div class="lesson-card__body">
+                            <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+                                <span class="badge bg-primary-subtle text-primary">{{ lesson.subject.name }}</span>
+                                <span class="badge bg-secondary-subtle text-secondary">{{ lesson.get_difficulty_display }}</span>
+                                <span class="badge bg-success-subtle text-success">{{ lesson.age_label }}</span>
+                            </div>
+                            <h3 class="h5 fw-bold"><a href="{% url 'estudy:lesson_detail' slug=lesson.slug %}">{{ lesson.title }}</a></h3>
+                            <p class="text-muted small mb-3">{{ lesson.excerpt|default:lesson.content|truncatechars:160 }}</p>
+                            <ul class="list-unstyled text-muted small d-flex flex-column gap-1 mb-3">
+                                <li><i class="fa-regular fa-calendar me-2"></i>{{ lesson.date|date:"d MMMM Y" }}</li>
+                                <li><i class="fa-regular fa-clock me-2"></i>{{ lesson.duration_minutes }} minute</li>
+                            </ul>
+                        </div>
+                        <div class="lesson-card__footer">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{% url 'estudy:lesson_detail' slug=lesson.slug %}" class="btn btn-link p-0">Detalii lecție</a>
+                                <button type="button" class="btn btn-sm {% if lesson.is_completed %}btn-success{% else %}btn-outline-success{% endif %} toggle-completion" data-complete-href="{% url 'estudy:toggle_lesson_completion' slug=lesson.slug %}">
+                                    {% if lesson.is_completed %}<i class="fa-solid fa-check me-1"></i>Finalizată{% else %}<i class="fa-regular fa-circle-check me-1"></i>Marchează finalizarea{% endif %}
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5 bg-white rounded-4 shadow-sm">
+            <h3 class="h5">Nu am găsit lecții potrivite filtrelor.</h3>
+            <p class="text-muted">Modifică filtrele de mai sus sau revino mai târziu pentru lecții noi.</p>
+        </div>
+    {% endif %}
+</section>
+
+<section class="mb-5">
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h2 class="h5 mb-0">Lecții viitoare</h2>
+                    <span class="badge bg-primary-subtle text-primary">Calendar</span>
+                </div>
+                <div class="card-body">
+                    {% if upcoming_lessons %}
+                        <ul class="timeline list-unstyled mb-0">
+                            {% for lesson in upcoming_lessons %}
+                                <li class="timeline-item">
+                                    <div class="timeline-date">{{ lesson.date|date:"d MMM" }}</div>
+                                    <div class="timeline-content">
+                                        <h3 class="h6 mb-1">{{ lesson.title }}</h3>
+                                        <p class="text-muted small mb-1">{{ lesson.subject.name }} · {{ lesson.duration_minutes }} minute</p>
+                                        <a href="{% url 'estudy:lesson_detail' slug=lesson.slug %}" class="text-decoration-none small">Deschide lecția</a>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0">Nu există lecții planificate în perioada următoare.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h2 class="h5 mb-0">Lecții actualizate recent</h2>
+                    <span class="badge bg-secondary-subtle text-secondary">Nou</span>
+                </div>
+                <div class="card-body">
+                    {% if latest_resources %}
+                        <div class="list-group list-group-flush">
+                            {% for lesson in latest_resources %}
+                                <a href="{% url 'estudy:lesson_detail' slug=lesson.slug %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h3 class="h6 mb-1">{{ lesson.title }}</h3>
+                                        <p class="text-muted small mb-0">{{ lesson.subject.name }} · actualizat {{ lesson.updated_at|date:"d MMM Y" }}</p>
+                                    </div>
+                                    <i class="fa-solid fa-arrow-right text-muted"></i>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">Nicio lecție nu a fost actualizată recent.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
