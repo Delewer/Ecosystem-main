@@ -1,0 +1,73 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Misiunile mele · UnITex{% endblock %}
+
+{% block content %}
+<section class="mb-4">
+    <h1 class="h4 mb-3">Completează misiuni pentru XP suplimentar</h1>
+    <p class="text-muted">Finalizează lecții, quiz-uri și proiecte pentru a debloca insigne rare și bonusuri.</p>
+</section>
+
+<section class="row g-4">
+    <div class="col-lg-4">
+        <h2 class="h5">Misiuni zilnice</h2>
+        {% if missions.daily %}
+            {% for mission in missions.daily %}
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <span class="badge" style="background: {{ mission.mission.color }}33; color: {{ mission.mission.color }};"><i class="fa {{ mission.mission.icon }} me-1"></i>Daily</span>
+                        <h3 class="h6 mt-2">{{ mission.mission.title }}</h3>
+                        <p class="text-muted small">{{ mission.mission.description }}</p>
+                        <div class="small text-muted">Progres: {{ mission.progress }} / {{ mission.mission.target_value }} · {{ mission.mission.reward_points }} XP</div>
+                        {% if mission.completed %}
+                            <span class="badge bg-success mt-2"><i class="fa-solid fa-check me-1"></i>Finalizată</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">Nu există misiuni zilnice active.</p>
+        {% endif %}
+    </div>
+    <div class="col-lg-4">
+        <h2 class="h5">Misiuni săptămânale</h2>
+        {% if missions.weekly %}
+            {% for mission in missions.weekly %}
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <span class="badge" style="background: {{ mission.mission.color }}33; color: {{ mission.mission.color }};"><i class="fa {{ mission.mission.icon }} me-1"></i>Weekly</span>
+                        <h3 class="h6 mt-2">{{ mission.mission.title }}</h3>
+                        <p class="text-muted small">{{ mission.mission.description }}</p>
+                        <div class="small text-muted">Progres: {{ mission.progress }} / {{ mission.mission.target_value }} · {{ mission.mission.reward_points }} XP</div>
+                        {% if mission.completed %}
+                            <span class="badge bg-success mt-2"><i class="fa-solid fa-check me-1"></i>Finalizată</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">Nu există misiuni săptămânale active.</p>
+        {% endif %}
+    </div>
+    <div class="col-lg-4">
+        <h2 class="h5">Provocări speciale</h2>
+        {% if missions.special %}
+            {% for mission in missions.special %}
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <span class="badge" style="background: {{ mission.mission.color }}33; color: {{ mission.mission.color }};"><i class="fa {{ mission.mission.icon }} me-1"></i>Special</span>
+                        <h3 class="h6 mt-2">{{ mission.mission.title }}</h3>
+                        <p class="text-muted small">{{ mission.mission.description }}</p>
+                        <div class="small text-muted">Progres: {{ mission.progress }} / {{ mission.mission.target_value }} · {{ mission.mission.reward_points }} XP</div>
+                        {% if mission.completed %}
+                            <span class="badge bg-success mt-2"><i class="fa-solid fa-check me-1"></i>Finalizată</span>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">Nu există provocări speciale acum.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

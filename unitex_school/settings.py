@@ -140,3 +140,8 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'andugd67@gmail.com'  # Ваш email
 EMAIL_HOST_PASSWORD = 'dpty hnlg vnbc jpcj'  # Ваш пароль или App password для Gmail
+
+LOGIN_URL = '/login/'
+LOGOUT_REDIRECT_URL = '/'
+
+TEACHER_REGISTRATION_CODE = os.environ.get('UNITEX_TEACHER_CODE', 'MENTOR-2025')

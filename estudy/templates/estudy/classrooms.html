@@ -1,0 +1,90 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Clasele mele{% endblock %}
+
+{% block content %}
+<section class="row g-4">
+    <div class="col-lg-5">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h1 class="h5 mb-0">Adaugă sau alătură-te unei clase</h1>
+            </div>
+            <div class="card-body">
+                {% if profile.is_teacher %}
+                    <form method="post" class="vstack gap-3">
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+                        <div>
+                            <label class="form-label" for="id_name">Numele clasei</label>
+                            {{ form.name }}
+                            {{ form.name.errors }}
+                        </div>
+                        <div>
+                            <label class="form-label" for="id_description">Descriere</label>
+                            {{ form.description }}
+                            {{ form.description.errors }}
+                        </div>
+                        <button class="btn btn-primary" type="submit">Creează clasa</button>
+                    </form>
+                {% else %}
+                    <form method="post" class="vstack gap-3">
+                        {% csrf_token %}
+                        <div>
+                            <label class="form-label" for="invite_code">Cod invitație</label>
+                            <input type="text" class="form-control" id="invite_code" name="invite_code" placeholder="ABC123" required>
+                            {% if join_error %}<div class="text-danger small mt-2">{{ join_error }}</div>{% endif %}
+                        </div>
+                        <button class="btn btn-primary" type="submit">Alătură-te clasei</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">Clasele mele</h2>
+            </div>
+            <div class="card-body">
+                {% if memberships %}
+                    <ul class="list-group list-group-flush">
+                        {% for membership in memberships %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-semibold">{{ membership.classroom.name }}</div>
+                                    <div class="small text-muted">Alăturat la {{ membership.joined_at|date:"d MMM Y" }}</div>
+                                </div>
+                                {% if profile.is_teacher %}
+                                    <a class="btn btn-sm btn-outline-primary" href="{% url 'estudy:classroom_detail' membership.classroom.pk %}">Gestionează</a>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">Nu ești asociat cu nicio clasă momentan.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% if owned %}
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h2 class="h6 mb-0">Clase create de mine</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for classroom in owned %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-semibold">{{ classroom.name }}</div>
+                                    <div class="small text-muted">Cod invitație: <code>{{ classroom.invite_code }}</code></div>
+                                </div>
+                                <a class="btn btn-sm btn-outline-secondary" href="{% url 'estudy:classroom_detail' classroom.pk %}">Detalii</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

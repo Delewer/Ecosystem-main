@@ -1,0 +1,124 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Clasa {{ classroom.name }}{% endblock %}
+
+{% block content %}
+<section class="mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <h1 class="h4 mb-1">{{ classroom.name }}</h1>
+            <p class="text-muted mb-0">Cod invitație: <code>{{ classroom.invite_code }}</code></p>
+        </div>
+        <span class="badge bg-primary-subtle text-primary">{{ memberships|length }} membri</span>
+    </div>
+</section>
+
+<section class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Membri</h2>
+            </div>
+            <div class="card-body">
+                {% if memberships %}
+                    <ul class="list-group list-group-flush">
+                        {% for membership in memberships %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-semibold">{{ membership.user.get_full_name|default:membership.user.username }}</div>
+                                    <div class="small text-muted">Rol: {{ membership.get_role_display }}</div>
+                                </div>
+                                <span class="badge bg-success-subtle text-success">{{ membership.points }} XP</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">Încă nu există membri în această clasă.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Publică o sarcină</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" class="vstack gap-3">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <div>
+                        <label class="form-label" for="id_title">Titlu</label>
+                        {{ form.title }}
+                    </div>
+                    <div>
+                        <label class="form-label" for="id_description">Descriere</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="id_assignment_type">Tip</label>
+                            {{ form.assignment_type }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="id_due_date">Termen</label>
+                            {{ form.due_date }}
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="id_lesson">Lecție</label>
+                            {{ form.lesson }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="id_project">Proiect</label>
+                            {{ form.project }}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label" for="id_points">Puncte</label>
+                        {{ form.points }}
+                    </div>
+                    <button class="btn btn-primary" type="submit">Publică</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h2 class="h5 mb-0">Sarcini publicate</h2>
+        </div>
+        <div class="card-body">
+            {% if assignments %}
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Titlu</th>
+                                <th>Tip</th>
+                                <th>Termen</th>
+                                <th>Puncte</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assignment in assignments %}
+                                <tr>
+                                    <td>{{ assignment.title }}</td>
+                                    <td>{{ assignment.get_assignment_type_display }}</td>
+                                    <td>{{ assignment.due_date|default:"-" }}</td>
+                                    <td>{{ assignment.points }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">Nu există sarcini publicate încă.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

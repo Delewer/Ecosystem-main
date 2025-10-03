@@ -1,0 +1,99 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Dashboard profesor · UnITex{% endblock %}
+
+{% block content %}
+<section class="row g-4 mb-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5 mb-3">Bine ai revenit, {{ profile.display_or_username }}</h2>
+                <p class="text-muted small">Gestionează clasele, urmărește sarcinile și oferă feedback rapid elevilor.</p>
+                <div class="mt-4">
+                    <span class="d-block text-uppercase small text-muted">Clase gestionate</span>
+                    <span class="fs-3 fw-bold">{{ classrooms|length }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">Clasele mele</h2>
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'estudy:classrooms' %}"><i class="fa-solid fa-plus me-1"></i>Nouă clasă</a>
+            </div>
+            <div class="card-body">
+                {% if classrooms %}
+                    <div class="row g-3">
+                        {% for classroom in classrooms %}
+                            <div class="col-md-6">
+                                <a class="text-decoration-none" href="{% url 'estudy:classroom_detail' classroom.pk %}">
+                                    <div class="p-3 border rounded-3 h-100">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h3 class="h6 mb-0">{{ classroom.name }}</h3>
+                                            <span class="badge bg-primary-subtle text-primary">{{ classroom.member_count }} membri</span>
+                                        </div>
+                                        <p class="text-muted small mb-0">{{ classroom.description|default:"Spațiu de învățare pentru echipa ta." }}</p>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Nu ai încă clase create. Creează una pentru a începe.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">Teme recente</h2>
+                <span class="badge bg-secondary-subtle text-secondary">Ultimele 5</span>
+            </div>
+            <div class="card-body">
+                {% if assignments %}
+                    <ul class="list-group list-group-flush">
+                        {% for assignment in assignments %}
+                            <li class="list-group-item">
+                                <div class="fw-semibold">{{ assignment.title }}</div>
+                                <div class="small text-muted">{{ assignment.classroom.name }} · {{ assignment.assignment_type|title }}</div>
+                                {% if assignment.due_date %}
+                                    <div class="small text-muted"><i class="fa-solid fa-calendar-day me-1"></i>Termen: {{ assignment.due_date }}</div>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">Nu sunt teme publicate.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">Trimiteri în așteptare</h2>
+                <span class="badge bg-warning text-dark">Feedback necesar</span>
+            </div>
+            <div class="card-body">
+                {% if pending_reviews %}
+                    <ul class="list-group list-group-flush">
+                        {% for submission in pending_reviews %}
+                            <li class="list-group-item">
+                                <div class="fw-semibold">{{ submission.assignment.title }}</div>
+                                <div class="small text-muted">{{ submission.student.username }} · {{ submission.submitted_at|date:"d MMM, HH:mm" }}</div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">Nu sunt teme ce așteaptă corectură.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,33 +1,42 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 
 {% block title %}Panou administrator · UnITex{% endblock %}
 
 {% block content %}
 <section class="row g-4 mb-4">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="stat-card bg-primary text-white">
             <div class="stat-card__icon"><i class="fa-solid fa-graduation-cap"></i></div>
             <div>
-                <span class="stat-card__label">Total lecții</span>
+                <span class="stat-card__label">Lecții active</span>
                 <span class="stat-card__value">{{ lessons|length }}</span>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="stat-card bg-success text-white">
-            <div class="stat-card__icon"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-card__icon"><i class="fa-solid fa-children"></i></div>
             <div>
-                <span class="stat-card__label">Elevi activi</span>
+                <span class="stat-card__label">Elevi</span>
                 <span class="stat-card__value">{{ total_students }}</span>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="stat-card bg-warning text-white">
-            <div class="stat-card__icon"><i class="fa-solid fa-layer-group"></i></div>
+    <div class="col-md-3">
+        <div class="stat-card bg-info text-white">
+            <div class="stat-card__icon"><i class="fa-solid fa-chalkboard-user"></i></div>
             <div>
-                <span class="stat-card__label">Top materii</span>
-                <span class="stat-card__value">{{ top_subjects|length }}</span>
+                <span class="stat-card__label">Profesori</span>
+                <span class="stat-card__value">{{ total_teachers }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card bg-warning text-white">
+            <div class="stat-card__icon"><i class="fa-solid fa-house-user"></i></div>
+            <div>
+                <span class="stat-card__label">Părinți</span>
+                <span class="stat-card__value">{{ total_parents }}</span>
             </div>
         </div>
     </div>
@@ -38,7 +47,7 @@
         <div class="card shadow-sm">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h2 class="h5 mb-0">Lecții publicate</h2>
-                <a class="btn btn-sm btn-primary" href="{% url 'estudy:add_lesson' %}"><i class="fa-solid fa-plus me-2"></i>Adaugă lecție</a>
+                <span class="badge bg-primary-subtle text-primary"><i class="fa-solid fa-layer-group me-1"></i>{{ lessons|length }}</span>
             </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -48,7 +57,6 @@
                             <th>Subiect</th>
                             <th>Elevi</th>
                             <th>Ultima actualizare</th>
-                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -58,11 +66,10 @@
                                 <td>{{ lesson.subject.name }}</td>
                                 <td>{{ lesson.student_count }}</td>
                                 <td>{{ lesson.updated_at|date:"d MMM Y" }}</td>
-                                <td class="text-end"><a href="{% url 'estudy:edit_lesson' lesson_id=lesson.id %}" class="btn btn-sm btn-outline-secondary">Editează</a></td>
                             </tr>
                         {% empty %}
                             <tr>
-                                <td colspan="5" class="text-center text-muted py-4">Nu există lecții publicate momentan.</td>
+                                <td colspan="4" class="text-center text-muted py-4">Nu există încă lecții publicate.</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -71,7 +78,7 @@
         </div>
     </div>
     <div class="col-lg-4">
-        <div class="card shadow-sm">
+        <div class="card shadow-sm mb-4">
             <div class="card-header bg-white">
                 <h2 class="h6 mb-0">Materii populare</h2>
             </div>
@@ -86,8 +93,19 @@
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p class="text-muted mb-0">Nu există statistici încă.</p>
+                    <p class="text-muted mb-0">Încă nu există date.</p>
                 {% endif %}
+            </div>
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h6 mb-0">Statistici platformă</h2>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small text-muted mb-0">
+                    <li class="d-flex justify-content-between align-items-center py-1"><span>Clase active</span><span class="fw-semibold">{{ total_classrooms }}</span></li>
+                    <li class="d-flex justify-content-between align-items-center py-1"><span>Utilizatori înrolați</span><span class="fw-semibold">{{ total_students|add:total_teachers|add:total_parents }}</span></li>
+                </ul>
             </div>
         </div>
     </div>

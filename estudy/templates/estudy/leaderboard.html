@@ -1,0 +1,52 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Clasamentul UnITex{% endblock %}
+
+{% block content %}
+<section class="row g-4 align-items-center mb-4">
+    <div class="col-lg-6">
+        <h1 class="h4 mb-2">Cei mai activi exploratori</h1>
+        <p class="text-muted">Fiecare lecție finalizată adaugă puncte în clasament. Bonusurile și insignele pot oferi surprize suplimentare!</p>
+    </div>
+    <div class="col-lg-6">
+        <form method="get" class="d-flex gap-2 justify-content-lg-end">
+            <select class="form-select w-auto" name="classroom">
+                <option value="">Clasament global</option>
+                {% for membership in classrooms %}
+                    <option value="{{ membership.classroom.id }}" {% if selected_classroom and membership.classroom.id == selected_classroom.id %}selected{% endif %}>{{ membership.classroom.name }}</option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-primary" type="submit">Filtrează</button>
+        </form>
+    </div>
+</section>
+
+<section class="card shadow-sm">
+    <div class="card-body p-0">
+        {% if leaderboard %}
+            <div class="table-responsive">
+                <table class="table table-striped align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Utilizator</th>
+                            <th>Puncte</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in leaderboard %}
+                            <tr>
+                                <td><span class="badge bg-primary">#{{ entry.position }}</span></td>
+                                <td>{{ entry.username }}</td>
+                                <td><i class="fa-solid fa-star text-warning me-1"></i>{{ entry.score }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="p-4 text-center text-muted">Nu există date pentru clasamentul selectat.</div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

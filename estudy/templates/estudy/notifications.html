@@ -1,0 +1,63 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Notificările mele{% endblock %}
+
+{% block content %}
+<section class="row g-4">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h1 class="h5 mb-0">Flux notificări</h1>
+            </div>
+            <div class="card-body">
+                {% if notifications %}
+                    <ul class="list-unstyled mb-0">
+                        {% for item in notifications %}
+                            <li class="mb-4">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h2 class="h6 mb-1"><i class="fa-solid fa-bell me-2 text-primary"></i>{{ item.title }}</h2>
+                                        <p class="text-muted small mb-2">{{ item.message }}</p>
+                                        {% if item.link_url %}
+                                            <a class="btn btn-sm btn-outline-primary" href="{{ item.link_url }}">Deschide</a>
+                                        {% endif %}
+                                    </div>
+                                    <span class="small text-muted">{{ item.created_at|date:"d MMM, HH:mm" }}</span>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">Nu ai notificări în acest moment.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h6 mb-0">Preferințe notificări</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" class="vstack gap-3">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <div class="form-check form-switch">
+                        {{ form.email_enabled }}
+                        <label class="form-check-label" for="id_email_enabled">Notificări prin e-mail</label>
+                    </div>
+                    <div class="form-check form-switch">
+                        {{ form.in_app_enabled }}
+                        <label class="form-check-label" for="id_in_app_enabled">Notificări în aplicație</label>
+                    </div>
+                    <div>
+                        <label class="form-label" for="id_digest_frequency">Rezumat periodic</label>
+                        {{ form.digest_frequency }}
+                    </div>
+                    <button class="btn btn-primary" type="submit">Salvează</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

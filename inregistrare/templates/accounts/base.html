@@ -1,25 +1,32 @@
-
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ro" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}My Site{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>{% block title %}UnITex - Autentificare{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-Z+z3kGqV4l6zqvV1CxQjbV1jc4Eo9yYEKz2sug1Gv3a1JpN96CB2A+qsSVqS2+CA0nVddOZXS6aYvjh6+pr0Hg==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="{% static 'inregistrare/style.css' %}">
+    <script>
+        (function() {
+            try {
+                var stored = localStorage.getItem('unitex-theme');
+                if (!stored && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    stored = 'dark';
+                }
+                document.documentElement.setAttribute('data-theme', stored === 'dark' ? 'dark' : 'light');
+            } catch (error) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
 </head>
-<body>
-    
-    <nav>
-        <!-- Navigation links here -->
-    </nav>
-    <main>
-        {% block content %}
-   
+<body class="auth-body">
+    {% block content %}{% endblock %}
 
-
-
-        {% endblock %}
-    </main>
-  
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

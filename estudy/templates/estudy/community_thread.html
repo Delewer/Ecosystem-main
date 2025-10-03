@@ -1,0 +1,61 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}{{ thread.title }} · Comunitate{% endblock %}
+
+{% block content %}
+<section class="mb-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h1 class="h4">{{ thread.title }}</h1>
+            <p class="text-muted small">Creat de {{ thread.created_by.get_short_name|default:thread.created_by.username }} · {{ thread.created_at|date:"d MMM, HH:mm" }}</p>
+            <p>{{ thread.body }}</p>
+            {% if thread.tags %}
+                <div class="d-flex flex-wrap gap-2">
+                    {% for tag in thread.tags %}
+                        <span class="badge bg-primary-subtle text-primary">#{{ tag }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="mb-4">
+    <h2 class="h5">Răspunsuri</h2>
+    {% if replies %}
+        <div class="vstack gap-3">
+            {% for reply in replies %}
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-semibold">{{ reply.created_by.get_short_name|default:reply.created_by.username }}</span>
+                            <span class="small text-muted">{{ reply.created_at|date:"d MMM, HH:mm" }}</span>
+                        </div>
+                        <p class="mt-2 mb-0">{{ reply.body }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted">Nu există răspunsuri încă. Fii primul!</p>
+    {% endif %}
+</section>
+
+<section class="mb-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h2 class="h6 mb-0">Scrie un răspuns</h2>
+        </div>
+        <div class="card-body">
+            <form method="post" class="vstack gap-3">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div>
+                    {{ form.body }}
+                </div>
+                <button class="btn btn-primary" type="submit">Trimite</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

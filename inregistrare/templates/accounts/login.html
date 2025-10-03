@@ -1,25 +1,43 @@
 {% extends 'accounts/base.html' %}
 {% load static %}
 
-{% block title %}Autentificare{% endblock %}
+{% block title %}Autentificare - UnITex{% endblock %}
 
 {% block content %}
-    
-<body>
-    <div class="fundal">
-        <div class="container-login">
-            <h1>Autentificare</h1>
-            <div class="middle-3dl">
-                <!-- Placeholder for 3D elements -->
-                <img src="{% static 'images/3d.png' %}" alt="3D Elements">
-            </div>
-            <form class="loginform" method="post">
-                {% csrf_token %}
-                {{ loginform.as_p }}
-                <input type="submit" value="Autentificare"  class="submit-button-login">
-            </form>
-            <p>Nu ai un cont? <a href="{% url 'signup' %}">Înregistrează-te aici</a></p>
-        </div>
+<section class="auth-shell">
+    <div class="auth-panel auth-panel--hero">
+        <span class="auth-tag">Bine ai revenit!</span>
+        <h1 class="auth-title">Continua aventura digitala.</h1>
+        <p class="auth-subtitle">Intra in contul tau pentru a relua lectiile, a finaliza misiuni zilnice si a castiga XP pentru avatarul tau.</p>
+        <ul class="auth-feature-list">
+            <li><i class="fa-solid fa-star"></i>Pastreaza streak-ul activ revenind zilnic in platforma.</li>
+            <li><i class="fa-solid fa-sparkles"></i>Deblocheaza insigne rare cu lectii consecutive.</li>
+            <li><i class="fa-solid fa-hand-holding-heart"></i>Profesorii pot urmari progresul echipei in timp real.</li>
+        </ul>
+        <img class="auth-illustration" src="{% static 'images/auth-hero-login.svg' %}" alt="Erou digital" onerror="this.style.display='none'">
     </div>
-</body>
+    <div class="auth-panel auth-panel--form">
+        <h2 class="auth-form__title">Autentificare</h2>
+        {% if form.errors %}
+            <div class="auth-alert auth-alert--error">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>Verifica datele introduse si incearca din nou.
+            </div>
+        {% endif %}
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            <div class="input-group">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {{ form.username.errors }}
+            </div>
+            <div class="input-group">
+                {{ form.password.label_tag }}
+                {{ form.password }}
+                {{ form.password.errors }}
+            </div>
+            <button type="submit" class="btn btn-primary auth-submit"><i class="fa-solid fa-right-to-bracket me-2"></i>Intra in cont</button>
+        </form>
+        <p class="auth-switch">Nu ai inca un cont? <a href="{% url 'signup' %}">Inregistreaza-te</a></p>
+    </div>
+</section>
 {% endblock %}

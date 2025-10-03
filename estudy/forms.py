@@ -8,6 +8,14 @@ from .models import (
     Test,
     UserProfile,
     default_practice_data,
+    Classroom,
+    ClassAssignment,
+    Project,
+    ProjectSubmission,
+    Mission,
+    NotificationPreference,
+    CommunityThread,
+    CommunityReply,
 )
 
 
@@ -31,6 +39,11 @@ class LessonForm(forms.ModelForm):
             "difficulty",
             "age_bracket",
             "cover_image",
+            "xp_reward",
+            "fun_fact",
+            "featured",
+            "hero_theme",
+            "hero_emoji",
             "theory_intro",
             "theory_takeaways",
         ]
@@ -39,6 +52,7 @@ class LessonForm(forms.ModelForm):
             "content": forms.Textarea(attrs={"rows": 6}),
             "excerpt": forms.Textarea(attrs={"rows": 3}),
             "theory_intro": forms.Textarea(attrs={"rows": 4}),
+            "fun_fact": forms.Textarea(attrs={"rows": 3}),
         }
         help_texts = {
             "slug": "Optional. Generated automatically when left blank.",
@@ -225,4 +239,154 @@ TestFormSet = inlineformset_factory(
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ["status"]
+        fields = [
+            "status",
+            "display_name",
+            "bio",
+            "mascot_slug",
+            "theme_slug",
+            "favorite_subject",
+            "weekly_goal",
+            "notifications_enabled",
+            "parent_email",
+        ]
+        widgets = {
+            "bio": forms.Textarea(attrs={"rows": 3}),
+        }
+
+
+class NotificationPreferenceForm(forms.ModelForm):
+    class Meta:
+        model = NotificationPreference
+        fields = ["email_enabled", "in_app_enabled", "digest_frequency"]
+
+
+class ClassroomForm(forms.ModelForm):
+    class Meta:
+        model = Classroom
+        fields = ["name", "description"]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control"}),
+            "description": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+        }
+
+
+class ClassAssignmentForm(forms.ModelForm):
+    class Meta:
+        model = ClassAssignment
+        fields = ["title", "description", "assignment_type", "lesson", "project", "due_date", "points"]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control"}),
+            "description": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+            "assignment_type": forms.Select(attrs={"class": "form-select"}),
+            "lesson": forms.Select(attrs={"class": "form-select"}),
+            "project": forms.Select(attrs={"class": "form-select"}),
+            "due_date": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+            "points": forms.NumberInput(attrs={"class": "form-control"}),
+        }
+
+
+class ProjectForm(forms.ModelForm):
+    skills = forms.CharField(required=False, help_text="Comma separated skill tags")
+    resources = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={"rows": 3}),
+        help_text="One resource URL per line",
+    )
+
+    class Meta:
+        model = Project
+        fields = [
+            "title",
+            "slug",
+            "summary",
+            "brief",
+            "level",
+            "estimated_minutes",
+            "points_reward",
+            "lesson",
+        ]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control"}),
+            "slug": forms.TextInput(attrs={"class": "form-control"}),
+            "summary": forms.TextInput(attrs={"class": "form-control"}),
+            "brief": forms.Textarea(attrs={"class": "form-control", "rows": 4}),
+            "level": forms.Select(attrs={"class": "form-select"}),
+            "estimated_minutes": forms.NumberInput(attrs={"class": "form-control"}),
+            "points_reward": forms.NumberInput(attrs={"class": "form-control"}),
+            "lesson": forms.Select(attrs={"class": "form-select"}),
+        }
+
+    def clean_skills(self):
+        raw = self.cleaned_data.get("skills", "")
+        return [item.strip() for item in raw.split(',') if item.strip()]
+
+    def clean_resources(self):
+        raw = self.cleaned_data.get("resources", "")
+        return [line.strip() for line in raw.splitlines() if line.strip()]
+
+    def save(self, commit=True):
+        project = super().save(commit=False)
+        if commit:
+            project.save()
+        skills = self.cleaned_data.get("skills")
+        resources = self.cleaned_data.get("resources")
+        if skills is not None:
+            project.skills = skills
+        if resources is not None:
+            project.resources = resources
+        if commit:
+            project.save(update_fields=["skills", "resources"])
+        return project
+
+
+class ProjectSubmissionForm(forms.ModelForm):
+    class Meta:
+        model = ProjectSubmission
+        fields = ["description", "solution_url", "attachment"]
+        widgets = {
+            "description": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+            "solution_url": forms.URLInput(attrs={"class": "form-control"}),
+        }
+
+
+class MissionForm(forms.ModelForm):
+    class Meta:
+        model = Mission
+        fields = [
+            "code",
+            "title",
+            "description",
+            "frequency",
+            "target_value",
+            "reward_points",
+            "reward_badge",
+            "icon",
+            "color",
+            "is_active",
+        ]
+
+
+class ThreadForm(forms.ModelForm):
+    tags = forms.CharField(required=False, help_text="Separate tags with commas")
+
+    class Meta:
+        model = CommunityThread
+        fields = ["title", "body", "tags"]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control"}),
+            "body": forms.Textarea(attrs={"class": "form-control", "rows": 4}),
+        }
+
+    def clean_tags(self):
+        raw = self.cleaned_data.get("tags", "")
+        return [tag.strip() for tag in raw.split(',') if tag.strip()]
+
+
+class ReplyForm(forms.ModelForm):
+    class Meta:
+        model = CommunityReply
+        fields = ["body"]
+        widgets = {
+            "body": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+        }

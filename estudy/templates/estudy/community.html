@@ -1,0 +1,65 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Comunitatea UnITex{% endblock %}
+
+{% block content %}
+<section class="row g-4">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h1 class="h5 mb-0">Discuții recente</h1>
+            </div>
+            <div class="card-body">
+                {% if threads %}
+                    <ul class="list-group list-group-flush">
+                        {% for thread in threads %}
+                            <li class="list-group-item">
+                                <a class="text-decoration-none" href="{% url 'estudy:community_thread' thread.pk %}">
+                                    <div class="fw-semibold">{{ thread.title }}</div>
+                                    <div class="small text-muted">Inițiat de {{ thread.created_by.get_short_name|default:thread.created_by.username }} · {{ thread.created_at|date:"d MMM" }}</div>
+                                    {% if thread.tags %}
+                                        <div class="d-flex flex-wrap gap-2 mt-2">
+                                            {% for tag in thread.tags %}
+                                                <span class="badge bg-primary-subtle text-primary">#{{ tag }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted mb-0">Încă nu există discuții. Deschide una chiar acum!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Pornește o conversație</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" class="vstack gap-3">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <div>
+                        <label class="form-label" for="id_title">Titlu</label>
+                        {{ form.title }}
+                    </div>
+                    <div>
+                        <label class="form-label" for="id_body">Mesaj</label>
+                        {{ form.body }}
+                    </div>
+                    <div>
+                        <label class="form-label" for="id_tags">Tag-uri</label>
+                        {{ form.tags }}
+                        <div class="form-text">Separă tag-urile cu virgulă</div>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Publică</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

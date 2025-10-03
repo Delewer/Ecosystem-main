@@ -1,0 +1,62 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Trimite proiectul · {{ project.title }}{% endblock %}
+
+{% block content %}
+<section class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h1 class="h5 mb-0">{{ project.title }}</h1>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">{{ project.brief }}</p>
+                <ul class="small text-muted">
+                    <li><strong>Nivel:</strong> {{ project.get_level_display }}</li>
+                    <li><strong>XP:</strong> {{ project.points_reward }}</li>
+                    <li><strong>Timp estimat:</strong> {{ project.estimated_minutes }} min</li>
+                </ul>
+                {% if project.skills %}
+                    <div class="mt-3">
+                        <span class="text-muted small">Competențe vizate:</span>
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            {% for skill in project.skills %}
+                                <span class="badge bg-info-subtle text-info">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Trimite soluția</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" class="vstack gap-3">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    <div>
+                        <label class="form-label" for="id_description">Descriere</label>
+                        {{ form.description }}
+                        {{ form.description.errors }}
+                    </div>
+                    <div>
+                        <label class="form-label" for="id_solution_url">Link (GitHub, CodePen etc)</label>
+                        {{ form.solution_url }}
+                        {{ form.solution_url.errors }}
+                    </div>
+                    <div>
+                        <label class="form-label" for="id_attachment">Fișier</label>
+                        {{ form.attachment }}
+                        {{ form.attachment.errors }}
+                    </div>
+                    <button class="btn btn-primary" type="submit">Trimite proiectul</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

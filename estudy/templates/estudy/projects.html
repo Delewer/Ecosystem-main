@@ -1,0 +1,39 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Proiecte practice{% endblock %}
+
+{% block content %}
+<section class="mb-4">
+    <h1 class="h4 mb-2">Proiecte practice</h1>
+    <p class="text-muted">Alege un proiect pentru a aplica ce ai învățat și pentru a primi feedback de la profesori.</p>
+</section>
+
+<section class="row g-4">
+    {% for project in projects %}
+        <div class="col-md-6 col-xl-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-secondary-subtle text-secondary">{{ project.get_level_display }}</span>
+                        <span class="badge bg-success-subtle text-success"><i class="fa-solid fa-gem me-1"></i>{{ project.points_reward }} XP</span>
+                    </div>
+                    <h2 class="h5">{{ project.title }}</h2>
+                    <p class="text-muted small flex-grow-1">{{ project.summary }}</p>
+                    <div class="mt-3 d-flex justify-content-between align-items-center">
+                        <span class="small text-muted"><i class="fa-solid fa-clock me-1"></i>{{ project.estimated_minutes }} min</span>
+                        {% if project.id in submitted_project_ids %}
+                            <span class="badge bg-primary-subtle text-primary">Trimis</span>
+                        {% else %}
+                            <a class="btn btn-sm btn-outline-primary" href="{% url 'estudy:project_submit' project.slug %}">Începe</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <p class="text-muted">Nu există proiecte configurate încă.</p>
+        </div>
+    {% endfor %}
+</section>
+{% endblock %}

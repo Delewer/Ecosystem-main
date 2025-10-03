@@ -1,5 +1,56 @@
 /* eslint-env browser */
 
+const STORAGE_KEYS = {
+    theme: 'unitex-theme',
+};
+
+const safeLocalStorage = {
+    get(key) {
+        try {
+            return window.localStorage.getItem(key);
+        } catch (error) {
+            console.warn('LocalStorage get failed', error);
+            return null;
+        }
+    },
+    set(key, value) {
+        try {
+            window.localStorage.setItem(key, value);
+        } catch (error) {
+            console.warn('LocalStorage set failed', error);
+        }
+    },
+};
+
+const applyTheme = (theme) => {
+    const root = document.documentElement;
+    const normalized = theme === 'dark' ? 'dark' : 'light';
+    root.setAttribute('data-theme', normalized);
+    document.body.classList.toggle('theme-dark', normalized === 'dark');
+    document.querySelectorAll('[data-theme-toggle]').forEach((toggle) => {
+        toggle.setAttribute('data-theme-state', normalized);
+        const label = toggle.querySelector('[data-theme-toggle-label]');
+        if (label) {
+            label.textContent = normalized === 'dark' ? 'Noapte' : 'Zi';
+        }
+    });
+};
+
+const initializeThemeControls = () => {
+    const stored = safeLocalStorage.get(STORAGE_KEYS.theme);
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(stored || (prefersDark ? 'dark' : 'light'));
+
+    document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            safeLocalStorage.set(STORAGE_KEYS.theme, next);
+            applyTheme(next);
+        });
+    });
+};
+
 const getCsrfToken = () => {
     const value = document.cookie.split(";").map((item) => item.trim()).find((item) => item.startsWith("csrftoken="));
     return value ? decodeURIComponent(value.split("=")[1]) : "";
@@ -15,6 +66,7 @@ const updateProgressDisplays = ({ percent, completed, total }) => {
     document.querySelectorAll('[data-progress-bar]').forEach((bar) => {
         bar.style.width = `${roundedPercent}%`;
         bar.setAttribute('aria-valuenow', String(roundedPercent));
+        bar.dataset.progressInitial = String(roundedPercent);
         const percentHolder = bar.querySelector('[data-progress-percent]');
         if (percentHolder) {
             percentHolder.textContent = roundedPercent;
@@ -32,6 +84,87 @@ const updateProgressDisplays = ({ percent, completed, total }) => {
             node.textContent = total;
         });
     }
+};
+
+const initializeProgressBars = () => {
+    document.querySelectorAll('[data-progress-bar]').forEach((bar) => {
+        const initialRaw = bar.dataset.progressInitial;
+        if (!initialRaw) {
+            return;
+        }
+        const initialValue = Number.parseFloat(initialRaw);
+        if (!Number.isFinite(initialValue)) {
+            return;
+        }
+        const clamped = Math.max(0, Math.min(100, Math.round(initialValue)));
+        bar.style.width = `${clamped}%`;
+        bar.setAttribute('aria-valuenow', String(clamped));
+        const percentHolder = bar.querySelector('[data-progress-percent]');
+        if (percentHolder) {
+            percentHolder.textContent = clamped;
+        }
+    });
+};
+
+const getNextButton = () => document.querySelector('[data-next-button]');
+
+const splitClasses = (value) => (value || '').split(/\s+/).map((item) => item.trim()).filter(Boolean);
+
+const splitList = (value) => (value || '').split(/[,|]/).map((item) => item.trim().toLowerCase()).filter(Boolean);
+
+const addClasses = (element, value) => {
+    splitClasses(value).forEach((className) => element.classList.add(className));
+};
+
+const removeClasses = (element, value) => {
+    splitClasses(value).forEach((className) => element.classList.remove(className));
+};
+
+const getNextButtonMeta = (button) => ({
+    url: button.dataset.nextUrl || button.getAttribute('href') || '#',
+    enabledClass: button.dataset.nextEnabledClass || 'btn-primary',
+    disabledClass: button.dataset.nextDisabledClass || 'btn-outline-secondary',
+    labelLocked: button.dataset.nextLabelLocked || '<i class=\"fa-solid fa-lock me-2\"></i>Lectia urmatoare',
+    labelUnlocked: button.dataset.nextLabelUnlocked || '<i class=\"fa-solid fa-arrow-right me-2\"></i>Lectia urmatoare',
+});
+
+const applyNextButtonState = (isUnlocked) => {
+    const button = getNextButton();
+    if (!button) {
+        return;
+    }
+    const meta = getNextButtonMeta(button);
+    if (isUnlocked) {
+        removeClasses(button, meta.disabledClass);
+        button.classList.remove('disabled');
+        addClasses(button, meta.enabledClass);
+        button.href = meta.url;
+        button.dataset.locked = 'false';
+        button.removeAttribute('aria-disabled');
+        button.innerHTML = meta.labelUnlocked;
+    } else {
+        removeClasses(button, meta.enabledClass);
+        addClasses(button, meta.disabledClass);
+        button.classList.add('disabled');
+        button.href = '#';
+        button.dataset.locked = 'true';
+        button.setAttribute('aria-disabled', 'true');
+        button.innerHTML = meta.labelLocked;
+    }
+};
+
+const initializeNextButtonState = () => {
+    const button = getNextButton();
+    if (!button) {
+        return;
+    }
+    const meta = getNextButtonMeta(button);
+    button.dataset.nextLabelLocked = button.dataset.nextLabelLocked || meta.labelLocked;
+    button.dataset.nextLabelUnlocked = button.dataset.nextLabelUnlocked || meta.labelUnlocked;
+    const isLocked = button.dataset.locked === 'true'
+        || button.classList.contains('disabled')
+        || button.getAttribute('aria-disabled') === 'true';
+    applyNextButtonState(!isLocked);
 };
 
 const setLessonCompletionUI = (completed, sourceButton) => {
@@ -71,6 +204,7 @@ const setLessonCompletionUI = (completed, sourceButton) => {
         statusEl.textContent = completed ? 'Finalizată' : 'În curs';
         statusEl.classList.toggle('text-success', completed);
     }
+    applyNextButtonState(completed);
 };
 
 const wireToggleCompletion = () => {
@@ -448,11 +582,179 @@ const wireCodeChallenges = () => {
     });
 };
 
+const wireVoiceButtons = () => {
+    const buttons = document.querySelectorAll('[data-voice-button]');
+    if (buttons.length === 0) {
+        return;
+    }
+
+    const supportsSpeech = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+    if (!supportsSpeech) {
+        buttons.forEach((button) => {
+            button.addEventListener('click', () => {
+                alert('Redarea audio nu este suportată de acest browser.');
+            });
+        });
+        return;
+    }
+
+    const synth = window.speechSynthesis;
+    const preferredVendors = ['Google', 'Microsoft', 'Amazon', 'Acapela'];
+    let availableVoices = [];
+    let activeButton = null;
+
+    const refreshVoices = () => {
+        availableVoices = synth.getVoices().filter((voice) => voice && voice.lang);
+        buttons.forEach((button) => button.classList.remove('is-loading-voice'));
+    };
+
+    refreshVoices();
+    if (typeof synth.addEventListener === 'function') {
+        synth.addEventListener('voiceschanged', refreshVoices);
+    } else if (typeof synth.onvoiceschanged !== 'undefined') {
+        synth.onvoiceschanged = refreshVoices;
+    }
+
+    const normalise = (lang) => (lang || '').toLowerCase();
+
+    const chooseVoice = (button) => {
+        if (!availableVoices.length) {
+            return null;
+        }
+        const requested = normalise(button.dataset.voiceLang || 'ro-RO');
+        const alternative = normalise(button.dataset.voiceAltLang || '');
+        const preferredNames = splitList(button.dataset.voiceNames);
+        const candidates = [requested, requested.split('-')[0], alternative, 'ro-ro', 'ro'];
+
+        const findMatches = (lang) => availableVoices.filter((voice) => normalise(voice.lang) === lang);
+        const findStartsWith = (lang) => availableVoices.filter((voice) => normalise(voice.lang).startsWith(lang));
+        const prefer = (voices) => {
+            if (!voices.length) {
+                return null;
+            }
+            const vendorHit = voices.find((voice) => preferredVendors.some((vendor) => (voice.name || '').includes(vendor)));
+            if (vendorHit) {
+                return vendorHit;
+            }
+            const romanianName = voices.find((voice) => /ro|romanian/i.test(voice.name || ''));
+            if (romanianName) {
+                return romanianName;
+            }
+            return voices[0];
+        };
+
+        if (preferredNames.length) {
+            const matchPreferred = availableVoices.find((voice) => preferredNames.some((name) => (voice.name || '').toLowerCase().includes(name)));
+            if (matchPreferred) {
+                return matchPreferred;
+            }
+        }
+
+        for (const candidate of candidates) {
+            if (!candidate) {
+                continue;
+            }
+            const matchesExact = findMatches(candidate);
+            if (matchesExact.length) {
+                const voice = prefer(matchesExact);
+                if (voice) {
+                    return voice;
+                }
+            }
+            const matchesStart = findStartsWith(candidate);
+            if (matchesStart.length) {
+                const voice = prefer(matchesStart);
+                if (voice) {
+                    return voice;
+                }
+            }
+        }
+        return prefer(availableVoices);
+    };
+
+    const resetState = () => {
+        if (activeButton) {
+            activeButton.classList.remove('is-speaking');
+            activeButton.removeAttribute('aria-pressed');
+        }
+        activeButton = null;
+    };
+
+    const stopSpeaking = () => {
+        if (synth.speaking || synth.pending) {
+            synth.cancel();
+        }
+    };
+
+    const startSpeech = (button) => {
+        const rawText = button.dataset.voiceText || '';
+        const textContent = rawText.trim();
+        if (!textContent) {
+            alert('Nu există conținut de redat pentru această explicație.');
+            return;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(textContent);
+        const preferredLang = normalise(button.dataset.voiceLang || 'ro-RO');
+        utterance.lang = preferredLang || 'ro-RO';
+        const rate = Number.parseFloat(button.dataset.voiceRate || '0.95');
+        utterance.rate = Number.isFinite(rate) ? rate : 0.95;
+        const pitch = Number.parseFloat(button.dataset.voicePitch || '1');
+        utterance.pitch = Number.isFinite(pitch) ? pitch : 1;
+
+        const voice = chooseVoice(button);
+        if (voice) {
+            utterance.voice = voice;
+            utterance.lang = voice.lang || utterance.lang;
+        }
+
+        utterance.onend = resetState;
+        utterance.onerror = (event) => {
+            console.error('Speech synthesis error', event);
+            resetState();
+            alert('Nu am putut porni redarea audio. Încearcă din nou sau schimbă browserul.');
+        };
+
+        activeButton = button;
+        button.classList.add('is-speaking');
+        button.setAttribute('aria-pressed', 'true');
+        synth.speak(utterance);
+    };
+
+    buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+            if (!availableVoices.length) {
+                button.classList.add('is-loading-voice');
+                refreshVoices();
+            }
+            if (activeButton === button) {
+                stopSpeaking();
+                resetState();
+                return;
+            }
+            stopSpeaking();
+            resetState();
+            startSpeech(button);
+        });
+    });
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopSpeaking();
+            resetState();
+        }
+    });
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+    initializeThemeControls();
+    initializeProgressBars();
+    initializeNextButtonState();
     wireToggleCompletion();
     wireQuizForms();
     wireFormsetAddButtons();
     wirePracticeDragDrop();
     wireConceptCards();
     wireCodeChallenges();
+    wireVoiceButtons();
 });

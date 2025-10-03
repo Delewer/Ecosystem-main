@@ -15,7 +15,7 @@ def register(request):
     else:
         form = InregistrareFormular()
 
-    return render(request, 'accounts/signup.html', {'register': form})
+        return render(request, 'accounts/signup.html', {'form': form})
 
 def login_view(request):
     if request.method == 'POST':
@@ -30,7 +30,7 @@ def login_view(request):
     else:
         form = LoginFormular()
 
-    return render(request, 'accounts/login.html', {'loginform': form})
+        return render(request, 'accounts/login.html', {'form': form})
 
 @login_required(login_url="login")
 def logout(request):

@@ -1,55 +1,110 @@
 {% extends 'accounts/base.html' %}
 {% load static %}
 
-{% block title %}Înregistrare{% endblock %}
+{% block title %}Creeaza cont - UnITex{% endblock %}
 
 {% block content %}
-<body>
-    <div class="fundal">
-        <div class="container left-container">
-            <h3>Informații utile pentru înregistrare</h3>
-            <p><strong>Salutare!</strong> Înregistrează-te pentru a beneficia de toate funcționalitățile noastre.</p>
-            <h4>Ce informații sunt necesare?</h4>
-            <ul>
-                <li><strong>Nume de utilizator:</strong> Un nume unic pentru contul tău.</li>
-                <li><strong>Adresă de email:</strong> O adresă de email validă pentru a primi notificări și pentru a reseta parola în cazul în care o uiți.</li>
-                <li><strong>Parolă:</strong> O parolă sigură pentru a-ți proteja contul.</li>
-                <li><strong>Confirmare parolă:</strong> Confirmă că parola introdusă este corectă.</li>
-            </ul>
-        </div>
-        <div class="middle-3d">
-            <!-- Placeholder for 3D elements -->
-            <img src="{% static 'images/3d.png' %}" alt="3D Elements">
-        </div>
-        <div class="container right-container">
-            <h1>Create Account</h1>
-            <form method="post" autocomplete="off">
-                {% csrf_token %}
-                <div class="form-field">
-                    {{ register.username.label_tag }}
-                    {{ register.username }}
-                    {{ register.username.errors }}
-                </div>
-                <div class="form-field">
-                    {{ register.email.label_tag }}
-                    {{ register.email }}
-                    {{ register.email.errors }}
-                </div>
-                
-                <div class="form-field">
-                    {{ register.password1.label_tag }}
-                    {{ register.password1 }}
-                    {{ register.password1.errors }}
-                </div>
-                <div class="form-field">
-                    {{ register.password2.label_tag }}
-                    {{ register.password2 }}
-                    {{ register.password2.errors }}
-                </div>
-                <input type="submit" value="Create Account" class="submit-button">
-            </form>
-            <p>Already have an account? <a href="{% url 'login' %}">Log in</a></p>
-        </div>
+<section class="auth-shell auth-shell--wide">
+    <div class="auth-panel auth-panel--hero">
+        <span class="auth-tag">Alatura-te comunitatii</span>
+        <h1 class="auth-title">Creeaza-ti avatarul si incepe sa programezi.</h1>
+        <p class="auth-subtitle">Completeaza formularul din dreapta pentru a-ti activa contul. In cateva minute poti explora lectii, misiuni si proiecte adaptate varstei tale.</p>
+        <ul class="auth-feature-list">
+            <li><i class="fa-solid fa-puzzle-piece"></i>Lectii interactive cu jocuri si quiz-uri.</li>
+            <li><i class="fa-solid fa-award"></i>Sistem de XP, insigne si niveluri pentru motivatie.</li>
+            <li><i class="fa-solid fa-shield"></i>Conturile profesorilor sunt confirmate cu un cod unic.</li>
+        </ul>
+        <img class="auth-illustration" src="{% static 'images/auth-hero-signup.svg' %}" alt="Inregistrare" onerror="this.style.display='none'">
     </div>
-</body>
+    <div class="auth-panel auth-panel--form">
+        <h2 class="auth-form__title">Creeaza un cont</h2>
+        {% if form.non_field_errors %}
+            <div class="auth-alert auth-alert--error">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ form.non_field_errors|join:' ' }}
+            </div>
+        {% endif %}
+        <form method="post" autocomplete="off" class="auth-form" id="register-form">
+            {% csrf_token %}
+            <div class="input-group">
+                {{ form.username.label_tag }}
+                {{ form.username }}
+                {{ form.username.errors }}
+            </div>
+            <div class="input-group">
+                {{ form.email.label_tag }}
+                {{ form.email }}
+                {{ form.email.errors }}
+            </div>
+            <div class="input-group input-group--role">
+                {{ form.role.label_tag }}
+                <div class="role-selector" data-role-selector data-teacher-value="{{ form.fields.role.choices.1.0 }}">
+                    {{ form.role }}
+                </div>
+                <small class="form-hint">{{ form.role.help_text }}</small>
+                {{ form.role.errors }}
+            </div>
+            <div class="input-group teacher-code" data-teacher-code>
+                {{ form.teacher_code.label_tag }}
+                {{ form.teacher_code }}
+                <small class="form-hint">Pentru conturile de profesor foloseste codul primit de la coordonatorul UnITex.</small>
+                {{ form.teacher_code.errors }}
+            </div>
+            <div class="input-group">
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+                {{ form.password1.errors }}
+            </div>
+            <div class="input-group">
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+                {{ form.password2.errors }}
+            </div>
+            <button type="submit" class="btn btn-primary auth-submit"><i class="fa-solid fa-user-plus me-2"></i>Creeaza contul</button>
+        </form>
+        <p class="auth-switch">Ai deja un cont? <a href="{% url 'login' %}">Autentifica-te</a></p>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const wrapper = document.querySelector('[data-role-selector]');
+        const teacherField = document.querySelector('[data-teacher-code]');
+        if (!wrapper || !teacherField) {
+            return;
+        }
+        const inputs = wrapper.querySelectorAll('input[type="radio"]');
+        const toggleTeacherField = () => {
+            const selected = wrapper.querySelector('input[type="radio"]:checked');
+            const teacherValue = wrapper.dataset.teacherValue;
+            if (selected && teacherValue && selected.value === teacherValue) {
+                teacherField.classList.remove('is-hidden');
+            } else {
+                teacherField.classList.add('is-hidden');
+                const input = teacherField.querySelector('input');
+                if (input) {
+                    input.value = '';
+                }
+            }
+        };
+        const syncRoleBadges = () => {
+            wrapper.querySelectorAll('label').forEach((label) => label.classList.remove('is-selected'));
+            inputs.forEach((input) => {
+                if (input.checked) {
+                    const label = input.closest('label');
+                    if (label) {
+                        label.classList.add('is-selected');
+                    }
+                }
+            });
+        };
+        const handleChange = () => {
+            toggleTeacherField();
+            syncRoleBadges();
+        };
+        inputs.forEach((input) => input.addEventListener('change', handleChange));
+        handleChange();
+    });
+</script>
 {% endblock %}
