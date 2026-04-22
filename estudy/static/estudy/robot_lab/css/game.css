@@ -67,6 +67,24 @@ body.rr-page .site-main {
     padding: 0;
 }
 
+body.rr-page .site-footer,
+body.rr-page .cookie-banner,
+body.rr-page .scroll-progress,
+body.rr-page .scroll-top-button {
+    display: none !important;
+}
+
+body.rr-game-page .site-navbar {
+    display: none !important;
+}
+
+body.rr-game-page .site-shell,
+body.rr-game-page .site-main,
+body.rr-game-page .workspace-shell,
+body.rr-game-page .workspace-main {
+    min-height: 100vh;
+}
+
 /* Game container */
 .rr-game {
     display: flex;
@@ -76,6 +94,11 @@ body.rr-page .site-main {
     color: var(--rr-text);
     font-family: 'Segoe UI', system-ui, sans-serif;
     overflow: hidden;
+}
+
+body.rr-game-page .rr-game {
+    min-height: 100vh;
+    height: 100vh;
 }
 
 .rr-game__main {

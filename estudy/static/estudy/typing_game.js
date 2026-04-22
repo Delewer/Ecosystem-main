@@ -26,7 +26,11 @@
         cursor:     root.querySelector('[data-tg-cursor]'),
         roundFill:  root.querySelector('[data-tg-round-fill]'),
         roundLabel: root.querySelector('[data-tg-round-label]'),
+        fingerGuide: root.querySelector('[data-tg-finger]'),
         fingerText: root.querySelector('[data-tg-finger-text]'),
+        fingerKey:  root.querySelector('[data-tg-finger-key]'),
+        fingerParts: root.querySelectorAll('[data-tg-finger-part]'),
+        hands:      root.querySelectorAll('[data-tg-hand]'),
         keyboard:   root.querySelector('[data-tg-keyboard]'),
     };
     const resultEls = {
@@ -105,18 +109,33 @@
 
     // === Finger map for hints ===
     const FINGER_MAP = {
-        q: 'degetul mic stang', w: 'degetul inelar stang', e: 'degetul mijlociu stang',
-        r: 'degetul aratator stang', t: 'degetul aratator stang',
-        y: 'degetul aratator drept', u: 'degetul aratator drept',
-        i: 'degetul mijlociu drept', o: 'degetul inelar drept', p: 'degetul mic drept',
-        a: 'degetul mic stang', s: 'degetul inelar stang', d: 'degetul mijlociu stang',
-        f: 'degetul aratator stang', g: 'degetul aratator stang',
-        h: 'degetul aratator drept', j: 'degetul aratator drept',
-        k: 'degetul mijlociu drept', l: 'degetul inelar drept',
-        z: 'degetul mic stang', x: 'degetul inelar stang', c: 'degetul mijlociu stang',
-        v: 'degetul aratator stang', b: 'degetul aratator stang',
-        n: 'degetul aratator drept', m: 'degetul aratator drept',
-        ' ': 'degetul mare (spatiu)',
+        q: { targets: ['left-pinky'], label: 'Deget mic stang' },
+        w: { targets: ['left-ring'], label: 'Inelar stang' },
+        e: { targets: ['left-middle'], label: 'Mijlociu stang' },
+        r: { targets: ['left-index'], label: 'Aratator stang' },
+        t: { targets: ['left-index'], label: 'Aratator stang' },
+        y: { targets: ['right-index'], label: 'Aratator drept' },
+        u: { targets: ['right-index'], label: 'Aratator drept' },
+        i: { targets: ['right-middle'], label: 'Mijlociu drept' },
+        o: { targets: ['right-ring'], label: 'Inelar drept' },
+        p: { targets: ['right-pinky'], label: 'Deget mic drept' },
+        a: { targets: ['left-pinky'], label: 'Deget mic stang' },
+        s: { targets: ['left-ring'], label: 'Inelar stang' },
+        d: { targets: ['left-middle'], label: 'Mijlociu stang' },
+        f: { targets: ['left-index'], label: 'Aratator stang' },
+        g: { targets: ['left-index'], label: 'Aratator stang' },
+        h: { targets: ['right-index'], label: 'Aratator drept' },
+        j: { targets: ['right-index'], label: 'Aratator drept' },
+        k: { targets: ['right-middle'], label: 'Mijlociu drept' },
+        l: { targets: ['right-ring'], label: 'Inelar drept' },
+        z: { targets: ['left-pinky'], label: 'Deget mic stang' },
+        x: { targets: ['left-ring'], label: 'Inelar stang' },
+        c: { targets: ['left-middle'], label: 'Mijlociu stang' },
+        v: { targets: ['left-index'], label: 'Aratator stang' },
+        b: { targets: ['left-index'], label: 'Aratator stang' },
+        n: { targets: ['right-index'], label: 'Aratator drept' },
+        m: { targets: ['right-index'], label: 'Aratator drept' },
+        ' ': { targets: ['left-thumb', 'right-thumb'], label: 'Deget mare pentru spatiu' },
     };
 
     // === Game state ===
@@ -262,10 +281,33 @@
         highlightKey(text[charIdx] || '');
 
         // Finger guide
-        const finger = FINGER_MAP[(text[charIdx] || '').toLowerCase()];
-        if (finger && playEls.fingerText) {
-            playEls.fingerText.textContent = 'Foloseste ' + finger;
+        updateFingerGuide(text[charIdx] || '');
+    }
+
+    function updateFingerGuide(ch) {
+        const key = (ch || '').toLowerCase();
+        const finger = FINGER_MAP[key];
+
+        playEls.fingerParts.forEach(part => part.classList.remove('is-active'));
+        playEls.hands.forEach(hand => hand.classList.remove('is-active'));
+
+        if (!finger) {
+            if (playEls.fingerKey) playEls.fingerKey.textContent = '';
+            if (playEls.fingerText) playEls.fingerText.textContent = '';
+            return;
         }
+
+        (finger.targets || []).forEach(target => {
+            const part = root.querySelector('[data-tg-finger-part="' + target + '"]');
+            if (part) part.classList.add('is-active');
+
+            const handName = target.split('-')[0];
+            const hand = root.querySelector('[data-tg-hand="' + handName + '"]');
+            if (hand) hand.classList.add('is-active');
+        });
+
+        if (playEls.fingerKey) playEls.fingerKey.textContent = key === ' ' ? 'SPATIU' : key.toUpperCase();
+        if (playEls.fingerText) playEls.fingerText.textContent = finger.label;
     }
 
     function highlightKey(ch) {

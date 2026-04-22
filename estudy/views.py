@@ -719,8 +719,79 @@ def world_map_view(request):
 
 @login_required
 def missions_view(request):
+    missions = get_mission_context(request.user)
+    mission_groups = []
+    flat_missions = []
+    group_meta = {
+        "daily": {
+            "title": "Misiuni zilnice",
+            "subtitle": "Obiective scurte care se reseteaza in fiecare zi.",
+            "empty": "Nu exista misiuni zilnice active. Revino maine.",
+            "accent": "#22c55e",
+        },
+        "weekly": {
+            "title": "Misiuni saptamanale",
+            "subtitle": "Provocari mai mari pentru progres constant.",
+            "empty": "Nu exista misiuni saptamanale active.",
+            "accent": "#f59e0b",
+        },
+        "special": {
+            "title": "Provocari speciale",
+            "subtitle": "Obiective rare care deblocheaza recompense mai mari.",
+            "empty": "Nu exista provocari speciale acum.",
+            "accent": "#6366f1",
+        },
+    }
+
+    for key in ("daily", "weekly", "special"):
+        items = []
+        for user_mission in missions.get(key, []):
+            mission = user_mission.mission
+            target = max(int(mission.target_value or 1), 1)
+            progress = int(user_mission.progress or 0)
+            progress_percent = min(100, round((progress / target) * 100))
+            item = {
+                "title": mission.title,
+                "description": mission.description,
+                "icon": mission.icon,
+                "color": mission.color,
+                "progress": progress,
+                "target": target,
+                "progress_percent": progress_percent,
+                "reward_points": mission.reward_points,
+                "completed": user_mission.completed,
+            }
+            items.append(item)
+            flat_missions.append(item)
+        meta = group_meta[key]
+        mission_groups.append(
+            {
+                "key": key,
+                "title": meta["title"],
+                "subtitle": meta["subtitle"],
+                "empty": meta["empty"],
+                "accent": meta["accent"],
+                "items": items,
+            }
+        )
+
+    total_missions = len(flat_missions)
+    completed_missions = sum(1 for item in flat_missions if item["completed"])
+    mission_summary = {
+        "total": total_missions,
+        "completed": completed_missions,
+        "open": max(total_missions - completed_missions, 0),
+        "completion_percent": round((completed_missions / total_missions) * 100)
+        if total_missions
+        else 0,
+        "available_xp": sum(item["reward_points"] for item in flat_missions),
+        "earned_xp": sum(
+            item["reward_points"] for item in flat_missions if item["completed"]
+        ),
+    }
     context = {
-        "missions": get_mission_context(request.user),
+        "mission_groups": mission_groups,
+        "mission_summary": mission_summary,
     }
     return render(request, "estudy/missions.html", with_progress(context, request.user))
 
