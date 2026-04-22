@@ -55,11 +55,23 @@
 .rr-theme--space { --rr-bg: var(--rr-space-bg); --rr-wall: var(--rr-space-wall); --rr-floor: var(--rr-space-floor); --rr-accent: var(--rr-space-accent); --rr-glow: var(--rr-space-glow); }
 .rr-theme--core { --rr-bg: var(--rr-core-bg); --rr-wall: var(--rr-core-wall); --rr-floor: var(--rr-core-floor); --rr-accent: var(--rr-core-accent); --rr-glow: var(--rr-core-glow); }
 
+/* Full-bleed page when Robo Rescue game is active */
+body.rr-page .workspace-shell,
+body.rr-page .workspace-main {
+    max-width: none;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+body.rr-page .site-main {
+    padding: 0;
+}
+
 /* Game container */
 .rr-game {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    min-height: calc(100vh - 64px);
     background: var(--rr-bg, var(--rr-garden-bg));
     color: var(--rr-text);
     font-family: 'Segoe UI', system-ui, sans-serif;
