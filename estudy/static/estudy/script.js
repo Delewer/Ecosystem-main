@@ -268,6 +268,10 @@ const setLessonCompletionUI = (completed, sourceButton) => {
         statusEl.textContent = completed ? 'Finalizată' : 'În curs';
         statusEl.classList.toggle('text-success', completed);
     }
+    const shareBtn = document.querySelector('[data-share-btn]');
+    if (shareBtn) {
+        shareBtn.style.display = completed ? '' : 'none';
+    }
     setNextButtonState(completed);
 };
 
@@ -1929,6 +1933,106 @@ const initializeHistoryBackLinks = () => {
     });
 };
 
+// ── Daily challenge countdown timer ────────────────────────────────────
+const wireChallengeCountdown = () => {
+    const timerEl = document.querySelector('[data-challenge-timer]');
+    if (!timerEl) return;
+    let remaining = parseInt(timerEl.dataset.seconds, 10) || 0;
+    const display = timerEl.querySelector('[data-timer-display]');
+    if (!display) return;
+
+    const formatTime = (secs) => {
+        const h = String(Math.floor(secs / 3600)).padStart(2, '0');
+        const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
+        const s = String(secs % 60).padStart(2, '0');
+        return `${h}:${m}:${s}`;
+    };
+
+    display.textContent = formatTime(remaining);
+    const interval = setInterval(() => {
+        remaining = Math.max(0, remaining - 1);
+        display.textContent = formatTime(remaining);
+        if (remaining <= 0) {
+            clearInterval(interval);
+            display.textContent = 'Timp expirat!';
+        }
+    }, 1000);
+};
+
+// ── Cooperative session modal ──────────────────────────────────────────
+const wireCoopModal = () => {
+    const createBtn = document.querySelector('[data-coop-create]');
+    const joinBtn = document.querySelector('[data-coop-join-submit]');
+    if (!createBtn && !joinBtn) return;
+
+    const modal = document.querySelector('[data-coop-modal]');
+    const codeDisplay = modal?.querySelector('[data-coop-code]');
+    const joinInput = modal?.querySelector('[data-coop-join-input]');
+    const statusEl = modal?.querySelector('[data-coop-status]');
+
+    if (createBtn) {
+        createBtn.addEventListener('click', async () => {
+            const slug = createBtn.dataset.lessonSlug;
+            const url = createBtn.dataset.coopCreateUrl;
+            createBtn.disabled = true;
+            try {
+                const resp = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken(),
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `lesson_slug=${encodeURIComponent(slug)}`,
+                });
+                const data = await resp.json();
+                if (resp.ok && data.session_code) {
+                    if (codeDisplay) codeDisplay.textContent = data.session_code;
+                    if (statusEl) statusEl.textContent = 'Se așteaptă un coleg...';
+                    if (modal) modal.hidden = false;
+                } else {
+                    alert(data.error || 'Nu s-a putut crea sesiunea.');
+                }
+            } catch {
+                alert('Eroare de rețea.');
+            } finally {
+                createBtn.disabled = false;
+            }
+        });
+    }
+
+    if (joinBtn) {
+        joinBtn.addEventListener('click', async () => {
+            const code = joinInput?.value?.trim();
+            if (!code) return;
+            const url = joinBtn.dataset.coopJoinUrl;
+            joinBtn.disabled = true;
+            try {
+                const resp = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCsrfToken(),
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `session_code=${encodeURIComponent(code)}`,
+                });
+                const data = await resp.json();
+                if (resp.ok && data.lesson_slug) {
+                    if (statusEl) statusEl.textContent = `Te-ai alăturat sesiunii cu ${data.host_username}!`;
+                    setTimeout(() => {
+                        window.location.href = `/estudy/lessons/${data.lesson_slug}/`;
+                    }, 1500);
+                } else {
+                    alert(data.error || 'Cod invalid.');
+                }
+            } catch {
+                alert('Eroare de rețea.');
+            } finally {
+                joinBtn.disabled = false;
+            }
+        });
+    }
+};
+
 const initializeEstudyPage = () => {
     initializeLessonsDashboard();
     initializeProgressBars();
@@ -1944,6 +2048,8 @@ const initializeEstudyPage = () => {
     wireHardwareMapGame();
     wireHardwareSoftwareMatch();
     initializeWorkspaceMessages();
+    wireChallengeCountdown();
+    wireCoopModal();
 };
 
 const runEstudyPageForCurrentView = () => {

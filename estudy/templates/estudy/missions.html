@@ -1,88 +1,122 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 
-
-
-{% block workspace_title %}Misiuni zilnice{% endblock %}
+{% block workspace_title %}&#127919; Misiuni zilnice{% endblock %}
 {% block workspace_subtitle %}
-    Colectează XP și insigne completând sarcini rapide. Revino zilnic pentru provocări noi și bonusuri surpriză.
+    Colecteaza XP si insigne completand sarcini rapide. Revino zilnic pentru provocari noi!
 {% endblock %}
 {% block workspace_actions %}
 <div class="workspace-actions">
-    <a class="btn btn--primary" href="#daily-missions"><i class="fa-solid fa-bolt"></i> Pornește provocarea</a>
-    <a class="btn btn--ghost" href="{% url 'estudy:leaderboard' %}"><i class="fa-solid fa-medal"></i> Vezi clasamentul</a>
+    <a class="btn btn--primary" href="#daily-missions">&#9889; Porneste provocarea</a>
+    <a class="btn btn--ghost" href="{% url 'estudy:leaderboard' %}">&#127942; Vezi clasamentul</a>
 </div>
 {% endblock %}
 
 {% block page_content %}
-<section class="mb-4" id="daily-missions">
-    <h1 class="h4 mb-3">Completează misiuni pentru XP suplimentar</h1>
-    <p class="text-muted">Finalizează lecții, quiz-uri și proiecte pentru a debloca insigne rare și bonusuri.</p>
-</section>
+<section class="hub-section" id="daily-missions">
+    <div class="hub-missions-grid">
 
-<section class="row g-4">
-    <div class="col-lg-4">
-        <h2 class="h5">Misiuni zilnice</h2>
-        {% if missions.daily %}
-            {% for mission in missions.daily %}
-                <div class="card shadow-sm mb-3">
-                    <div class="card-body">
-                        <span class="badge" style="background: {{ mission.mission.color }}33; color: {{ mission.mission.color }};"><i class="fa {{ mission.mission.icon }} me-1"></i>Daily</span>
-                        <h3 class="h6 mt-2">{{ mission.mission.title }}</h3>
-                        <p class="text-muted small">{{ mission.mission.description }}</p>
-                        <div class="small text-muted">Progres: {{ mission.progress }} / {{ mission.mission.target_value }} · {{ mission.mission.reward_points }} XP</div>
-                        {% if mission.completed %}
-                            <span class="badge bg-success mt-2"><i class="fa-solid fa-check me-1"></i>Finalizată</span>
-                        {% endif %}
+        {# === Daily missions === #}
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#9889; Misiuni zilnice</h2>
+            </div>
+            {% if missions.daily %}
+            <div class="hub-mission-list">
+                {% for mission in missions.daily %}
+                <div class="hub-mission{% if mission.completed %} hub-mission--done{% endif %}">
+                    <div class="hub-mission__icon" style="background: {{ mission.mission.color }}22; color: {{ mission.mission.color }};">
+                        <i class="fa {{ mission.mission.icon }}"></i>
                     </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p class="text-muted">Nu există misiuni zilnice active.</p>
-        {% endif %}
-    </div>
-    <div class="col-lg-4">
-        <h2 class="h5">Misiuni săptămânale</h2>
-        {% if missions.weekly %}
-            {% for mission in missions.weekly %}
-                <div class="card shadow-sm mb-3">
-                    <div class="card-body">
-                        <span class="badge" style="background: {{ mission.mission.color }}33; color: {{ mission.mission.color }};"><i class="fa {{ mission.mission.icon }} me-1"></i>Weekly</span>
-                        <h3 class="h6 mt-2">{{ mission.mission.title }}</h3>
-                        <p class="text-muted small">{{ mission.mission.description }}</p>
-                        <div class="small text-muted">Progres: {{ mission.progress }} / {{ mission.mission.target_value }} · {{ mission.mission.reward_points }} XP</div>
-                        {% if mission.completed %}
-                            <span class="badge bg-success mt-2"><i class="fa-solid fa-check me-1"></i>Finalizată</span>
-                        {% endif %}
+                    <div class="hub-mission__body">
+                        <div class="hub-mission__title">{{ mission.mission.title }}</div>
+                        <p class="hub-mission__desc">{{ mission.mission.description }}</p>
+                        <div class="hub-mission__bar">
+                            <div class="hub-mission__bar-fill" style="width: {% widthratio mission.progress mission.mission.target_value 100 %}%; background: {{ mission.mission.color }};"></div>
+                        </div>
+                        <div class="hub-mission__meta">
+                            <span>{{ mission.progress }}/{{ mission.mission.target_value }}</span>
+                            <span class="hub-mission__xp">&#9889; +{{ mission.mission.reward_points }} XP</span>
+                        </div>
                     </div>
+                    {% if mission.completed %}
+                    <div class="hub-mission__badge-done">&#9989;</div>
+                    {% endif %}
                 </div>
-            {% endfor %}
-        {% else %}
-            <p class="text-muted">Nu există misiuni săptămânale active.</p>
-        {% endif %}
-    </div>
-    <div class="col-lg-4">
-        <h2 class="h5">Provocări speciale</h2>
-        {% if missions.special %}
-            {% for mission in missions.special %}
-                <div class="card shadow-sm mb-3">
-                    <div class="card-body">
-                        <span class="badge" style="background: {{ mission.mission.color }}33; color: {{ mission.mission.color }};"><i class="fa {{ mission.mission.icon }} me-1"></i>Special</span>
-                        <h3 class="h6 mt-2">{{ mission.mission.title }}</h3>
-                        <p class="text-muted small">{{ mission.mission.description }}</p>
-                        <div class="small text-muted">Progres: {{ mission.progress }} / {{ mission.mission.target_value }} · {{ mission.mission.reward_points }} XP</div>
-                        {% if mission.completed %}
-                            <span class="badge bg-success mt-2"><i class="fa-solid fa-check me-1"></i>Finalizată</span>
-                        {% endif %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="hub-card__empty">Nu exista misiuni zilnice active. Revino maine!</p>
+            {% endif %}
+        </div>
+
+        {# === Weekly missions === #}
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#128197; Misiuni saptamanale</h2>
+            </div>
+            {% if missions.weekly %}
+            <div class="hub-mission-list">
+                {% for mission in missions.weekly %}
+                <div class="hub-mission{% if mission.completed %} hub-mission--done{% endif %}">
+                    <div class="hub-mission__icon" style="background: {{ mission.mission.color }}22; color: {{ mission.mission.color }};">
+                        <i class="fa {{ mission.mission.icon }}"></i>
                     </div>
+                    <div class="hub-mission__body">
+                        <div class="hub-mission__title">{{ mission.mission.title }}</div>
+                        <p class="hub-mission__desc">{{ mission.mission.description }}</p>
+                        <div class="hub-mission__bar">
+                            <div class="hub-mission__bar-fill" style="width: {% widthratio mission.progress mission.mission.target_value 100 %}%; background: {{ mission.mission.color }};"></div>
+                        </div>
+                        <div class="hub-mission__meta">
+                            <span>{{ mission.progress }}/{{ mission.mission.target_value }}</span>
+                            <span class="hub-mission__xp">&#9889; +{{ mission.mission.reward_points }} XP</span>
+                        </div>
+                    </div>
+                    {% if mission.completed %}
+                    <div class="hub-mission__badge-done">&#9989;</div>
+                    {% endif %}
                 </div>
-            {% endfor %}
-        {% else %}
-            <p class="text-muted">Nu există provocări speciale acum.</p>
-        {% endif %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="hub-card__empty">Nu exista misiuni saptamanale active.</p>
+            {% endif %}
+        </div>
+
+        {# === Special missions === #}
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#127775; Provocari speciale</h2>
+            </div>
+            {% if missions.special %}
+            <div class="hub-mission-list">
+                {% for mission in missions.special %}
+                <div class="hub-mission{% if mission.completed %} hub-mission--done{% endif %}">
+                    <div class="hub-mission__icon" style="background: {{ mission.mission.color }}22; color: {{ mission.mission.color }};">
+                        <i class="fa {{ mission.mission.icon }}"></i>
+                    </div>
+                    <div class="hub-mission__body">
+                        <div class="hub-mission__title">{{ mission.mission.title }}</div>
+                        <p class="hub-mission__desc">{{ mission.mission.description }}</p>
+                        <div class="hub-mission__bar">
+                            <div class="hub-mission__bar-fill" style="width: {% widthratio mission.progress mission.mission.target_value 100 %}%; background: {{ mission.mission.color }};"></div>
+                        </div>
+                        <div class="hub-mission__meta">
+                            <span>{{ mission.progress }}/{{ mission.mission.target_value }}</span>
+                            <span class="hub-mission__xp">&#9889; +{{ mission.mission.reward_points }} XP</span>
+                        </div>
+                    </div>
+                    {% if mission.completed %}
+                    <div class="hub-mission__badge-done">&#9989;</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="hub-card__empty">Nu exista provocari speciale acum.</p>
+            {% endif %}
+        </div>
+
     </div>
 </section>
 {% endblock %}
-
-
-
-

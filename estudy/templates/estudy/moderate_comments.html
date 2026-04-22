@@ -3,127 +3,91 @@
 {% block title %}Moderare comentarii · UnITex{% endblock %}
 
 {% block page_content %}
-<div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 mb-0">Moderare comentarii</h1>
-                <a href="{% url 'estudy:dashboard' %}" class="btn btn-outline-primary">
-                    <i class="fa-solid fa-arrow-left me-2"></i>Înapoi la dashboard
-                </a>
-            </div>
+<section class="hub-section">
+    <div class="hub-card" style="margin-bottom:1rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+            <h1 style="font-size:22px;font-weight:900;margin:0;">&#128172; Moderare comentarii</h1>
+            <a class="hub-btn hub-btn--ghost" href="{% url 'estudy:dashboard' %}">&#8592; Inapoi la dashboard</a>
         </div>
     </div>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="hub-row" style="grid-template-columns: 1fr 1fr;">
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#9200; In asteptare ({{ pending_comments|length }})</h2>
             </div>
-        {% endfor %}
-    {% endif %}
-
-    <div class="row">
-        <!-- Pending Comments -->
-        <div class="col-lg-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">
-                        <i class="fa-solid fa-clock me-2"></i>
-                        Comentarii în așteptare ({{ pending_comments|length }})
-                    </h5>
-                </div>
-                <div class="card-body">
-                    {% if pending_comments %}
-                        <div class="list-group list-group-flush">
-                            {% for comment in pending_comments %}
-                                <div class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <strong>{{ comment.user.username }}</strong>
-                                            <small class="text-muted d-block">{{ comment.lesson.title }}</small>
-                                        </div>
-                                        <small class="text-muted">{{ comment.created_at|date:"d.m.Y H:i" }}</small>
-                                    </div>
-                                    <p class="mb-3">{{ comment.content }}</p>
-                                    <div class="d-flex gap-2">
-                                        <form method="post" class="d-inline">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="comment_id" value="{{ comment.id }}">
-                                            <input type="hidden" name="action" value="approve">
-                                            <button type="submit" class="btn btn-sm btn-success">
-                                                <i class="fa-solid fa-check me-1"></i>Aprobă
-                                            </button>
-                                        </form>
-                                        <form method="post" class="d-inline">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="comment_id" value="{{ comment.id }}">
-                                            <input type="hidden" name="action" value="hide">
-                                            <button type="submit" class="btn btn-sm btn-warning">
-                                                <i class="fa-solid fa-eye-slash me-1"></i>Ascunde
-                                            </button>
-                                        </form>
-                                        <form method="post" class="d-inline">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="comment_id" value="{{ comment.id }}">
-                                            <input type="hidden" name="action" value="delete">
-                                            <button type="submit" class="btn btn-sm btn-danger">
-                                                <i class="fa-solid fa-trash me-1"></i>Șterge
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            {% endfor %}
+            {% if pending_comments %}
+            <div class="hub-comment-list">
+                {% for comment in pending_comments %}
+                <div class="hub-comment" style="flex-direction:column;gap:8px;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;width:100%;">
+                        <div>
+                            <span style="font-weight:800;font-size:14px;">&#129489; {{ comment.user.username }}</span>
+                            <span style="display:block;font-size:12px;color:var(--color-text-muted,#64748B);font-weight:500;">&#128218; {{ comment.lesson.title }}</span>
                         </div>
-                    {% else %}
-                        <p class="text-muted mb-0">Nu sunt comentarii în așteptare.</p>
-                    {% endif %}
+                        <span style="font-size:11px;color:var(--color-text-muted,#94A3B8);font-weight:500;">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                    <p style="font-size:14px;font-weight:500;margin:0;line-height:1.5;">{{ comment.content }}</p>
+                    <div style="display:flex;gap:6px;">
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                            <input type="hidden" name="action" value="approve">
+                            <button type="submit" class="hub-btn hub-btn--small" style="background:#D1FAE5;color:#065F46;">&#9989; Aproba</button>
+                        </form>
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                            <input type="hidden" name="action" value="hide">
+                            <button type="submit" class="hub-btn hub-btn--small" style="background:#FEF3C7;color:#92400E;">&#128064; Ascunde</button>
+                        </form>
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                            <input type="hidden" name="action" value="delete">
+                            <button type="submit" class="hub-btn hub-btn--small" style="background:#FEE2E2;color:#991B1B;">&#128465; Sterge</button>
+                        </form>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
+            {% else %}
+            <p class="hub-card__empty">&#127881; Nu sunt comentarii in asteptare.</p>
+            {% endif %}
         </div>
 
-        <!-- Recent Comments -->
-        <div class="col-lg-6">
-            <div class="card shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">
-                        <i class="fa-solid fa-comments me-2"></i>
-                        Comentarii recente
-                    </h5>
-                </div>
-                <div class="card-body">
-                    {% if recent_comments %}
-                        <div class="list-group list-group-flush">
-                            {% for comment in recent_comments %}
-                                <div class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-start mb-2">
-                                        <div>
-                                            <strong>{{ comment.user.username }}</strong>
-                                            <small class="text-muted d-block">{{ comment.lesson.title }}</small>
-                                        </div>
-                                        <small class="text-muted">{{ comment.created_at|date:"d.m.Y H:i" }}</small>
-                                    </div>
-                                    <p class="mb-2">{{ comment.content|truncatechars:150 }}</p>
-                                    <div class="d-flex align-items-center gap-3">
-                                        <small class="text-muted">
-                                            <i class="fa-solid fa-thumbs-up me-1"></i>{{ comment.likes_count }} aprecieri
-                                        </small>
-                                        {% if comment.replies_count > 0 %}
-                                            <small class="text-muted">
-                                                <i class="fa-solid fa-reply me-1"></i>{{ comment.replies_count }} răspunsuri
-                                            </small>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <p class="text-muted mb-0">Nu sunt comentarii recente.</p>
-                    {% endif %}
-                </div>
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#128172; Comentarii recente</h2>
             </div>
+            {% if recent_comments %}
+            <div class="hub-comment-list">
+                {% for comment in recent_comments %}
+                <div class="hub-comment">
+                    <div class="hub-comment__avatar">&#129489;</div>
+                    <div class="hub-comment__body">
+                        <div class="hub-comment__header">
+                            <div>
+                                <span class="hub-comment__author">{{ comment.user.username }}</span>
+                                <span class="hub-comment__lesson"> · {{ comment.lesson.title }}</span>
+                            </div>
+                            <span class="hub-comment__time">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+                        </div>
+                        <p class="hub-comment__text">{{ comment.content|truncatechars:150 }}</p>
+                        <div style="display:flex;gap:12px;margin-top:4px;font-size:12px;color:var(--color-text-muted,#64748B);font-weight:600;">
+                            <span>&#128077; {{ comment.likes_count }} aprecieri</span>
+                            {% if comment.replies_count > 0 %}
+                            <span>&#128172; {{ comment.replies_count }} raspunsuri</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="hub-card__empty">Nu sunt comentarii recente.</p>
+            {% endif %}
         </div>
     </div>
-</div>
+</section>
 {% endblock %}

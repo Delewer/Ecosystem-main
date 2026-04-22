@@ -1,125 +1,121 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Clasa {{ classroom.name }}{% endblock %}
 
 {% block page_content %}
-<section class="mb-4">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-        <div>
-            <h1 class="h4 mb-1">{{ classroom.name }}</h1>
-            <p class="text-muted mb-0">Cod invitație: <code>{{ classroom.invite_code }}</code></p>
+<section class="hub-section">
+    <div class="hub-card" style="margin-bottom:1rem;">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;">
+            <div>
+                <a class="hub-back-link" href="{% url 'estudy:classrooms' %}">&#8592; Inapoi la clase</a>
+                <h1 style="font-size:22px;font-weight:900;margin:8px 0 4px;">&#127979; {{ classroom.name }}</h1>
+                <p style="font-size:14px;color:var(--color-text-muted,#64748B);font-weight:600;margin:0;">
+                    Cod invitatie: <strong style="color:var(--color-primary,#7C3AED);">{{ classroom.invite_code }}</strong>
+                </p>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span class="hub-zone__badge">&#129489; {{ memberships|length }} membri</span>
+            </div>
         </div>
-        <span class="badge bg-primary-subtle text-primary">{{ memberships|length }} membri</span>
     </div>
-</section>
 
-<section class="row g-4">
-    <div class="col-lg-6">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white">
-                <h2 class="h5 mb-0">Membri</h2>
-            </div>
-            <div class="card-body">
-                {% if memberships %}
-                    <ul class="list-group list-group-flush">
-                        {% for membership in memberships %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div class="fw-semibold">{{ membership.user.get_full_name|default:membership.user.username }}</div>
-                                    <div class="small text-muted">Rol: {{ membership.get_role_display }}</div>
-                                </div>
-                                <span class="badge bg-success-subtle text-success">{{ membership.points }} XP</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-muted mb-0">Încă nu există membri în această clasă.</p>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white">
-                <h2 class="h5 mb-0">Publică o sarcină</h2>
-            </div>
-            <div class="card-body">
-                <form method="post" class="vstack gap-3">
-                    {% csrf_token %}
-                    {{ form.non_field_errors }}
-                    <div>
-                        <label class="form-label" for="id_title">Titlu</label>
-                        {{ form.title }}
-                    </div>
-                    <div>
-                        <label class="form-label" for="id_description">Descriere</label>
-                        {{ form.description }}
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label" for="id_assignment_type">Tip</label>
-                            {{ form.assignment_type }}
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="id_due_date">Termen</label>
-                            {{ form.due_date }}
-                        </div>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label" for="id_lesson">Lecție</label>
-                            {{ form.lesson }}
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="id_project">Proiect</label>
-                            {{ form.project }}
-                        </div>
-                    </div>
-                    <div>
-                        <label class="form-label" for="id_points">Puncte</label>
-                        {{ form.points }}
-                    </div>
-                    <button class="btn btn-primary" type="submit">Publică</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</section>
+    <div class="hub-row" style="grid-template-columns: 1fr 1fr;">
 
-<section class="mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-white">
-            <h2 class="h5 mb-0">Sarcini publicate</h2>
-        </div>
-        <div class="card-body">
-            {% if assignments %}
-                <div class="table-responsive">
-                    <table class="table align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Titlu</th>
-                                <th>Tip</th>
-                                <th>Termen</th>
-                                <th>Puncte</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for assignment in assignments %}
-                                <tr>
-                                    <td>{{ assignment.title }}</td>
-                                    <td>{{ assignment.get_assignment_type_display }}</td>
-                                    <td>{{ assignment.due_date|default:"-" }}</td>
-                                    <td>{{ assignment.points }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#129489; Membri</h2>
+            </div>
+            {% if memberships %}
+            <div class="hub-member-list">
+                {% for membership in memberships %}
+                <div class="hub-member-row">
+                    <div class="hub-member-row__icon">&#129489;</div>
+                    <div class="hub-member-row__info">
+                        <span class="hub-member-row__name">{{ membership.user.get_full_name|default:membership.user.username }}</span>
+                        <span class="hub-member-row__meta">{{ membership.get_role_display }}</span>
+                    </div>
+                    <span class="hub-zone__badge hub-zone__badge--hot">&#9889; {{ membership.points }} XP</span>
                 </div>
+                {% endfor %}
+            </div>
             {% else %}
-                <p class="text-muted mb-0">Nu există sarcini publicate încă.</p>
+            <p class="hub-card__empty">Inca nu exista membri in aceasta clasa.</p>
             {% endif %}
         </div>
+
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#128221; Publica o sarcina</h2>
+            </div>
+            <form method="post" class="hub-form">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="hub-form__group">
+                    <label class="hub-form__label" for="id_title">Titlu</label>
+                    {{ form.title }}
+                </div>
+                <div class="hub-form__group">
+                    <label class="hub-form__label" for="id_description">Descriere</label>
+                    {{ form.description }}
+                </div>
+                <div class="hub-form__row">
+                    <div class="hub-form__group">
+                        <label class="hub-form__label" for="id_assignment_type">Tip</label>
+                        {{ form.assignment_type }}
+                    </div>
+                    <div class="hub-form__group">
+                        <label class="hub-form__label" for="id_due_date">Termen</label>
+                        {{ form.due_date }}
+                    </div>
+                </div>
+                <div class="hub-form__row">
+                    <div class="hub-form__group">
+                        <label class="hub-form__label" for="id_lesson">Lectie</label>
+                        {{ form.lesson }}
+                    </div>
+                    <div class="hub-form__group">
+                        <label class="hub-form__label" for="id_project">Proiect</label>
+                        {{ form.project }}
+                    </div>
+                </div>
+                <div class="hub-form__group">
+                    <label class="hub-form__label" for="id_points">Puncte</label>
+                    {{ form.points }}
+                </div>
+                <button class="hub-btn hub-btn--primary" type="submit">&#128221; Publica</button>
+            </form>
+        </div>
+
+    </div>
+
+    <div class="hub-card" style="margin-top:1rem;">
+        <div class="hub-card__header">
+            <h2>&#128203; Sarcini publicate</h2>
+        </div>
+        {% if assignments %}
+        <table class="hub-table">
+            <thead>
+                <tr>
+                    <th>Titlu</th>
+                    <th>Tip</th>
+                    <th>Termen</th>
+                    <th>Puncte</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for assignment in assignments %}
+                <tr>
+                    <td><strong>{{ assignment.title }}</strong></td>
+                    <td>{{ assignment.get_assignment_type_display }}</td>
+                    <td>{{ assignment.due_date|default:"—" }}</td>
+                    <td>&#9889; {{ assignment.points }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="hub-card__empty">Nu exista sarcini publicate inca.</p>
+        {% endif %}
     </div>
 </section>
 {% endblock %}
-

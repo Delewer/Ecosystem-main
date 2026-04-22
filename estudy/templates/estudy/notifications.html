@@ -1,64 +1,65 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 
-{% block title %}Notificările mele{% endblock %}
+{% block title %}Notificarile mele{% endblock %}
 
 {% block page_content %}
-<section class="row g-4">
-    <div class="col-lg-7">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white">
-                <h1 class="h5 mb-0">Flux notificări</h1>
+<section class="hub-section">
+    <div class="hub-row" style="grid-template-columns: 1fr 380px;">
+
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#128276; Flux notificari</h2>
             </div>
-            <div class="card-body">
-                {% if notifications %}
-                    <ul class="list-unstyled mb-0">
-                        {% for item in notifications %}
-                            <li class="mb-4">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h2 class="h6 mb-1"><i class="fa-solid fa-bell me-2 text-primary"></i>{{ item.title }}</h2>
-                                        <p class="text-muted small mb-2">{{ item.message }}</p>
-                                        {% if item.link_url %}
-                                            <a class="btn btn-sm btn-outline-primary" href="{{ item.link_url }}">Deschide</a>
-                                        {% endif %}
-                                    </div>
-                                    <span class="small text-muted">{{ item.created_at|date:"d MMM, HH:mm" }}</span>
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-muted mb-0">Nu ai notificări în acest moment.</p>
-                {% endif %}
+            {% if notifications %}
+            <div class="hub-notif-list">
+                {% for item in notifications %}
+                <div class="hub-notif">
+                    <div class="hub-notif__icon">&#128276;</div>
+                    <div class="hub-notif__body">
+                        <div class="hub-notif__title">{{ item.title }}</div>
+                        <p class="hub-notif__msg">{{ item.message }}</p>
+                        <span class="hub-notif__time">{{ item.created_at|date:"d MMM, HH:mm" }}</span>
+                        {% if item.link_url %}
+                        <div class="hub-notif__action">
+                            <a class="hub-btn hub-btn--small" href="{{ item.link_url }}">&#128279; Deschide</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
             </div>
+            {% else %}
+            <p class="hub-card__empty">Nu ai notificari in acest moment. Totul e linistit! &#127774;</p>
+            {% endif %}
         </div>
-    </div>
-    <div class="col-lg-5">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white">
-                <h2 class="h6 mb-0">Preferințe notificări</h2>
+
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#9881; Preferinte notificari</h2>
             </div>
-            <div class="card-body">
-                <form method="post" class="vstack gap-3">
-                    {% csrf_token %}
-                    {{ form.non_field_errors }}
-                    <div class="form-check form-switch">
+            <form method="post" class="hub-form">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="hub-form__group">
+                    <label class="hub-switch">
                         {{ form.email_enabled }}
-                        <label class="form-check-label" for="id_email_enabled">Notificări prin e-mail</label>
-                    </div>
-                    <div class="form-check form-switch">
+                        <span>Notificari prin e-mail</span>
+                    </label>
+                </div>
+                <div class="hub-form__group">
+                    <label class="hub-switch">
                         {{ form.in_app_enabled }}
-                        <label class="form-check-label" for="id_in_app_enabled">Notificări în aplicație</label>
-                    </div>
-                    <div>
-                        <label class="form-label" for="id_digest_frequency">Rezumat periodic</label>
-                        {{ form.digest_frequency }}
-                    </div>
-                    <button class="btn btn-primary" type="submit">Salvează</button>
-                </form>
-            </div>
+                        <span>Notificari in aplicatie</span>
+                    </label>
+                </div>
+                <div class="hub-form__group">
+                    <label class="hub-form__label" for="id_digest_frequency">Rezumat periodic</label>
+                    {{ form.digest_frequency }}
+                </div>
+                <button class="hub-btn hub-btn--primary" type="submit">&#128190; Salveaza</button>
+            </form>
         </div>
+
     </div>
 </section>
 {% endblock %}
-

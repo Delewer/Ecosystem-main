@@ -1,371 +1,607 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Modul 1 · Alfabetizare digitală{% endblock %}
+{% block title %}Modul 1 · Aventura digitala{% endblock %}
+{% block body_class %}lesson-page{% endblock %}
+{% block workspace_banner %}{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'estudy/lesson.css' %}?v=20260411a">
+{% endblock %}
 
 {% block page_content %}
-<div class="lesson-experience lesson-experience--started" data-lesson-experience>
-    <section class="lesson-gate" data-lesson-gate>
-        <div class="module-hero lesson-gate__card">
-            <div class="lesson-gate__intro" data-lesson-intro data-keep-visible>
-                <div class="row g-4 align-items-center lesson-gate__intro-row">
-                    <div class="col-lg-7 lesson-gate__intro-text">
-                        <span class="badge bg-primary-subtle text-primary text-uppercase mb-3">Modul 1</span>
-                        <h1 class="display-5 fw-bold text-primary mb-3">Alfabetizare digitală</h1>
-                        <p class="lead text-muted mb-4">Descoperim ce ascunde un computer, cum funcționează internetul si cum ramanem in siguranta online prin teorie clara si exercitii usoare.</p>
-                        {% if digital_literacy_entry_slug %}
-                        <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
-                            <a class="btn btn-primary" href="{% url 'estudy:lesson_detail' slug=digital_literacy_entry_slug %}">
-                                Deschide lecția nouă
-                            </a>
-                            <span class="text-muted small">Teorie scurta, exemple clare si verificari simple.</span>
-                        </div>
-                        {% endif %}
-                        <div class="lesson-gate__stats d-flex flex-wrap gap-4">
-                            <div class="d-grid gap-1">
-                                <span class="d-block text-uppercase small text-muted">Durată</span>
-                                <span class="fs-5 fw-semibold text-primary"><i class="fa-solid fa-clock me-2"></i>15 minute</span>
-                            </div>
-                            <div class="d-grid gap-1">
-                                <span class="d-block text-uppercase small text-muted">Nivel</span>
-                                <span class="fs-5 fw-semibold text-primary"><i class="fa-solid fa-signal me-2"></i>Începători</span>
-                            </div>
-                            <div class="d-grid gap-1">
-                                <span class="d-block text-uppercase small text-muted">Obiectiv special</span>
-                                <span class="fs-5 fw-semibold text-primary"><i class="fa-solid fa-star text-warning me-2"></i>Insigna „Guardian digital”</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-5 lesson-gate__intro-panel">
-                        <div class="card border-0 shadow-sm lesson-gate__panel" data-lesson-panel>
-                            <div class="card-body lesson-gate__panel-front" data-panel-front hidden>
-                                <h2 class="h5 mb-3">Ce vei stăpâni la final</h2>
-                            </div>
-                            <div class="card-body lesson-gate__panel-steps" data-panel-steps>
-                                <div class="lesson-gate__summary" data-lesson-summary>
-                                    <div class="lesson-summary">
-                                        <span class="badge bg-primary-subtle text-primary text-uppercase mb-2">Modul 1</span>
-                                        <h2 class="h4 mb-2">Alfabetizare digitală</h2>
-                                        <p class="text-muted small mb-0">Aplicam notiunile despre hardware, internet si siguranta digitala in exercitii practice si mini-teste accesibile.</p>
-                                        <ul class="lesson-gate__objectives list-unstyled text-muted small mt-3 mb-3">
-                                            <li><i class="fa-solid fa-circle-check text-success me-2"></i>Recunoști componentele de bază ale unui computer și rolul fiecăreia.</li>
-                                            <li><i class="fa-solid fa-circle-check text-success me-2"></i>Folosești browserul ca să ajungi în siguranță pe site-urile dorite.</li>
-                                            <li><i class="fa-solid fa-circle-check text-success me-2"></i>Organizezi fișierele și le păstrezi în cloud pentru acces rapid.</li>
-                                            <li><i class="fa-solid fa-circle-check text-success me-2"></i>Construiești parole puternice și identifici link-urile periculoase.</li>
-                                        </ul>
-                                        <p class="text-muted small mb-0">Sfat: pregateste un caiet pentru notite si rezuma fiecare lectie in 2-3 idei simple.</p>
-                                    </div>
-                                </div>
+<div class="lesson lesson-experience lesson-experience--started" data-lesson-experience>
 
-                                <div class="lesson-body" data-lesson-body>
-                                    <div class="lesson-flow module-card module-card--theory border-0 shadow-sm" data-lesson-flow>
-                                        <div class="lesson-flow__progress d-flex flex-wrap align-items-center justify-content-between gap-3">
-                                            <div class="lesson-flow__stage">
-                                                <span class="lesson-flow__stage-indicator badge text-bg-primary-subtle text-primary fw-semibold">Pasul <span data-step-current>1</span> din <span data-step-total>4</span></span>
-                                                <h3 class="lesson-flow__stage-title h5 mt-2 mb-0 text-primary" data-step-title>Descoperim componentele hardware</h3>
-                                            </div>
-                                            <div class="lesson-flow__actions d-flex gap-2">
-                                                <button type="button" class="btn btn-outline-secondary" data-step-prev hidden>Înapoi</button>
-                                                <button type="button" class="btn btn-primary" data-step-next>Continuă</button>
-                                            </div>
-                                        </div>
-                                        <div class="lesson-flow__gamebar mt-3">
-                                            <div class="lesson-stars" data-step-stars aria-live="polite">
-                                                <span class="lesson-stars__label text-muted small">Stele pas curent</span>
-                                                <div class="lesson-stars__icons" data-stars-list>
-                                                    <i class="fa-solid fa-star" data-star-slot></i>
-                                                    <i class="fa-solid fa-star" data-star-slot></i>
-                                                    <i class="fa-solid fa-star" data-star-slot></i>
-                                                </div>
-                                                <span class="lesson-stars__score text-muted small" data-stars-score>0/3</span>
-                                            </div>
-                                            <div class="lesson-team" data-team-mode>
-                                                <div class="lesson-team__actions d-flex flex-wrap gap-2">
-                                                    <button type="button" class="btn btn-sm btn-outline-primary is-active" data-team-mode-btn data-team-mode-value="solo">Solo</button>
-                                                    <button type="button" class="btn btn-sm btn-outline-primary" data-team-mode-btn data-team-mode-value="pair">În doi</button>
-                                                </div>
-                                                <div class="lesson-team__shared" data-team-progress hidden>
-                                                    <div class="lesson-team__label small text-muted" data-team-progress-label>Echipă: 0/4 pași</div>
-                                                    <div class="lesson-team__bar">
-                                                        <span class="lesson-team__bar-fill" data-team-progress-fill style="width: 0%;"></span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <p class="lesson-flow__lock-hint text-danger small fw-semibold mt-2 mb-0" data-step-lock-hint hidden></p>
-                                        <div class="lesson-reward mt-2" data-step-reward hidden></div>
-                                        <div class="lesson-secret-bonus mt-2" data-secret-bonus hidden>
-                                            <i class="fa-solid fa-gift me-2"></i>Bonus secret: două provocări interactive rezolvate la rând!
-                                        </div>
-                                        <div class="lesson-mascot mt-3" data-mascot-feedback hidden>
-                                            <span class="lesson-mascot__emoji">🦊</span>
-                                            <p class="lesson-mascot__message mb-0" data-mascot-message>Perfect! Continuăm aventura digitală.</p>
-                                        </div>
+    {# === Navigation HUD === #}
+    <div class="dl-hud">
+        <a class="lesson-hud__back" href="{% url 'estudy:lessons_list' %}">&#8592; Lectii</a>
+        <div class="dl-hud__indicator">
+            <span class="dl-hud__badge">&#129302; Modul 1</span>
+            Pasul <strong data-step-current>1</strong> din <span data-step-total>5</span>
+        </div>
+        <h3 class="dl-hud__title" data-step-title>Bine ai venit, explorator digital!</h3>
+        <div class="dl-hud__nav">
+            <button type="button" class="ls-btn ls-btn--ghost" data-step-prev hidden style="padding:8px 16px;font-size:13px;">&#8592; Inapoi</button>
+            <button type="button" class="ls-btn ls-btn--primary" data-step-next style="padding:8px 16px;font-size:13px;">Continua &#8594;</button>
+        </div>
+    </div>
 
-                                        <div class="lesson-flow__content">
-        <section class="lesson-step" data-lesson-step data-step-title="Descoperim componentele hardware" data-step-button="Continuă" data-step-requires="hardware-map" data-step-locked-message="Finalizează exercițiul hardware (toate piesele corecte), apoi poți continua.">
-            <div class="d-flex align-items-start gap-3 mb-4">
-                <span class="fs-2">🧠</span>
-                <div>
-                    <h3 class="h6 text-uppercase text-muted mb-1">Părțile vizibile și invizibile ale calculatorului</h3>
-                    <p class="text-muted small mb-2">Deschidem „cutia magică” a calculatorului și vedem cum fiecare piesă are o misiune clară: procesorul gândește, memoria RAM ține ideile scurte, iar stocarea păstrează fișierele pentru mai târziu.</p>
-                    <p class="text-muted small mb-0">Exersăm cu o placă de bază ilustrată: identificăm unde se conectează fiecare componentă și discutăm cum lucrează împreună cu software-ul.</p>
+    {# === Gamebar (stars, rewards) === #}
+    <div class="dl-gamebar">
+        <div class="dl-gamebar__stars" data-step-stars>
+            <i class="fa-solid fa-star" data-star-slot></i>
+            <i class="fa-solid fa-star" data-star-slot></i>
+            <i class="fa-solid fa-star" data-star-slot></i>
+            <span class="dl-gamebar__score" data-stars-score>0/3</span>
+        </div>
+    </div>
+    <p class="dl-lock-hint" data-step-lock-hint hidden></p>
+    <div class="dl-reward" data-step-reward hidden></div>
+    <div class="dl-secret-bonus" data-secret-bonus hidden>
+        <i class="fa-solid fa-gift"></i> &#127881; Bonus secret: doua provocari rezolvate la rand fara greseli!
+    </div>
+    <div class="dl-mascot" data-mascot-feedback hidden>
+        <span class="dl-mascot__emoji">&#129418;</span>
+        <p class="dl-mascot__msg" data-mascot-message>Perfect! Continuam aventura digitala.</p>
+    </div>
+
+    {# === Steps wrapper (script.js expects this structure) === #}
+    <div data-panel-steps>
+        <div data-lesson-body>
+            <div data-lesson-flow>
+                <div class="dl-steps">
+
+{# ================================================================ #}
+{# STEP 1 — Welcome & Introduction                                  #}
+{# ================================================================ #}
+<section class="lesson-step" data-lesson-step data-step-title="Bine ai venit, explorator digital!" data-step-button="Hai sa incepem!" data-step-reward="Sticker: Explorator curajos">
+    <div class="lesson-step__inner">
+        <div class="ls-mentor">
+            <div class="ls-mentor__avatar">&#129302;</div>
+            <div class="ls-mentor__bubble">
+                Salut! Eu sunt Byte, ghidul tau in lumea digitala. Azi pornim intr-o aventura in care vom descoperi cum functioneaza calculatorul, internetul si cum sa fim in siguranta online!
+            </div>
+        </div>
+
+        <div class="ls-welcome">
+            <div class="ls-welcome__subject">&#127760; Alfabetizare Digitala</div>
+            <h1 class="ls-welcome__title">Aventura in lumea calculatoarelor</h1>
+            <p class="ls-welcome__desc">In aceasta lectie vei deveni un adevarat explorator digital! Vei deschide cutia magica a calculatorului, vei calatori prin internet si vei invata sa fii un erou al sigurantei online.</p>
+
+            <div class="ls-welcome__stats">
+                <div class="ls-stat">
+                    <span class="ls-stat__icon">&#128205;</span>
+                    <span class="ls-stat__value">5 statii</span>
+                    <span class="ls-stat__label">De explorat</span>
+                </div>
+                <div class="ls-stat">
+                    <span class="ls-stat__icon">&#127912;</span>
+                    <span class="ls-stat__value">2 jocuri</span>
+                    <span class="ls-stat__label">Interactive</span>
+                </div>
+                <div class="ls-stat">
+                    <span class="ls-stat__icon">&#11088;</span>
+                    <span class="ls-stat__value">3 stele</span>
+                    <span class="ls-stat__label">De castigat</span>
+                </div>
+                <div class="ls-stat">
+                    <span class="ls-stat__icon">&#128170;</span>
+                    <span class="ls-stat__value">Usor</span>
+                    <span class="ls-stat__label">Dificultate</span>
                 </div>
             </div>
-            <div class="module-interactive hardware-map" data-hardware-map data-step-requirement="hardware-map">
-                <p class="module-interactive__intro text-muted small mb-3">Trage fiecare etichetă pe zona corectă din placa de bază, apoi apasă „Verifică”.</p>
-                <div class="hardware-map__layout">
-                    <div class="hardware-slot" data-slot="cpu" data-dropzone>
-                        <span class="hardware-slot__title">Procesor (CPU)</span>
-                        <div class="hardware-slot__placeholder">Trage componenta aici</div>
-                    </div>
-                    <div class="hardware-slot" data-slot="ram" data-dropzone>
-                        <span class="hardware-slot__title">Memorie rapidă (RAM)</span>
-                        <div class="hardware-slot__placeholder">Trage componenta aici</div>
-                    </div>
-                    <div class="hardware-slot" data-slot="gpu" data-dropzone>
-                        <span class="hardware-slot__title">Placă video (GPU)</span>
-                        <div class="hardware-slot__placeholder">Trage componenta aici</div>
-                    </div>
-                    <div class="hardware-slot" data-slot="storage" data-dropzone>
-                        <span class="hardware-slot__title">Stocare (SSD/HDD)</span>
-                        <div class="hardware-slot__placeholder">Trage componenta aici</div>
-                    </div>
-                </div>
-                <div class="hardware-map__bank" data-bank data-dropzone>
-                    <span class="hardware-map__bank-title small text-muted">Piese de poziționat</span>
-                    <div class="hardware-piece" draggable="true" data-piece="cpu" data-answer="cpu">
-                        <span class="hardware-piece__emoji">🧠</span>
-                        <span class="hardware-piece__label">CPU: execută comenzile</span>
-                    </div>
-                    <div class="hardware-piece" draggable="true" data-piece="gpu" data-answer="gpu">
-                        <span class="hardware-piece__emoji">🎮</span>
-                        <span class="hardware-piece__label">GPU: desenează grafica</span>
-                    </div>
-                    <div class="hardware-piece" draggable="true" data-piece="ram" data-answer="ram">
-                        <span class="hardware-piece__emoji">⚡</span>
-                        <span class="hardware-piece__label">RAM: ține datele active</span>
-                    </div>
-                    <div class="hardware-piece" draggable="true" data-piece="storage" data-answer="storage">
-                        <span class="hardware-piece__emoji">💾</span>
-                        <span class="hardware-piece__label">SSD/HDD: păstrează fișierele</span>
-                    </div>
-                </div>
-                <div class="hardware-map__actions d-flex flex-wrap align-items-center gap-2 mt-3">
-                    <button type="button" class="btn btn-primary btn-sm" data-hardware-check>Verifică</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" data-hardware-reset>Resetează</button>
-                    <div class="hardware-feedback" data-hardware-feedback></div>
-                </div>
-            </div>
-        </section>
 
-        <section class="lesson-step" data-lesson-step hidden data-step-title="Explorăm internetul și cloud-ul" data-step-button="Continuă">
-            <div class="lesson-step__compact">
-                <h3 class="h6 text-uppercase text-muted mb-2">Internet și cloud pe scurt</h3>
-                <ul class="lesson-step__bullets text-muted small mb-3">
-                    <li>URL-ul este adresa exactă a paginii pe care vrei să ajungi.</li>
-                    <li>Cloud-ul este un dosar online pe care îl poți deschide de pe orice dispozitiv.</li>
+            <div class="ls-objectives">
+                <div class="ls-objectives__title">&#127919; Ce vei invata azi</div>
+                <ul class="ls-objectives__list">
+                    <li class="ls-objectives__item">
+                        <span class="ls-objectives__check">&#9989;</span>
+                        Ce piese are un calculator si ce face fiecare
+                    </li>
+                    <li class="ls-objectives__item">
+                        <span class="ls-objectives__check">&#9989;</span>
+                        Cum functioneaza internetul si browserul
+                    </li>
+                    <li class="ls-objectives__item">
+                        <span class="ls-objectives__check">&#9989;</span>
+                        Ce este cloud-ul si de ce e util
+                    </li>
+                    <li class="ls-objectives__item">
+                        <span class="ls-objectives__check">&#9989;</span>
+                        Cum sa te protejezi cand esti pe internet
+                    </li>
+                    <li class="ls-objectives__item">
+                        <span class="ls-objectives__check">&#9989;</span>
+                        Diferenta dintre hardware si software
+                    </li>
                 </ul>
-                <p class="lesson-step__action small mb-0"><strong>Acțiune:</strong> deschide browserul, caută un animal preferat și salvează rezultatul într-un folder „Școală”.</p>
             </div>
-        </section>
+        </div>
 
-        <section class="lesson-step" data-lesson-step hidden data-step-title="Supereroi în siguranță digitală" data-step-button="Continuă" data-step-requires="hardware-software-match" data-step-locked-message="Rezolvă jocul de potrivire hardware + software, apoi poți merge mai departe.">
-            <div class="lesson-step__compact mb-4">
-                <h3 class="h6 text-uppercase text-muted mb-2">Securitate digitală pentru supereroi</h3>
-                <ul class="lesson-step__bullets text-muted small mb-3">
-                    <li>O parolă bună combină litere, cifre și simboluri.</li>
-                    <li>Nu deschidem link-uri ciudate și cerem ajutorul unui adult.</li>
-                </ul>
-                <p class="lesson-step__action small mb-0"><strong>Acțiune:</strong> joacă provocarea de mai jos și potrivește fiecare sarcină cu dispozitivul și programul corect.</p>
-            </div>
-            <div class="module-interactive module-match" data-hardware-software data-step-requirement="hardware-software-match">
-                <p class="module-interactive__intro text-muted small mb-3">Trage cartonașele potrivite spre fiecare sarcină: un dispozitiv și un program.</p>
-                <div class="module-match__board">
-                    <div class="module-match__row" data-scenario="game">
-                        <div class="module-match__task">
-                            <span class="module-match__emoji">🎮</span>
-                            <div>
-                                <p class="fw-semibold mb-1">Rulează jocul de curse 3D</p>
-                                <p class="text-muted small mb-0">Avem nevoie de imagini fluide și de programul care știe regulile jocului.</p>
-                            </div>
-                        </div>
-                        <div class="module-match__answers">
-                            <div class="match-slot" data-match-slot data-accept="hardware" data-match="gpu" data-dropzone>
-                                <span class="match-slot__label small text-muted">Dispozitivul potrivit</span>
-                            </div>
-                            <div class="match-slot" data-match-slot data-accept="software" data-match="game" data-dropzone>
-                                <span class="match-slot__label small text-muted">Programul potrivit</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="module-match__row" data-scenario="poster">
-                        <div class="module-match__task">
-                            <span class="module-match__emoji">🖨️</span>
-                            <div>
-                                <p class="fw-semibold mb-1">Tipărește un poster color</p>
-                                <p class="text-muted small mb-0">Imaginea trebuie să ajungă din calculator pe hârtie folosind echipamentul corect.</p>
-                            </div>
-                        </div>
-                        <div class="module-match__answers">
-                            <div class="match-slot" data-match-slot data-accept="hardware" data-match="printer" data-dropzone>
-                                <span class="match-slot__label small text-muted">Dispozitivul potrivit</span>
-                            </div>
-                            <div class="match-slot" data-match-slot data-accept="software" data-match="driver_printer" data-dropzone>
-                                <span class="match-slot__label small text-muted">Programul potrivit</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="module-match__row" data-scenario="music">
-                        <div class="module-match__task">
-                            <span class="module-match__emoji">🎧</span>
-                            <div>
-                                <p class="fw-semibold mb-1">Ascultă playlist-ul preferat</p>
-                                <p class="text-muted small mb-0">Sunetul bun are nevoie de dispozitiv și de aplicația care redă melodiile.</p>
-                            </div>
-                        </div>
-                        <div class="module-match__answers">
-                            <div class="match-slot" data-match-slot data-accept="hardware" data-match="headphones" data-dropzone>
-                                <span class="match-slot__label small text-muted">Dispozitivul potrivit</span>
-                            </div>
-                            <div class="match-slot" data-match-slot data-accept="software" data-match="player_audio" data-dropzone>
-                                <span class="match-slot__label small text-muted">Programul potrivit</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="module-match__bank">
-                    <div class="match-bank__column">
-                        <h4 class="match-bank__title text-muted small text-uppercase mb-2">Dispozitive</h4>
-                        <div class="match-bank__list" data-bank="hardware" data-dropzone>
-                            <div class="match-token" draggable="true" data-match-token data-token-type="hardware" data-token-value="gpu">
-                                <span class="match-token__emoji">🖥️</span>
-                                <span class="match-token__text">Adaugă grafica fluidă în jocuri</span>
-                            </div>
-                            <div class="match-token" draggable="true" data-match-token data-token-type="hardware" data-token-value="printer">
-                                <span class="match-token__emoji">🖨️</span>
-                                <span class="match-token__text">Transferă cerneala pe hârtie</span>
-                            </div>
-                            <div class="match-token" draggable="true" data-match-token data-token-type="hardware" data-token-value="headphones">
-                                <span class="match-token__emoji">🎧</span>
-                                <span class="match-token__text">Aduce sunetul direct la urechi</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="match-bank__column">
-                        <h4 class="match-bank__title text-muted small text-uppercase mb-2">Programe</h4>
-                        <div class="match-bank__list" data-bank="software" data-dropzone>
-                            <div class="match-token" draggable="true" data-match-token data-token-type="software" data-token-value="game">
-                                <span class="match-token__emoji">🕹️</span>
-                                <span class="match-token__text">Conține regulile și hărțile jocului</span>
-                            </div>
-                            <div class="match-token" draggable="true" data-match-token data-token-type="software" data-token-value="driver_printer">
-                                <span class="match-token__emoji">🧑‍💻</span>
-                                <span class="match-token__text">Îi explică imprimantei ce are de făcut</span>
-                            </div>
-                            <div class="match-token" draggable="true" data-match-token data-token-type="software" data-token-value="player_audio">
-                                <span class="match-token__emoji">🎵</span>
-                                <span class="match-token__text">Redă melodiile preferate</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="module-match__actions d-flex flex-wrap align-items-center gap-2 mt-3">
-                    <button type="button" class="btn btn-primary btn-sm" data-match-check>Verifică</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" data-match-reset>Curăță tabla</button>
-                    <div class="module-match__feedback" data-match-feedback></div>
-                </div>
-            </div>
-            <div class="alert alert-primary mt-3 mb-0 small">
-                <i class="fa-solid fa-rocket me-2"></i>Mini-lectie separată: „Gândire algoritmică în viața de zi cu zi” va fi parcursă separat, în ritm mai lent.
-            </div>
-        </section>
+        <div class="ls-fun-fact">
+            <span>&#128161;</span>
+            <span><strong>Stiati ca?</strong> Primul calculator din lume, ENIAC, cantarea 27 de tone si ocupa o camera intreaga! Astazi, telefonul tau e de milioane de ori mai puternic.</span>
+        </div>
+    </div>
+</section>
 
-        <section class="lesson-step" data-lesson-step hidden data-step-title="Aplicăm ce am învățat" data-step-button="Finalizează lecția">
-            <div class="lesson-step__overview text-muted small mb-4">
-                <p class="mb-2">Alege două provocări principale. Restul rămân opționale, la secțiunea Bonus.</p>
+{# ================================================================ #}
+{# STEP 2 — Hardware: Inside the Magic Box                          #}
+{# ================================================================ #}
+<section class="lesson-step" data-lesson-step hidden data-step-title="Deschidem cutia magica a calculatorului" data-step-button="Continua" data-step-requires="hardware-map" data-step-locked-message="Pune toate piesele pe locul lor in exercitiul de mai jos, apoi poti merge mai departe!" data-step-reward="Sticker: Constructor hardware">
+    <div class="lesson-step__inner">
+        <div class="ls-mentor">
+            <div class="ls-mentor__avatar">&#129504;</div>
+            <div class="ls-mentor__bubble">
+                Imagineaza-ti ca deschizi un calculator ca pe o cutie cu comori. Inauntru gasesti piese speciale, fiecare cu propria misiune. Hai sa le descoperim!
             </div>
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="module-activity module-activity--highlight h-100 p-4">
-                        <div class="d-flex align-items-center gap-3 mb-3">
-                            <span class="fs-3">🧩</span>
-                            <h3 class="h6 mb-0">Puzzle: „Asamblează PC-ul”</h3>
-                        </div>
-                        <p class="text-muted small mb-3">Trage componentele pe schema corectă și află ce face fiecare piesă.</p>
-                        <ul class="text-muted small mb-0 ps-3">
-                            <li>3 niveluri de dificultate</li>
-                            <li>Explicații audio pentru fiecare componentă</li>
-                            <li>Puncte bonus pentru rapiditate</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="module-activity h-100 p-4">
-                        <div class="d-flex align-items-center gap-3 mb-3">
-                            <span class="fs-3">🔐</span>
-                            <h3 class="h6 mb-0">Test: „Internet în siguranță”</h3>
-                        </div>
-                        <p class="text-muted small mb-3">Întrebări grilă și scenarii interactive despre parole, confidențialitate și phishing.</p>
-                        <ul class="text-muted small mb-0 ps-3">
-                            <li>Feedback instant și explicații după fiecare întrebare</li>
-                            <li>Simulări de mesaje reale (email, chat, social media)</li>
-                            <li>Obții insigna „Guardian digital” peste 80% scor</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="module-bonus mt-4">
-                <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
-                    <h3 class="h6 mb-0 text-uppercase text-muted">Bonus (opțional)</h3>
-                    <span class="badge text-bg-warning">După ce termini activitățile principale</span>
-                </div>
-                <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="module-activity h-100 p-4">
-                        <div class="d-flex align-items-center gap-3 mb-3">
-                            <span class="fs-3">🧠</span>
-                            <h3 class="h6 mb-0">Misiune Blockly: „Rutina de dimineață”</h3>
-                        </div>
-                        <p class="text-muted small mb-3">Ordonează blocurile pentru a crea un algoritm corect, apoi rulează-l să vezi dacă robotul reușește.</p>
-                        <ul class="text-muted small mb-0 ps-3">
-                            <li>Blochează sau deblochează pașii pentru extra provocare</li>
-                            <li>Secțiune „Hint” dacă rămâi blocat</li>
-                            <li>Puncte suplimentare pentru optimizare</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="module-activity module-activity--highlight h-100 p-4">
-                        <div class="d-flex align-items-center gap-3 mb-3">
-                            <span class="fs-3">📜</span>
-                            <h3 class="h6 mb-0">Mini-proiect: „Manifestul meu digital”</h3>
-                        </div>
-                        <p class="text-muted small mb-3">Creezi un poster digital cu 5 reguli personale de siguranță, gata de distribuit colegilor.</p>
-                        <ul class="text-muted small mb-0 ps-3">
-                            <li>Template-uri colorate pentru personalizare</li>
-                            <li>Poți adăuga stickere și emoji explicative</li>
-                            <li>Se poate publica în galeria clasei pentru feedback</li>
-                        </ul>
-                    </div>
-                </div>
-                </div>
-            </div>
-            <div class="alert alert-info mt-4 mb-0 small fw-semibold border-0 text-primary">
-                <i class="fa-solid fa-lightbulb me-2"></i>Pont: după ce finalizezi activitățile, marchează lecția ca terminată și împărtășește colegilor ce ți-a plăcut cel mai mult.
-            </div>
-        </section>
+        </div>
 
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="ls-card">
+            <h2 class="ls-card__title">&#9881; Piesele secrete din calculator</h2>
+            <div class="ls-theory">
+                <p>Fiecare calculator are patru piese principale care lucreaza impreuna, ca o echipa:</p>
+            </div>
+        </div>
+
+        <div class="dl-info-grid">
+            <div class="ls-card ls-card--accent">
+                <h3 class="ls-card__title">&#129504; Procesorul (CPU)</h3>
+                <div class="ls-theory">
+                    <p>Este <strong>creierul calculatorului</strong>. Gandeste si rezolva toate problemele. Cand deschizi un joc sau un program, procesorul face calculele necesare.</p>
+                    <p style="font-size:13px;color:var(--lk-text-dim);margin-top:8px;"><em>&#128218; Gandeste la el ca la un matematician super-rapid care poate rezolva miliarde de calcule pe secunda!</em></p>
+                </div>
+            </div>
+            <div class="ls-card ls-card--accent">
+                <h3 class="ls-card__title">&#9889; Memoria RAM</h3>
+                <div class="ls-theory">
+                    <p>Este <strong>memoria de lucru</strong>. Tine minte ce faci chiar acum — tab-urile deschise, jocul in care esti, documentul la care lucrezi.</p>
+                    <p style="font-size:13px;color:var(--lk-text-dim);margin-top:8px;"><em>&#128218; E ca un birou pe care pui ce ai nevoie acum. Cand inchizi calculatorul, biroul se goleste.</em></p>
+                </div>
+            </div>
+            <div class="ls-card ls-card--accent">
+                <h3 class="ls-card__title">&#127918; Placa video (GPU)</h3>
+                <div class="ls-theory">
+                    <p>Este <strong>artistul calculatorului</strong>. Deseneaza tot ce vezi pe ecran — jocuri, videoclipuri, animatii, chiar si interfata programelor.</p>
+                    <p style="font-size:13px;color:var(--lk-text-dim);margin-top:8px;"><em>&#128218; Fara GPU, ecranul ar fi gol. GPU-ul transforma datele in imagini colorate.</em></p>
+                </div>
+            </div>
+            <div class="ls-card ls-card--accent">
+                <h3 class="ls-card__title">&#128190; Stocarea (SSD/HDD)</h3>
+                <div class="ls-theory">
+                    <p>Este <strong>dulapul calculatorului</strong>. Aici se pastreaza toate fisierele — poze, jocuri, documente — chiar si cand inchizi calculatorul.</p>
+                    <p style="font-size:13px;color:var(--lk-text-dim);margin-top:8px;"><em>&#128218; SSD-ul e un dulap super-rapid, iar HDD-ul e un dulap mai incet dar mai mare.</em></p>
                 </div>
             </div>
         </div>
-    </section>
-</div>
+
+        <div class="ls-card">
+            <h3 class="ls-card__title">&#128444; Cum lucreaza impreuna: Exemplu</h3>
+            <div class="ls-theory">
+                <p>Sa zicem ca deschizi un joc pe calculator. Uite ce se intampla:</p>
+                <ol style="padding-left:18px;margin:0;">
+                    <li><strong>Stocarea</strong> gaseste fisierele jocului si le trimite mai departe</li>
+                    <li><strong>RAM-ul</strong> incarca datele de care ai nevoie chiar acum (harta, personajele)</li>
+                    <li><strong>Procesorul</strong> calculeaza miscarea personajului, scorurile, regulile</li>
+                    <li><strong>GPU-ul</strong> deseneaza totul pe ecran — grafica, culorile, animatiile</li>
+                </ol>
+            </div>
+        </div>
+
+        {# Hardware drag-and-drop exercise #}
+        <div class="ls-card ls-card--accent">
+            <h3 class="ls-card__title">&#127912; Provocare: Construieste calculatorul!</h3>
+            <p class="dl-exercise-intro">Trage fiecare piesa in locul ei de pe placa de baza. Cand ai pus toate piesele, apasa <strong>Verifica</strong> sa vezi daca ai nimerit!</p>
+
+            <div class="dl-hw-map" data-hardware-map data-step-requirement="hardware-map">
+                <div class="dl-hw-slots">
+                    <div class="dl-hw-slot" data-slot="cpu" data-dropzone>
+                        <span class="dl-hw-slot__title">&#129504; Procesor (CPU)</span>
+                        <div class="dl-hw-slot__placeholder">Trage piesa aici</div>
+                    </div>
+                    <div class="dl-hw-slot" data-slot="ram" data-dropzone>
+                        <span class="dl-hw-slot__title">&#9889; Memorie (RAM)</span>
+                        <div class="dl-hw-slot__placeholder">Trage piesa aici</div>
+                    </div>
+                    <div class="dl-hw-slot" data-slot="gpu" data-dropzone>
+                        <span class="dl-hw-slot__title">&#127918; Placa video (GPU)</span>
+                        <div class="dl-hw-slot__placeholder">Trage piesa aici</div>
+                    </div>
+                    <div class="dl-hw-slot" data-slot="storage" data-dropzone>
+                        <span class="dl-hw-slot__title">&#128190; Stocare (SSD)</span>
+                        <div class="dl-hw-slot__placeholder">Trage piesa aici</div>
+                    </div>
+                </div>
+                <div class="dl-hw-bank" data-bank data-dropzone>
+                    <span class="dl-hw-bank__title">&#128230; Piese de montat</span>
+                    <div class="hardware-piece dl-hw-piece" draggable="true" data-piece="cpu" data-answer="cpu">
+                        <span class="dl-hw-piece__emoji">&#129504;</span>
+                        <span>Creierul — executa comenzile</span>
+                    </div>
+                    <div class="hardware-piece dl-hw-piece" draggable="true" data-piece="gpu" data-answer="gpu">
+                        <span class="dl-hw-piece__emoji">&#127918;</span>
+                        <span>Artistul — deseneaza grafica</span>
+                    </div>
+                    <div class="hardware-piece dl-hw-piece" draggable="true" data-piece="ram" data-answer="ram">
+                        <span class="dl-hw-piece__emoji">&#9889;</span>
+                        <span>Biroul — tine datele active</span>
+                    </div>
+                    <div class="hardware-piece dl-hw-piece" draggable="true" data-piece="storage" data-answer="storage">
+                        <span class="dl-hw-piece__emoji">&#128190;</span>
+                        <span>Dulapul — pastreaza fisierele</span>
+                    </div>
+                </div>
+                <div class="dl-hw-actions">
+                    <button type="button" class="ls-btn ls-btn--success" data-hardware-check style="padding:8px 18px;font-size:13px;">&#10003; Verifica</button>
+                    <button type="button" class="ls-btn ls-btn--ghost" data-hardware-reset style="padding:8px 18px;font-size:13px;">&#128260; Reseteaza</button>
+                    <div class="dl-hw-feedback" data-hardware-feedback></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ls-fun-fact">
+            <span>&#128161;</span>
+            <span><strong>De retinut:</strong> <em>Hardware</em> = piesele pe care le poti atinge (procesor, tastatura, mouse). <em>Software</em> = programele care spun pieselor ce sa faca (jocuri, browsere, aplicatii).</span>
+        </div>
+    </div>
+</section>
+
+{# ================================================================ #}
+{# STEP 3 — Internet, Browser & Cloud                               #}
+{# ================================================================ #}
+<section class="lesson-step" data-lesson-step hidden data-step-title="Calatorim prin internet!" data-step-button="Continua" data-step-reward="Sticker: Navigator web">
+    <div class="lesson-step__inner">
+        <div class="ls-mentor">
+            <div class="ls-mentor__avatar">&#127760;</div>
+            <div class="ls-mentor__bubble">
+                Acum ca stim ce are calculatorul inauntru, hai sa iesim in lumea mare a internetului! E ca un oras urias plin de informatii, jocuri si lucruri interesante.
+            </div>
+        </div>
+
+        <div class="ls-card">
+            <h2 class="ls-card__title">&#127760; Ce este internetul?</h2>
+            <div class="ls-theory">
+                <p>Internetul este o <strong>retea uriasa de calculatoare</strong> conectate intre ele din toata lumea. Cand intri pe un site, calculatorul tau trimite un mesaj catre alt calculator care iti trimite inapoi pagina pe care o vezi.</p>
+                <p style="margin-top:12px;">Gandeste-te la internet ca la un <strong>sistem postal super-rapid</strong>: trimiți o scrisoare (cererea ta) și primesti raspunsul inapoi in cateva milisecunde!</p>
+            </div>
+        </div>
+
+        <div class="ls-card ls-card--accent">
+            <h2 class="ls-card__title">&#129517; Browserul: Fereastra ta catre internet</h2>
+            <div class="ls-theory">
+                <p>Browserul este <strong>aplicatia cu care navighezi pe internet</strong> — Chrome, Firefox, Edge, Safari. E ca o fereastra magica prin care vezi tot continutul online.</p>
+            </div>
+            <div class="dl-info-grid" style="margin-top:16px;">
+                <div class="ls-key-point">
+                    <span class="ls-key-point__icon">&#128279;</span>
+                    <span><strong>Bara de adrese</strong> — aici scrii adresa (URL-ul) unui site, cum ar fi <code>www.scoala.ro</code></span>
+                </div>
+                <div class="ls-key-point">
+                    <span class="ls-key-point__icon">&#128196;</span>
+                    <span><strong>Tab-uri</strong> — poti tine mai multe pagini deschise in acelasi timp, ca mai multe carti pe birou</span>
+                </div>
+                <div class="ls-key-point">
+                    <span class="ls-key-point__icon">&#128269;</span>
+                    <span><strong>Cautarea</strong> — cand nu stii adresa exacta, cauti pe Google cuvinte cheie despre subiectul tau</span>
+                </div>
+                <div class="ls-key-point">
+                    <span class="ls-key-point__icon">&#8592;</span>
+                    <span><strong>Butonul Back</strong> — te duce inapoi la pagina anterioara, ca un buton de "undo"</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ls-card">
+            <h2 class="ls-card__title">&#9729; Cloud-ul: Dulapul tau magic din internet</h2>
+            <div class="ls-theory">
+                <p>Cloud-ul nu este un nor adevarat! Este un <strong>spatiu de stocare online</strong>, pe servere sigure, unde poti salva fisiere. Avantajul? Le gasesti de pe orice dispozitiv — calculator, tableta sau telefon.</p>
+            </div>
+        </div>
+
+        <div class="dl-info-grid">
+            <div class="ls-card ls-card--accent">
+                <h3 class="ls-card__title">&#128077; Cand e util cloud-ul</h3>
+                <ul style="padding-left:18px;margin:0;">
+                    <li>Ai inceput o tema acasa si vrei sa o continui la scoala</li>
+                    <li>Vrei sa pastrezi poze sau documente in siguranta</li>
+                    <li>Lucrezi la un proiect impreuna cu colegii</li>
+                    <li>Vrei sa ai acces la fisiere de pe telefon si calculator</li>
+                </ul>
+            </div>
+            <div class="ls-card ls-card--accent">
+                <h3 class="ls-card__title">&#128450; Cum iti organizezi fisierele bine</h3>
+                <ol style="padding-left:18px;margin:0;">
+                    <li>Creezi foldere clare: <code>Scoala</code>, <code>Proiecte</code>, <code>Poze</code></li>
+                    <li>Dai fisierelor un nume usor de inteles: <code>tema-matematica-luni.docx</code></li>
+                    <li>Salvezi in cloud fisierele importante</li>
+                    <li>Verifici periodic ce ai salvat si stergi ce nu mai ai nevoie</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="ls-card">
+            <h3 class="ls-card__title">&#128161; URL sau cautare? Cand folosesti fiecare</h3>
+            <div class="dl-info-grid">
+                <div class="ls-key-point" style="background:var(--lk-purple-light);border-left-color:var(--lk-purple);">
+                    <span class="ls-key-point__icon">&#128279;</span>
+                    <span><strong>Scrii URL-ul</strong> cand profesorul iti da un site exact, de exemplu <code>www.bibliotecadigitala.ro</code></span>
+                </div>
+                <div class="ls-key-point" style="background:var(--lk-blue-light);border-left-color:var(--lk-blue);">
+                    <span class="ls-key-point__icon">&#128269;</span>
+                    <span><strong>Folosesti cautarea</strong> cand cauti informatii despre un subiect: "planete sistem solar"</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="ls-fun-fact">
+            <span>&#128640;</span>
+            <span><strong>Stiati ca?</strong> In fiecare minut pe internet se trimit 231 de milioane de emailuri, se incarca 500 de ore de video pe YouTube si se fac 5.9 milioane de cautari pe Google!</span>
+        </div>
+    </div>
+</section>
+
+{# ================================================================ #}
+{# STEP 4 — Digital Safety                                          #}
+{# ================================================================ #}
+<section class="lesson-step" data-lesson-step hidden data-step-title="Devino un erou al sigurantei digitale!" data-step-button="Continua" data-step-requires="hardware-software-match" data-step-locked-message="Rezolva jocul de potrivire de mai jos ca sa deblochezi pasul urmator!" data-step-reward="Sticker: Scut digital">
+    <div class="lesson-step__inner">
+        <div class="ls-mentor">
+            <div class="ls-mentor__avatar">&#128737;</div>
+            <div class="ls-mentor__bubble">
+                Acum vine partea cea mai importanta! Pe internet nu toate mesajele sunt prietenoase. Hai sa invatam superputerile unui erou digital!
+            </div>
+        </div>
+
+        <div class="ls-card">
+            <h2 class="ls-card__title">&#128737; Cele 3 superputeri ale unui erou digital</h2>
+            <div class="ls-theory">
+                <p>Un erou digital stie sa se protejeze online. Are trei superputeri pe care le foloseste mereu:</p>
+            </div>
+        </div>
+
+        <div class="dl-info-grid dl-info-grid--3">
+            <div class="ls-card ls-card--accent">
+                <h3 class="ls-card__title">&#128272; Parole puternice</h3>
+                <div class="ls-theory">
+                    <p>O parola buna este greu de ghicit dar usor de tinut minte de tine.</p>
+                    <ul style="padding-left:16px;margin:8px 0 0;">
+                        <li>Foloseste litere mari si mici, cifre si simboluri</li>
+                        <li>NU folosi numele tau, clasa sau data nasterii</li>
+                        <li>NU o spune altor copii si NU o trimite in chat</li>
+                    </ul>
+                    <p style="font-size:13px;color:var(--lk-text-dim);margin-top:8px;"><em>&#128218; Exemplu bun: <code>Robo&Pixel42!</code> — e scurt, are de toate si e usor de retinut.</em></p>
+                </div>
+            </div>
+            <div class="ls-card ls-card--accent">
+                <h3 class="ls-card__title">&#128683; Detectivul de link-uri</h3>
+                <div class="ls-theory">
+                    <p>Inainte sa dai click pe un link, pune-ti 3 intrebari:</p>
+                    <ol style="padding-left:16px;margin:8px 0 0;">
+                        <li>Cunosc persoana care mi-a trimis acest mesaj?</li>
+                        <li>Adresa site-ului pare normala si familiara?</li>
+                        <li>Mi se cere sa ma grabesc sau sa dau date personale?</li>
+                    </ol>
+                    <p style="font-size:13px;color:var(--lk-text-dim);margin-top:8px;"><em>&#128218; Daca raspunsul la intrebarea 3 e "da", cel mai probabil e o capcana!</em></p>
+                </div>
+            </div>
+            <div class="ls-card ls-card--accent">
+                <h3 class="ls-card__title">&#128274; Pazitorul datelor personale</h3>
+                <div class="ls-theory">
+                    <p>Datele personale sunt informatii care te identifica:</p>
+                    <ul style="padding-left:16px;margin:8px 0 0;">
+                        <li>Numele complet, adresa, numarul de telefon</li>
+                        <li>Scoala la care inveti, pozele tale</li>
+                        <li>Parola, numarul cardului parintilor</li>
+                    </ul>
+                    <p style="font-size:13px;color:var(--lk-text-dim);margin-top:8px;"><em>&#128218; NU trimite niciodata aceste informatii in mesaje sau pe site-uri necunoscute!</em></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="ls-card">
+            <h3 class="ls-card__title">&#127384; Ce faci cand ceva pare suspect?</h3>
+            <div class="ls-theory">
+                <ol style="padding-left:18px;margin:0;">
+                    <li><strong>STOP!</strong> Nu apasa pe nimic, nu descarca nimic</li>
+                    <li><strong>Arata</strong> mesajul unui adult — parinte, profesor, bunic</li>
+                    <li><strong>Screenshot</strong> — fa o poza la ecran ca sa poti explica ce ai vazut</li>
+                    <li><strong>Inchide</strong> pagina daca incearca sa te sperie sau sa te grabeasca</li>
+                </ol>
+            </div>
+        </div>
+
+        {# Match exercise: Hardware + Software pairing #}
+        <div class="ls-card ls-card--accent">
+            <h3 class="ls-card__title">&#127912; Provocare: Potriveste dispozitivul si programul!</h3>
+            <p class="dl-exercise-intro">Fiecare sarcina are nevoie de un <strong>dispozitiv</strong> (hardware) si de un <strong>program</strong> (software). Trage cartonasele pe locul potrivit!</p>
+
+            <div class="dl-match" data-hardware-software data-step-requirement="hardware-software-match">
+                <div class="dl-match__board">
+                    <div class="dl-match__row" data-scenario="game">
+                        <div class="dl-match__task">
+                            <span class="dl-match__emoji">&#127918;</span>
+                            <div>
+                                <p class="dl-match__task-title">Joaca un joc 3D cu masini de curse</p>
+                                <p class="dl-match__task-desc">Ai nevoie de imagini fluide si de programul care stie regulile jocului.</p>
+                            </div>
+                        </div>
+                        <div class="dl-match__answers">
+                            <div class="match-slot dl-match__slot" data-match-slot data-accept="hardware" data-match="gpu" data-dropzone>
+                                <span class="dl-match__slot-label">&#9881; Dispozitiv</span>
+                            </div>
+                            <div class="match-slot dl-match__slot" data-match-slot data-accept="software" data-match="game" data-dropzone>
+                                <span class="dl-match__slot-label">&#128187; Program</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dl-match__row" data-scenario="poster">
+                        <div class="dl-match__task">
+                            <span class="dl-match__emoji">&#128424;</span>
+                            <div>
+                                <p class="dl-match__task-title">Tipareste un poster color pentru scoala</p>
+                                <p class="dl-match__task-desc">Imaginea din calculator trebuie sa ajunga pe hartie.</p>
+                            </div>
+                        </div>
+                        <div class="dl-match__answers">
+                            <div class="match-slot dl-match__slot" data-match-slot data-accept="hardware" data-match="printer" data-dropzone>
+                                <span class="dl-match__slot-label">&#9881; Dispozitiv</span>
+                            </div>
+                            <div class="match-slot dl-match__slot" data-match-slot data-accept="software" data-match="driver_printer" data-dropzone>
+                                <span class="dl-match__slot-label">&#128187; Program</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dl-match__row" data-scenario="music">
+                        <div class="dl-match__task">
+                            <span class="dl-match__emoji">&#127911;</span>
+                            <div>
+                                <p class="dl-match__task-title">Asculta playlist-ul preferat cu muzica</p>
+                                <p class="dl-match__task-desc">Ai nevoie de sunet bun si de aplicatia care reda melodiile.</p>
+                            </div>
+                        </div>
+                        <div class="dl-match__answers">
+                            <div class="match-slot dl-match__slot" data-match-slot data-accept="hardware" data-match="headphones" data-dropzone>
+                                <span class="dl-match__slot-label">&#9881; Dispozitiv</span>
+                            </div>
+                            <div class="match-slot dl-match__slot" data-match-slot data-accept="software" data-match="player_audio" data-dropzone>
+                                <span class="dl-match__slot-label">&#128187; Program</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dl-match__banks">
+                    <div class="dl-match__bank-col">
+                        <h4 class="dl-match__bank-title">&#9881; Dispozitive (hardware)</h4>
+                        <div class="dl-match__bank-list" data-bank="hardware" data-dropzone>
+                            <div class="match-token dl-match__token" draggable="true" data-match-token data-token-type="hardware" data-token-value="gpu">
+                                <span>&#128421;</span> Placa video — deseneaza grafica
+                            </div>
+                            <div class="match-token dl-match__token" draggable="true" data-match-token data-token-type="hardware" data-token-value="printer">
+                                <span>&#128424;</span> Imprimanta — pune cerneala pe hartie
+                            </div>
+                            <div class="match-token dl-match__token" draggable="true" data-match-token data-token-type="hardware" data-token-value="headphones">
+                                <span>&#127911;</span> Castile — aduc sunetul la urechi
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dl-match__bank-col">
+                        <h4 class="dl-match__bank-title">&#128187; Programe (software)</h4>
+                        <div class="dl-match__bank-list" data-bank="software" data-dropzone>
+                            <div class="match-token dl-match__token" draggable="true" data-match-token data-token-type="software" data-token-value="game">
+                                <span>&#128377;</span> Jocul — are regulile si hartile
+                            </div>
+                            <div class="match-token dl-match__token" draggable="true" data-match-token data-token-type="software" data-token-value="driver_printer">
+                                <span>&#128187;</span> Driver-ul — ii spune imprimantei ce sa faca
+                            </div>
+                            <div class="match-token dl-match__token" draggable="true" data-match-token data-token-type="software" data-token-value="player_audio">
+                                <span>&#127925;</span> Playerul — reda melodiile preferate
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dl-hw-actions">
+                    <button type="button" class="ls-btn ls-btn--success" data-match-check style="padding:8px 18px;font-size:13px;">&#10003; Verifica</button>
+                    <button type="button" class="ls-btn ls-btn--ghost" data-match-reset style="padding:8px 18px;font-size:13px;">&#128260; Curata tabla</button>
+                    <div class="dl-hw-feedback" data-match-feedback></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ls-fun-fact">
+            <span>&#128640;</span>
+            <span><strong>Scenariu:</strong> Primesti un mesaj care spune "Ai castigat un iPhone! Apasa acum!" — Un erou digital NU apasa. Mai intai verifica expeditorul si cere ajutorul unui adult.</span>
+        </div>
+    </div>
+</section>
+
+{# ================================================================ #}
+{# STEP 5 — Final Mission & Recap                                   #}
+{# ================================================================ #}
+<section class="lesson-step" data-lesson-step hidden data-step-title="Misiunea finala: Esti gata sa fii erou digital!" data-step-button="Finalizeaza lectia" data-step-reward="Insigna: Modul 1 complet!">
+    <div class="lesson-step__inner">
+        <div class="ls-mentor">
+            <div class="ls-mentor__avatar">&#127942;</div>
+            <div class="ls-mentor__bubble">
+                Bravo! Ai ajuns la ultima statie! Acum hai sa punem totul cap la cap si sa vedem cat de bine stii. Un adevarat erou digital e mereu pregatit!
+            </div>
+        </div>
+
+        <div class="ls-card ls-card--accent">
+            <h2 class="ls-card__title">&#128220; Fisa de erou digital</h2>
+            <div class="ls-theory">
+                <p>Uite tot ce ai invatat azi. Un adevarat explorator digital stie aceste lucruri:</p>
+            </div>
+            <div class="dl-info-grid" style="margin-top:12px;">
+                <div class="ls-key-point">
+                    <span class="ls-key-point__icon">&#9881;</span>
+                    <span><strong>Hardware</strong> = piesele calculatorului (CPU, RAM, GPU, SSD). <strong>Software</strong> = programele care le folosesc.</span>
+                </div>
+                <div class="ls-key-point">
+                    <span class="ls-key-point__icon">&#127760;</span>
+                    <span><strong>Browserul</strong> este fereastra catre internet, iar <strong>URL-ul</strong> este adresa exacta a unei pagini.</span>
+                </div>
+                <div class="ls-key-point">
+                    <span class="ls-key-point__icon">&#9729;</span>
+                    <span><strong>Cloud-ul</strong> pastreaza fisierele online si le poti accesa de pe orice dispozitiv.</span>
+                </div>
+                <div class="ls-key-point">
+                    <span class="ls-key-point__icon">&#128737;</span>
+                    <span><strong>Siguranta online</strong> inseamna parole puternice, link-uri verificate si date personale protejate.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="dl-info-grid">
+            <div class="ls-card">
+                <h3 class="ls-card__title">&#128450; Mini-misiune 1: Organizeaza o tema</h3>
+                <p style="font-size:14px;color:var(--lk-text-dim);margin-bottom:10px;">Imagineaza-ti ca ai facut un desen digital si nu vrei sa-l pierzi:</p>
+                <ol style="padding-left:18px;margin:0;font-size:14px;">
+                    <li>Creezi un folder clar: <code>Scoala / Desen</code></li>
+                    <li>Salvezi fisierul cu un nume bun: <code>desen-flori-aprilie.png</code></li>
+                    <li>Verifici ca l-ai pus in locul corect</li>
+                    <li>Daca e important, il salvezi si in cloud</li>
+                </ol>
+            </div>
+            <div class="ls-card">
+                <h3 class="ls-card__title">&#128270; Mini-misiune 2: Detectiv de link-uri</h3>
+                <p style="font-size:14px;color:var(--lk-text-dim);margin-bottom:10px;">Primesti un link intr-un mesaj. Ce faci ca un detectiv digital?</p>
+                <ol style="padding-left:18px;margin:0;font-size:14px;">
+                    <li>Te uiti cine a trimis mesajul</li>
+                    <li>Citesti cu atentie adresa site-ului</li>
+                    <li>NU dai date personale si NU descarci daca nu esti sigur</li>
+                    <li>Ceri ajutorul unui adult cand ceva pare ciudat</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="ls-card ls-card--accent">
+            <h3 class="ls-card__title">&#11088; Provocare bonus: Manifestul meu digital!</h3>
+            <div class="ls-theory">
+                <p>Scrie pe o foaie sau deseneaza <strong>5 reguli</strong> pe care vrei sa le respecti cand folosesti calculatorul sau internetul. Iata cateva idei:</p>
+                <ul style="padding-left:18px;margin:8px 0 0;">
+                    <li>&#128272; O regula despre cum imi fac parola</li>
+                    <li>&#128683; O regula despre link-uri si descarcari</li>
+                    <li>&#128450; O regula despre cum imi organizez fisierele</li>
+                    <li>&#128274; O regula despre datele mele personale</li>
+                    <li>&#129489; O regula despre cum cer ajutorul unui adult</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="ls-fun-fact">
+            <span>&#128161;</span>
+            <span><strong>Test final:</strong> Spune cu voce tare care este diferenta dintre hardware si software, ce face browserul si ce e cloud-ul. Daca poti explica simplu, ai inteles perfect!</span>
+        </div>
+    </div>
+</section>
+
+                </div>{# /dl-steps #}
+            </div>{# /lesson-body #}
+        </div>{# /lesson-flow #}
+    </div>{# /panel-steps #}
+</div>{# /lesson #}
 {% endblock %}
-
-

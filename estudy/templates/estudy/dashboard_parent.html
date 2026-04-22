@@ -1,80 +1,92 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 
-{% block title %}Dashboard părinte · UnITex{% endblock %}
+{% block title %}Dashboard parinte · UnITex{% endblock %}
 
 {% block page_content %}
-<section class="mb-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-white">
-            <h1 class="h4 mb-0">Progresul copiilor tăi</h1>
-        </div>
-        <div class="card-body">
-            {% if children %}
-                <div class="row g-4">
-                    {% for entry in children %}
-                        <div class="col-md-6">
-                            <div class="p-3 border rounded-3 h-100">
-                                <h2 class="h6">{{ entry.child.get_full_name|default:entry.child.username }}</h2>
-                                <p class="text-muted small">{{ entry.badges.count }} insigne câștigate</p>
-                                <div class="mb-2">
-                                    <div class="progress" style="height: 10px;">
-                                        <div class="progress-bar bg-success" style="width: {{ entry.progress.percent }}%;"></div>
-                                    </div>
-                                    <span class="small text-muted">{{ entry.progress.completed }} lecții finalizate din {{ entry.progress.total }}</span>
-                                </div>
-                                <div class="d-flex flex-wrap gap-2">
-                                    {% for badge in entry.badges.highlighted %}
-                                        <span class="badge" style="background: {{ badge.badge.color }}33; color: {{ badge.badge.color }};">
-                                            <i class="fa {{ badge.badge.icon }} me-1"></i>{{ badge.badge.name }}
-                                        </span>
-                                    {% empty %}
-                                        <span class="text-muted small">Încă nu există insigne evidențiate.</span>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p class="text-muted mb-0">Nu există legături părinte-copil definite. Contactează administratorul pentru a adăuga copilul.</p>
-            {% endif %}
+<section class="hub-section">
+    <div class="hub-card" style="margin-bottom:1rem;">
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <div style="font-size:48px;">&#128106;</div>
+            <div>
+                <h1 style="font-size:22px;font-weight:900;margin:0 0 4px;">Progresul copiilor tai</h1>
+                <p style="font-size:14px;color:var(--color-text-muted,#64748B);font-weight:500;margin:0;">
+                    Urmareste activitatea si realizarile copiilor pe platforma UNITEX.
+                </p>
+            </div>
         </div>
     </div>
+
+    {% if children %}
+    <div class="hub-child-grid">
+        {% for entry in children %}
+        <div class="hub-child-card">
+            <div class="hub-child-card__header">
+                <div class="hub-child-card__avatar">&#129489;</div>
+                <div>
+                    <div class="hub-child-card__name">{{ entry.child.get_full_name|default:entry.child.username }}</div>
+                    <div class="hub-child-card__badges-count">&#127941; {{ entry.badges.count }} insigne castigate</div>
+                </div>
+            </div>
+            <div class="hub-child-card__progress">
+                <div class="hub-child-card__bar">
+                    <div class="hub-child-card__bar-fill" style="width: {{ entry.progress.percent }}%;"></div>
+                </div>
+                <span class="hub-child-card__bar-label">{{ entry.progress.completed }}/{{ entry.progress.total }} lectii</span>
+            </div>
+            <div class="hub-child-card__badges">
+                {% for badge in entry.badges.highlighted %}
+                <span class="hub-child-badge" style="background: {{ badge.badge.color }}22; color: {{ badge.badge.color }};">
+                    <i class="fa {{ badge.badge.icon }}"></i> {{ badge.badge.name }}
+                </span>
+                {% empty %}
+                <span style="font-size:12px;color:var(--color-text-muted,#64748B);font-weight:500;">Inca nu exista insigne evidentiate.</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="hub-card">
+        <p class="hub-card__empty">Nu exista legaturi parinte-copil definite. Contacteaza administratorul pentru a adauga copilul.</p>
+    </div>
+    {% endif %}
 </section>
 
-<section class="row g-4">
-    <div class="col-lg-6">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white">
-                <h2 class="h5 mb-0">Notificări recente</h2>
+<section class="hub-section">
+    <div class="hub-row" style="grid-template-columns: 1fr 1fr;">
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#128276; Notificari recente</h2>
             </div>
-            <div class="card-body">
-                {% if notifications %}
-                    <ul class="list-group list-group-flush">
-                        {% for notification in notifications %}
-                            <li class="list-group-item">
-                                <div class="fw-semibold">{{ notification.title }}</div>
-                                <p class="small text-muted mb-1">{{ notification.message }}</p>
-                                <span class="small text-muted">{{ notification.created_at|date:"d MMM, HH:mm" }}</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-muted mb-0">Nu există notificări noi.</p>
-                {% endif %}
+            {% if notifications %}
+            <div class="hub-notif-list">
+                {% for notification in notifications %}
+                <div class="hub-notif">
+                    <div class="hub-notif__icon">&#128276;</div>
+                    <div class="hub-notif__body">
+                        <div class="hub-notif__title">{{ notification.title }}</div>
+                        <p class="hub-notif__msg">{{ notification.message }}</p>
+                        <span class="hub-notif__time">{{ notification.created_at|date:"d MMM, HH:mm" }}</span>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
+            {% else %}
+            <p class="hub-card__empty">Nu exista notificari noi.</p>
+            {% endif %}
         </div>
-    </div>
-    <div class="col-lg-6">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white">
-                <h2 class="h5 mb-0">Recomandări pentru familie</h2>
+
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#128161; Recomandari pentru familie</h2>
             </div>
-            <div class="card-body">
-                <p class="text-muted mb-0">Folosirea platformei 3 zile la rând deblochează notificări către părinți și insigne speciale precum „Family Hero”.</p>
+            <div style="text-align:center;padding:1rem 0;">
+                <div style="font-size:48px;margin-bottom:8px;">&#128170;</div>
+                <p style="font-size:14px;font-weight:600;color:var(--color-text-muted,#64748B);margin:0;line-height:1.6;">
+                    Folosirea platformei 3 zile la rand deblocheaza notificari catre parinti si insigne speciale precum „Family Hero".
+                </p>
             </div>
         </div>
     </div>
 </section>
 {% endblock %}
-

@@ -21,6 +21,57 @@
 
 {% block content %}
 <article class="landing" data-page="landing">
+    <svg aria-hidden="true" focusable="false" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden">
+        <defs>
+            <symbol id="unitex-icon-account" viewBox="0 0 48 48">
+                <circle cx="24" cy="16" r="7" fill="none" stroke="currentColor" stroke-width="3.2"></circle>
+                <path d="M12 36c2.6-6.5 8-10 12-10s9.4 3.5 12 10" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"></path>
+                <path d="M34 13h6M37 10v6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"></path>
+            </symbol>
+            <symbol id="unitex-icon-curriculum" viewBox="0 0 48 48">
+                <rect x="10" y="9" width="28" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="3.2"></rect>
+                <path d="M17 18h14M17 24h14M17 30h9" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"></path>
+                <path d="M31 14l2 2 4-4" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </symbol>
+            <symbol id="unitex-icon-learning" viewBox="0 0 48 48">
+                <path d="M10 18l14-7 14 7-14 7-14-7z" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"></path>
+                <path d="M16 22v8c0 2.8 4.1 5 8 5s8-2.2 8-5v-8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"></path>
+                <path d="M38 19v10" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"></path>
+            </symbol>
+            <symbol id="unitex-icon-digital" viewBox="0 0 48 48">
+                <rect x="11" y="10" width="26" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="3.2"></rect>
+                <path d="M18 38h12M21 30v8M27 30v8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"></path>
+                <path d="M17 19h14" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"></path>
+            </symbol>
+            <symbol id="unitex-icon-python" viewBox="0 0 48 48">
+                <path d="M17 12h8c3.3 0 6 2.7 6 6v5H19c-2.8 0-5 2.2-5 5v2c0 3.3 2.7 6 6 6h8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M31 36h-8c-3.3 0-6-2.7-6-6v-5h12c2.8 0 5-2.2 5-5v-2c0-3.3-2.7-6-6-6h-8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <circle cx="21" cy="17" r="1.8" fill="currentColor"></circle>
+                <circle cx="27" cy="31" r="1.8" fill="currentColor"></circle>
+            </symbol>
+            <symbol id="unitex-icon-web" viewBox="0 0 48 48">
+                <rect x="9" y="11" width="30" height="24" rx="5" fill="none" stroke="currentColor" stroke-width="3.2"></rect>
+                <path d="M9 18h30" fill="none" stroke="currentColor" stroke-width="3.2"></path>
+                <path d="M19 25l-4 3 4 3M29 25l4 3-4 3" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </symbol>
+            <symbol id="unitex-icon-logic" viewBox="0 0 48 48">
+                <path d="M15 16a5 5 0 1 1 5 5v6M33 16a5 5 0 1 0-5 5v6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"></path>
+                <path d="M20 27h8M24 27v8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"></path>
+                <circle cx="24" cy="38" r="2.5" fill="currentColor"></circle>
+            </symbol>
+            <symbol id="unitex-icon-maker" viewBox="0 0 48 48">
+                <path d="M19 10h10v5l4 4v5c0 5-4 9-9 9s-9-4-9-9v-5l4-4v-5z" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"></path>
+                <path d="M20 24h8M24 20v8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"></path>
+                <path d="M17 37h14" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"></path>
+            </symbol>
+            <symbol id="unitex-icon-gaming" viewBox="0 0 48 48">
+                <path d="M16 18h16c4.4 0 8 3.6 8 8v2c0 3.3-2.7 6-6 6h-2l-4-4H20l-4 4h-2c-3.3 0-6-2.7-6-6v-2c0-4.4 3.6-8 8-8z" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"></path>
+                <path d="M18 25h6M21 22v6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"></path>
+                <circle cx="30" cy="24" r="1.8" fill="currentColor"></circle>
+                <circle cx="34" cy="28" r="1.8" fill="currentColor"></circle>
+            </symbol>
+        </defs>
+    </svg>
     <section class="hero" id="hero" data-section="hero" data-layer="hero">
         <div class="hero__background" aria-hidden="true" data-layer="hero-bg">
             <span class="hero__glow hero__glow--top" data-layer="bg-glow-1"></span>

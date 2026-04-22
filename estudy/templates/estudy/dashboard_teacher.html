@@ -1,151 +1,128 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Dashboard profesor · UnITex{% endblock %}
 
 {% block page_content %}
-<section class="row g-4 mb-4">
-    <div class="col-lg-4">
-        <div class="card shadow-sm h-100">
-            <div class="card-body">
-                <h2 class="h5 mb-3">Bine ai revenit, {{ profile.display_or_username }}</h2>
-                <p class="text-muted small">Monitorizează performanța lecțiilor și gestionează comunitatea.</p>
-                <div class="mt-4">
-                    <span class="d-block text-uppercase small text-muted">Lecții active</span>
-                    <span class="fs-3 fw-bold">{{ analytics_overview.total_lessons }}</span>
+<section class="hub-section">
+    <div class="hub-card" style="margin-bottom:1rem;">
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:16px;">
+                <div style="font-size:48px;">&#128075;</div>
+                <div>
+                    <h1 style="font-size:22px;font-weight:900;margin:0 0 4px;">Bine ai revenit, {{ profile.display_or_username }}</h1>
+                    <p style="font-size:14px;color:var(--color-text-muted,#64748B);font-weight:500;margin:0;">
+                        Monitorizeaza performanta lectiilor si gestioneaza comunitatea.
+                    </p>
                 </div>
             </div>
+            <a class="hub-btn hub-btn--primary" href="{% url 'estudy:classrooms' %}">&#127979; Clasele mele</a>
         </div>
     </div>
-    <div class="col-lg-8">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white">
-                <h2 class="h5 mb-0">Analiza performanței lecțiilor</h2>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <div class="text-center">
-                            <div class="fs-4 fw-bold text-primary">{{ analytics_overview.total_views }}</div>
-                            <div class="small text-muted">Vizualizări totale</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="text-center">
-                            <div class="fs-4 fw-bold text-success">{{ analytics_overview.completion_rate|floatformat:1 }}%</div>
-                            <div class="small text-muted">Rată completare</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="text-center">
-                            <div class="fs-4 fw-bold text-warning">{{ analytics_overview.avg_rating }}</div>
-                            <div class="small text-muted">Rating mediu</div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="text-center">
-                            <div class="fs-4 fw-bold text-info">{{ analytics_overview.total_comments }}</div>
-                            <div class="small text-muted">Comentarii</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+    <div class="hub-stats-grid">
+        <div class="hub-stat">
+            <div class="hub-stat__value hub-stat__value--purple">{{ analytics_overview.total_lessons }}</div>
+            <div class="hub-stat__label">Lectii active</div>
+        </div>
+        <div class="hub-stat">
+            <div class="hub-stat__value hub-stat__value--blue">{{ analytics_overview.total_views }}</div>
+            <div class="hub-stat__label">Vizualizari</div>
+        </div>
+        <div class="hub-stat">
+            <div class="hub-stat__value hub-stat__value--green">{{ analytics_overview.completion_rate|floatformat:1 }}%</div>
+            <div class="hub-stat__label">Rata completare</div>
+        </div>
+        <div class="hub-stat">
+            <div class="hub-stat__value hub-stat__value--amber">{{ analytics_overview.avg_rating }}</div>
+            <div class="hub-stat__label">Rating mediu</div>
+        </div>
+        <div class="hub-stat">
+            <div class="hub-stat__value hub-stat__value--blue">{{ analytics_overview.total_comments }}</div>
+            <div class="hub-stat__label">Comentarii</div>
         </div>
     </div>
 </section>
 
-<section class="row g-4 mb-4">
-    <div class="col-lg-6">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white">
-                <h2 class="h5 mb-0">Top lecții performante</h2>
+<section class="hub-section">
+    <div class="hub-row" style="grid-template-columns: 1fr 1fr;">
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#127942; Top lectii performante</h2>
             </div>
-            <div class="card-body">
-                {% if top_lessons %}
-                    <div class="list-group list-group-flush">
-                        {% for item in top_lessons %}
-                            <div class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">{{ item.lesson.title }}</h6>
-                                        <small class="text-muted">{{ item.total_views }} vizualizări</small>
-                                    </div>
-                                    <div class="text-end">
-                                        <div class="fw-bold text-success">{{ item.completion_rate|floatformat:1 }}%</div>
-                                        <small class="text-muted">completare</small>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
+            {% if top_lessons %}
+            <div class="hub-lesson-list">
+                {% for item in top_lessons %}
+                <div class="hub-lesson-item">
+                    <div class="hub-lesson-item__info">
+                        <div class="hub-lesson-item__title">{{ item.lesson.title }}</div>
+                        <div class="hub-lesson-item__meta">{{ item.total_views }} vizualizari</div>
                     </div>
-                {% else %}
-                    <p class="text-muted mb-0">Nu sunt date disponibile încă.</p>
-                {% endif %}
+                    <div class="hub-lesson-item__stat">
+                        <div class="hub-lesson-item__stat-value" style="color:#10B981;">{{ item.completion_rate|floatformat:1 }}%</div>
+                        <div class="hub-lesson-item__stat-label">completare</div>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
+            {% else %}
+            <p class="hub-card__empty">Nu sunt date disponibile inca.</p>
+            {% endif %}
         </div>
-    </div>
-    <div class="col-lg-6">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white">
-                <h2 class="h5 mb-0">Comentarii recente</h2>
+
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#128172; Comentarii recente</h2>
             </div>
-            <div class="card-body">
-                {% if recent_comments %}
-                    <div class="list-group list-group-flush">
-                        {% for comment in recent_comments %}
-                            <div class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="flex-grow-1">
-                                        <div class="fw-semibold">{{ comment.user.username }}</div>
-                                        <small class="text-muted">{{ comment.lesson.title }}</small>
-                                        <p class="mb-1 small">{{ comment.content|truncatechars:100 }}</p>
-                                    </div>
-                                    <small class="text-muted">{{ comment.created_at|date:"d.m H:i" }}</small>
-                                </div>
+            {% if recent_comments %}
+            <div class="hub-comment-list">
+                {% for comment in recent_comments %}
+                <div class="hub-comment">
+                    <div class="hub-comment__avatar">&#129489;</div>
+                    <div class="hub-comment__body">
+                        <div class="hub-comment__header">
+                            <div>
+                                <span class="hub-comment__author">{{ comment.user.username }}</span>
+                                <span class="hub-comment__lesson"> · {{ comment.lesson.title }}</span>
                             </div>
-                        {% endfor %}
+                            <span class="hub-comment__time">{{ comment.created_at|date:"d.m H:i" }}</span>
+                        </div>
+                        <p class="hub-comment__text">{{ comment.content|truncatechars:100 }}</p>
                     </div>
-                {% else %}
-                    <p class="text-muted mb-0">Nu sunt comentarii noi.</p>
-                {% endif %}
+                </div>
+                {% endfor %}
             </div>
+            {% else %}
+            <p class="hub-card__empty">Nu sunt comentarii noi.</p>
+            {% endif %}
         </div>
     </div>
 </section>
 
-<section class="row g-4">
-    <div class="col-12">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white">
-                <h2 class="h5 mb-0">Rating-uri recente</h2>
-            </div>
-            <div class="card-body">
-                {% if recent_ratings %}
-                    <div class="row g-3">
-                        {% for rating in recent_ratings %}
-                            <div class="col-md-6 col-lg-4">
-                                <div class="border rounded p-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <h6 class="mb-0">{{ rating.lesson.title|truncatechars:30 }}</h6>
-                                        <div class="text-warning">
-                                            {% for i in "12345"|make_list %}
-                                                <i class="fa{% if forloop.counter <= rating.rating %}-solid{% else %}-regular{% endif %} fa-star"></i>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                    <div class="small text-muted">{{ rating.user.username }}</div>
-                                    {% if rating.review %}
-                                        <p class="mb-0 small mt-2">{{ rating.review|truncatechars:80 }}</p>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="text-muted mb-0">Nu sunt rating-uri noi.</p>
+<section class="hub-section">
+    <div class="hub-card">
+        <div class="hub-card__header">
+            <h2>&#11088; Rating-uri recente</h2>
+        </div>
+        {% if recent_ratings %}
+        <div class="hub-rating-grid">
+            {% for rating in recent_ratings %}
+            <div class="hub-rating">
+                <div class="hub-rating__header">
+                    <span class="hub-rating__lesson">{{ rating.lesson.title|truncatechars:30 }}</span>
+                    <span class="hub-rating__stars">
+                        {% for i in "12345"|make_list %}{% if forloop.counter <= rating.rating %}&#11088;{% else %}&#9734;{% endif %}{% endfor %}
+                    </span>
+                </div>
+                <div class="hub-rating__user">&#129489; {{ rating.user.username }}</div>
+                {% if rating.review %}
+                <p class="hub-rating__review">{{ rating.review|truncatechars:80 }}</p>
                 {% endif %}
             </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <p class="hub-card__empty">Nu sunt rating-uri noi.</p>
+        {% endif %}
     </div>
 </section>
 {% endblock %}
-

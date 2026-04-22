@@ -1,62 +1,62 @@
 {% extends 'base.html' %}
 
-{% block title %}Panoramă Estudy · UnITex{% endblock %}
+{% block title %}Panorama Estudy · UnITex{% endblock %}
 
 {% block page_content %}
-<section class="rounded-4 bg-white shadow-sm p-4 p-lg-5 mb-5">
-    <div class="row g-4 align-items-center">
-        <div class="col-lg-7">
-            <h1 class="display-6 fw-bold">Progresul tău în Estudy</h1>
-            <p class="lead text-muted">Vizualizează materia disponibilă și planifică următoarele lecții pentru a-ți menține ritmul.</p>
-            <div class="mt-4">
-                <span class="d-block text-uppercase small text-muted">Progres total</span>
-                <div class="progress mt-2" style="height: 14px;">
-                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress_percent }}%;" aria-valuenow="{{ progress_percent }}" aria-valuemin="0" aria-valuemax="100">{{ progress_percent }}%</div>
+<section class="hub-section">
+    <div class="hub-card" style="margin-bottom:1rem;">
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:260px;">
+                <h1 style="font-size:22px;font-weight:900;margin:0 0 6px;">&#128202; Progresul tau in Estudy</h1>
+                <p style="font-size:14px;color:var(--color-text-muted,#64748B);font-weight:500;margin:0 0 14px;line-height:1.6;">
+                    Vizualizeaza materia disponibila si planifica urmatoarele lectii.
+                </p>
+                <div>
+                    <span style="font-size:12px;font-weight:700;color:var(--color-text-muted,#64748B);text-transform:uppercase;letter-spacing:0.04em;">Progres total</span>
+                    <div class="hub-zone__progress" style="margin-top:6px;">
+                        <div class="hub-zone__bar" style="height:12px;">
+                            <div class="hub-zone__bar-fill" style="width: {{ progress_percent }}%;"></div>
+                        </div>
+                        <span class="hub-zone__bar-label">{{ progress_percent }}%</span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-5">
-            <div class="bg-primary text-white rounded-4 p-4 h-100 d-flex flex-column justify-content-center">
-                <p class="mb-2">Ține cont:</p>
-                <ul class="mb-0 small opacity-75">
-                    <li>Finalizează lecțiile din calendar pentru a debloca noi premii.</li>
-                    <li>Revizuiește notițele după fiecare quiz.</li>
-                    <li>Revenirea periodică consolidează informațiile.</li>
+            <div style="background:linear-gradient(135deg,#7C3AED,#6D28D9);color:#FFF;border-radius:18px;padding:20px 24px;max-width:320px;">
+                <p style="font-weight:800;font-size:14px;margin:0 0 8px;">&#128161; Tine cont:</p>
+                <ul style="margin:0;padding-left:18px;font-size:13px;font-weight:500;opacity:0.85;line-height:1.7;">
+                    <li>Finalizeaza lectiile din calendar pentru a debloca noi premii.</li>
+                    <li>Revizuieste notitele dupa fiecare quiz.</li>
+                    <li>Revenirea periodica consolideaza informatiile.</li>
                 </ul>
             </div>
         </div>
     </div>
 </section>
 
-<section class="mb-5">
-    <h2 class="h4 mb-3">Materii disponibile</h2>
-    <div class="row g-4">
+<section class="hub-section">
+    <h2 class="hub-section-title">&#128218; Materii disponibile</h2>
+    <div class="hub-project-grid">
         {% for subject in subjects %}
-            <div class="col-md-6 col-xl-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h3 class="h5 mb-0">{{ subject.name }}</h3>
-                            <span class="badge bg-primary-subtle text-primary">{{ subject.lessons.count }} lecții</span>
-                        </div>
-                        <p class="text-muted small">{{ subject.description|default:"Nu există o descriere pentru acest subiect încă." }}</p>
-                        <ul class="list-unstyled small text-muted">
-                            {% for lesson in subject.lessons.all %}
-                                <li><i class="fa-regular fa-circle-dot me-2"></i>{{ lesson.title }}</li>
-                            {% empty %}
-                                <li>Nu există lecții încă.</li>
-                            {% endfor %}
-                        </ul>
-                        <a href="{% url 'estudy:lessons_list' %}?subject={{ subject.id }}" class="btn btn-sm btn-outline-primary">Vezi lecțiile</a>
-                    </div>
-                </div>
+        <div class="hub-project-card">
+            <div class="hub-project-card__top">
+                <h3 class="hub-project-card__title">{{ subject.name }}</h3>
+                <span class="hub-project-card__level">{{ subject.lessons.count }} lectii</span>
             </div>
+            <p class="hub-project-card__desc">{{ subject.description|default:"Nu exista o descriere pentru acest subiect inca." }}</p>
+            <div style="font-size:13px;color:var(--color-text-muted,#64748B);font-weight:500;">
+                {% for lesson in subject.lessons.all %}
+                <div style="padding:2px 0;">&#128214; {{ lesson.title }}</div>
+                {% empty %}
+                <div>Nu exista lectii inca.</div>
+                {% endfor %}
+            </div>
+            <div class="hub-project-card__bottom">
+                <a class="hub-btn hub-btn--small" href="{% url 'estudy:lessons_list' %}?subject={{ subject.id }}">&#128218; Vezi lectiile</a>
+            </div>
+        </div>
         {% empty %}
-            <div class="col-12">
-                <p class="text-muted">Nu există materii înregistrate momentan.</p>
-            </div>
+        <p class="hub-card__empty">Nu exista materii inregistrate momentan.</p>
         {% endfor %}
     </div>
 </section>
 {% endblock %}
-

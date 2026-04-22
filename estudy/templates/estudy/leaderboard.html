@@ -1,66 +1,60 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 
-
-
-{% block workspace_title %}Hall of Fame UNITEX{% endblock %}
+{% block workspace_title %}&#127942; Hall of Fame UNITEX{% endblock %}
 {% block workspace_subtitle %}
-    Fii atent la topuri și depășește colegii strângând XP din lecții, misiuni și proiecte creative.
+    Fii atent la topuri si depaseste colegii strangand XP din lectii, misiuni si proiecte creative.
 {% endblock %}
 {% block workspace_actions %}
 <div class="workspace-actions">
-    <a class="btn btn--primary" href="#leaderboard"><i class="fa-solid fa-trophy"></i> Vezi podiumul</a>
-    <a class="btn btn--ghost" href="{% url 'estudy:missions' %}"><i class="fa-solid fa-rocket"></i> Câștigă mai mult XP</a>
+    <a class="btn btn--primary" href="#leaderboard">&#127942; Vezi podiumul</a>
+    <a class="btn btn--ghost" href="{% url 'estudy:missions' %}">&#128640; Castiga mai mult XP</a>
 </div>
 {% endblock %}
 
 {% block page_content %}
-<section class="row g-4 align-items-center mb-4" id="leaderboard">
-    <div class="col-lg-6">
-        <h1 class="h4 mb-2">Cei mai activi exploratori</h1>
-        <p class="text-muted">Fiecare lecție finalizată adaugă puncte în clasament. Bonusurile și insignele pot oferi surprize suplimentare!</p>
-    </div>
-    <div class="col-lg-6">
-        <form method="get" class="d-flex gap-2 justify-content-lg-end">
-            <select class="form-select w-auto" name="classroom">
-                <option value="">Clasament global</option>
-                {% for membership in classrooms %}
-                    <option value="{{ membership.classroom.id }}" {% if selected_classroom and membership.classroom.id == selected_classroom.id %}selected{% endif %}>{{ membership.classroom.name }}</option>
-                {% endfor %}
-            </select>
-            <button class="btn btn-primary" type="submit">Filtrează</button>
-        </form>
-    </div>
-</section>
-
-<section class="card shadow-sm">
-    <div class="card-body p-0">
-        {% if leaderboard %}
-            <div class="table-responsive">
-                <table class="table table-striped align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>Utilizator</th>
-                            <th>Puncte</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for entry in leaderboard %}
-                            <tr>
-                                <td><span class="badge bg-primary">#{{ entry.position }}</span></td>
-                                <td>{{ entry.username }}</td>
-                                <td><i class="fa-solid fa-star text-warning me-1"></i>{{ entry.score }}</td>
-                            </tr>
+<section class="hub-section" id="leaderboard">
+    <div class="hub-row" style="grid-template-columns: 1fr 300px;">
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#127775; Cei mai activi exploratori</h2>
+                <form method="get" class="hub-lb-filter">
+                    <select class="hub-select" name="classroom" onchange="this.form.submit()">
+                        <option value="">&#127760; Global</option>
+                        {% for membership in classrooms %}
+                        <option value="{{ membership.classroom.id }}" {% if selected_classroom and membership.classroom.id == selected_classroom.id %}selected{% endif %}>{{ membership.classroom.name }}</option>
                         {% endfor %}
-                    </tbody>
-                </table>
+                    </select>
+                </form>
             </div>
-        {% else %}
-            <div class="p-4 text-center text-muted">Nu există date pentru clasamentul selectat.</div>
-        {% endif %}
+            {% if leaderboard %}
+            <div class="hub-lb-list">
+                {% for entry in leaderboard %}
+                <div class="hub-lb-entry{% if entry.position <= 3 %} hub-lb-entry--top{% endif %}{% if entry.position == 1 %} hub-lb-entry--gold{% elif entry.position == 2 %} hub-lb-entry--silver{% elif entry.position == 3 %} hub-lb-entry--bronze{% endif %}">
+                    <span class="hub-lb-entry__rank">
+                        {% if entry.position == 1 %}&#129351;{% elif entry.position == 2 %}&#129352;{% elif entry.position == 3 %}&#129353;{% else %}<span class="hub-lb-entry__num">#{{ entry.position }}</span>{% endif %}
+                    </span>
+                    <span class="hub-lb-entry__avatar">&#129489;</span>
+                    <span class="hub-lb-entry__name">{{ entry.username }}</span>
+                    <span class="hub-lb-entry__score">&#11088; {{ entry.score }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="hub-card__empty">Nu exista date pentru clasamentul selectat.</p>
+            {% endif %}
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+            <div class="hub-card" style="text-align:center;">
+                <div style="font-size:56px;margin-bottom:8px;">&#127942;</div>
+                <h3 style="font-size:16px;font-weight:800;margin:0 0 4px;">Castiga XP</h3>
+                <p class="hub-card__empty">Completeaza lectii, misiuni si provocari zilnice pentru a urca in clasament!</p>
+            </div>
+            <div class="hub-card">
+                <div class="hub-card__header"><h2>&#128293; Streak-uri active</h2></div>
+                <p class="hub-card__empty" style="font-size:13px;">Elevii cu streak activ apar cu un bonus special in clasament.</p>
+            </div>
+        </div>
     </div>
 </section>
 {% endblock %}
-
-
-

@@ -1,62 +1,62 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}{{ thread.title }} · Comunitate{% endblock %}
 
 {% block page_content %}
-<section class="mb-4">
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h1 class="h4">{{ thread.title }}</h1>
-            <p class="text-muted small">Creat de {{ thread.author.get_short_name|default:thread.author.username }} · {{ thread.created_at|date:"d MMM, HH:mm" }}</p>
-            <p>{{ thread.body }}</p>
-            {% if thread.tags %}
-                <div class="d-flex flex-wrap gap-2">
-                    {% for tag in thread.tags %}
-                        <span class="badge bg-primary-subtle text-primary">#{{ tag }}</span>
-                    {% endfor %}
-                </div>
-            {% endif %}
+<section class="hub-section">
+    <div class="hub-card hub-card--thread">
+        <a class="hub-back-link" href="{% url 'estudy:community' %}">&#8592; Inapoi la comunitate</a>
+        <h1 class="hub-thread-title">&#128172; {{ thread.title }}</h1>
+        <div class="hub-thread-meta">
+            <span>&#129489; {{ thread.author.get_short_name|default:thread.author.username }}</span>
+            <span>&#128197; {{ thread.created_at|date:"d MMM, HH:mm" }}</span>
         </div>
-    </div>
-</section>
-
-<section class="mb-4">
-    <h2 class="h5">Răspunsuri</h2>
-    {% if replies %}
-        <div class="vstack gap-3">
-            {% for reply in replies %}
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <span class="fw-semibold">{{ reply.author.get_short_name|default:reply.author.username }}</span>
-                            <span class="small text-muted">{{ reply.created_at|date:"d MMM, HH:mm" }}</span>
-                        </div>
-                        <p class="mt-2 mb-0">{{ reply.body }}</p>
-                    </div>
-                </div>
+        <div class="hub-thread-body">{{ thread.body }}</div>
+        {% if thread.tags %}
+        <div class="hub-thread__tags" style="margin-top:12px;">
+            {% for tag in thread.tags %}
+            <span class="hub-tag">#{{ tag }}</span>
             {% endfor %}
         </div>
-    {% else %}
-        <p class="text-muted">Nu există răspunsuri încă. Fii primul!</p>
-    {% endif %}
-</section>
+        {% endif %}
+    </div>
 
-<section class="mb-5">
-    <div class="card shadow-sm">
-        <div class="card-header bg-white">
-            <h2 class="h6 mb-0">Scrie un răspuns</h2>
+    <div class="hub-card" style="margin-top:1rem;">
+        <div class="hub-card__header">
+            <h2>&#128173; Raspunsuri</h2>
         </div>
-        <div class="card-body">
-            <form method="post" class="vstack gap-3">
-                {% csrf_token %}
-                {{ form.non_field_errors }}
-                <div>
-                    {{ form.body }}
+        {% if replies %}
+        <div class="hub-reply-list">
+            {% for reply in replies %}
+            <div class="hub-reply">
+                <div class="hub-reply__avatar">&#129489;</div>
+                <div class="hub-reply__body">
+                    <div class="hub-reply__header">
+                        <span class="hub-reply__author">{{ reply.author.get_short_name|default:reply.author.username }}</span>
+                        <span class="hub-reply__time">{{ reply.created_at|date:"d MMM, HH:mm" }}</span>
+                    </div>
+                    <p class="hub-reply__text">{{ reply.body }}</p>
                 </div>
-                <button class="btn btn-primary" type="submit">Trimite</button>
-            </form>
+            </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <p class="hub-card__empty">Nu exista raspunsuri inca. Fii primul!</p>
+        {% endif %}
+    </div>
+
+    <div class="hub-card" style="margin-top:1rem;">
+        <div class="hub-card__header">
+            <h2>&#9997;&#65039; Scrie un raspuns</h2>
+        </div>
+        <form method="post" class="hub-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="hub-form__group">
+                {{ form.body }}
+            </div>
+            <button class="hub-btn hub-btn--primary" type="submit">&#128172; Trimite</button>
+        </form>
     </div>
 </section>
 {% endblock %}
-

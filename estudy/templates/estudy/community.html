@@ -1,79 +1,72 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 
-
-
-{% block workspace_title %}Comunitatea UNITEX{% endblock %}
+{% block workspace_title %}&#128172; Comunitatea UNITEX{% endblock %}
 {% block workspace_subtitle %}
-    Povestește cu colegii, împărtășește proiecte și cere ajutor atunci când ai nevoie de un boost de inspirație.
+    Povesteste cu colegii, impartaseste proiecte si cere ajutor atunci cand ai nevoie de un boost de inspiratie.
 {% endblock %}
 {% block workspace_actions %}
 <div class="workspace-actions">
-    <a class="btn btn--primary" href="#community-feed"><i class="fa-solid fa-comments"></i> Deschide forumul</a>
-    <a class="btn btn--ghost" href="{% url 'estudy:projects' %}"><i class="fa-solid fa-lightbulb"></i> Inspira-te din proiecte</a>
+    <a class="btn btn--primary" href="#new-thread">&#9997;&#65039; Scrie o postare</a>
+    <a class="btn btn--ghost" href="{% url 'estudy:projects' %}">&#128161; Inspira-te din proiecte</a>
 </div>
 {% endblock %}
 
 {% block page_content %}
-<section class="row g-4" id="community-feed">
-    <div class="col-lg-7">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white">
-                <h1 class="h5 mb-0">Discuții recente</h1>
+<section class="hub-section" id="community-feed">
+    <div class="hub-row" style="grid-template-columns: 1fr 380px;">
+
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#128172; Discutii recente</h2>
             </div>
-            <div class="card-body">
-                {% if threads %}
-                    <ul class="list-group list-group-flush">
-                        {% for thread in threads %}
-                            <li class="list-group-item">
-                                <a class="text-decoration-none" href="{% url 'estudy:community_thread' thread.pk %}">
-                                    <div class="fw-semibold">{{ thread.title }}</div>
-                                    <div class="small text-muted">Inițiat de {{ thread.author.get_short_name|default:thread.author.username }} · {{ thread.created_at|date:"d MMM" }}</div>
-                                    {% if thread.tags %}
-                                        <div class="d-flex flex-wrap gap-2 mt-2">
-                                            {% for tag in thread.tags %}
-                                                <span class="badge bg-primary-subtle text-primary">#{{ tag }}</span>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-muted mb-0">Încă nu există discuții. Deschide una chiar acum!</p>
-                {% endif %}
+            {% if threads %}
+            <div class="hub-thread-list">
+                {% for thread in threads %}
+                <a class="hub-thread" href="{% url 'estudy:community_thread' thread.pk %}">
+                    <div class="hub-thread__avatar">&#129489;</div>
+                    <div class="hub-thread__body">
+                        <div class="hub-thread__title">{{ thread.title }}</div>
+                        <div class="hub-thread__meta">{{ thread.author.get_short_name|default:thread.author.username }} · {{ thread.created_at|date:"d MMM" }}</div>
+                        {% if thread.tags %}
+                        <div class="hub-thread__tags">
+                            {% for tag in thread.tags %}
+                            <span class="hub-tag">#{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <span class="hub-thread__arrow">&#8594;</span>
+                </a>
+                {% endfor %}
             </div>
+            {% else %}
+            <p class="hub-card__empty">Inca nu exista discutii. Fii primul care porneste o conversatie!</p>
+            {% endif %}
         </div>
-    </div>
-    <div class="col-lg-5">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white">
-                <h2 class="h5 mb-0">Pornește o conversație</h2>
+
+        <div class="hub-card" id="new-thread">
+            <div class="hub-card__header">
+                <h2>&#9997;&#65039; Porneste o conversatie</h2>
             </div>
-            <div class="card-body">
-                <form method="post" class="vstack gap-3">
-                    {% csrf_token %}
-                    {{ form.non_field_errors }}
-                    <div>
-                        <label class="form-label" for="id_title">Titlu</label>
-                        {{ form.title }}
-                    </div>
-                    <div>
-                        <label class="form-label" for="id_body">Mesaj</label>
-                        {{ form.body }}
-                    </div>
-                    <div>
-                        <label class="form-label" for="id_tags">Tag-uri</label>
-                        {{ form.tags }}
-                        <div class="form-text">Separă tag-urile cu virgulă</div>
-                    </div>
-                    <button class="btn btn-primary" type="submit">Publică</button>
-                </form>
-            </div>
+            <form method="post" class="hub-form">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="hub-form__group">
+                    <label class="hub-form__label" for="id_title">Titlu</label>
+                    {{ form.title }}
+                </div>
+                <div class="hub-form__group">
+                    <label class="hub-form__label" for="id_body">Mesaj</label>
+                    {{ form.body }}
+                </div>
+                <div class="hub-form__group">
+                    <label class="hub-form__label" for="id_tags">Tag-uri <small>(separa cu virgula)</small></label>
+                    {{ form.tags }}
+                </div>
+                <button class="hub-btn hub-btn--primary" type="submit">&#128172; Publica</button>
+            </form>
         </div>
+
     </div>
 </section>
 {% endblock %}
-
-
-
