@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Robot Lab{% endblock %}
+
+{% block workspace_title %}Robot Lab: misiuni Python{% endblock %}
+{% block workspace_subtitle %}
+Invata Python controland un robot pe harta. Scrie cod, ruleaza, observa si imbunatateste.
+{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'estudy/robot_lab.css' %}?v=20260317">
+{% endblock %}
+
+{% block page_content %}
+<section class="robotlab-page">
+    <header class="robotlab-header card">
+        <div>
+            <h2>Misiuni disponibile</h2>
+            <p>Robot Lab este impartit in doua trasee: Mod Junior pentru 8-10 ani si Mod Cod pentru 11+.</p>
+            {% if robot_lab_age_recommendation.has_profile_age %}
+            <p>Profil {{ robot_lab_age_recommendation.age }} ani - recomandat: <strong>{{ robot_lab_age_recommendation.track_label }}</strong>.</p>
+            {% endif %}
+        </div>
+        {% if first_unlocked_level_id %}
+        <a class="btn btn--primary" href="{% url 'estudy:robot_lab_play' level_id=first_unlocked_level_id %}">
+            Continua misiunea
+        </a>
+        {% endif %}
+    </header>
+
+    <section class="robotlab-summary-grid">
+        <article class="card robotlab-stat">
+            <small>Niveluri totale</small>
+            <strong>{{ robot_lab_summary.total_levels }}</strong>
+        </article>
+        <article class="card robotlab-stat">
+            <small>Deblocate</small>
+            <strong>{{ robot_lab_summary.unlocked_levels }}</strong>
+        </article>
+        <article class="card robotlab-stat">
+            <small>Finalizate</small>
+            <strong>{{ robot_lab_summary.completed_levels }}</strong>
+        </article>
+        <article class="card robotlab-stat">
+            <small>Progres</small>
+            <strong>{{ robot_lab_summary.progress_percent }}%</strong>
+        </article>
+    </section>
+
+    <section class="card robotlab-levels">
+        <h3>Traseu de niveluri</h3>
+        <div class="robotlab-level-list">
+            {% for item in robot_lab_summary.levels %}
+            <article class="robotlab-level-item{% if item.completed %} is-completed{% elif item.unlocked %} is-unlocked{% else %} is-locked{% endif %}">
+                <div class="robotlab-level-item__meta">
+                    <span class="robotlab-level-item__id">{{ item.id }}</span>
+                    <span class="robotlab-level-item__difficulty">{{ item.difficulty_label|default:item.difficulty }}</span>
+                </div>
+                <h4>{{ item.title }}</h4>
+                <p>{{ item.goal }}</p>
+                <div class="robotlab-level-item__chips">
+                    <span class="chip">{{ item.mode_label }}</span>
+                    <span class="chip">{{ item.ui_stage_label }}</span>
+                    <span class="chip">Varsta {{ item.recommended_age }}</span>
+                    {% for concept in item.concept_labels %}
+                    <span class="chip">{{ concept }}</span>
+                    {% endfor %}
+                </div>
+                <div class="robotlab-level-item__footer">
+                    <span>XP +{{ item.xp_reward }}</span>
+                    {% if item.unlocked %}
+                        <a class="btn btn--ghost btn--small" href="{% url 'estudy:robot_lab_play' level_id=item.id %}">
+                            {% if item.completed %}Rejoaca{% else %}Incepe{% endif %}
+                        </a>
+                    {% else %}
+                        <span class="robotlab-lock-label">Blocat</span>
+                    {% endif %}
+                </div>
+            </article>
+            {% empty %}
+            <p>Nu exista niveluri Robot Lab inca.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    {% if request.user.userprofile.is_teacher or request.user.userprofile.is_admin %}
+    <section class="card robotlab-teacher-link">
+        <h3>Panou profesor</h3>
+        <p>Vezi incercarile elevilor si cele mai frecvente erori.</p>
+        <a class="btn btn--ghost" href="{% url 'estudy:robot_lab_teacher' %}">Deschide analytics</a>
+    </section>
+    {% endif %}
+</section>
+{% endblock %}

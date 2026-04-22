@@ -6,56 +6,121 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('estudy', '0003_userprofile'),
+        ("estudy", "0003_userprofile"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Reward',
+            name="Reward",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('description', models.TextField()),
-                ('image', models.ImageField(blank=True, null=True, upload_to='rewards/')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("description", models.TextField()),
+                (
+                    "image",
+                    models.ImageField(blank=True, null=True, upload_to="rewards/"),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='lesson',
-            name='resources',
+            model_name="lesson",
+            name="resources",
             field=models.JSONField(blank=True, default=list),
         ),
         migrations.CreateModel(
-            name='Test',
+            name="Test",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('question', models.CharField(max_length=255)),
-                ('correct_answer', models.CharField(max_length=255)),
-                ('wrong_answers', models.JSONField()),
-                ('lesson', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tests', to='estudy.lesson')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("question", models.CharField(max_length=255)),
+                ("correct_answer", models.CharField(max_length=255)),
+                ("wrong_answers", models.JSONField()),
+                (
+                    "lesson",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tests",
+                        to="estudy.lesson",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UserReward',
+            name="UserReward",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date_awarded', models.DateTimeField(auto_now_add=True)),
-                ('reward', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='estudy.reward')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='rewards', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("date_awarded", models.DateTimeField(auto_now_add=True)),
+                (
+                    "reward",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="estudy.reward"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="rewards",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='LessonProgress',
+            name="LessonProgress",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('completed', models.BooleanField(default=False)),
-                ('lesson', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='estudy.lesson')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='lesson_progress', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("completed", models.BooleanField(default=False)),
+                (
+                    "lesson",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="estudy.lesson"
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="lesson_progress",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('user', 'lesson')},
+                "unique_together": {("user", "lesson")},
             },
         ),
     ]

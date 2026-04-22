@@ -1,11 +1,10 @@
 import re
 
 from django.conf import settings
+from django.core.mail import send_mail
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
-
-from django.core.mail import send_mail
 
 
 def index(request):
@@ -36,7 +35,11 @@ def submit_form(request):
         errors["phone"] = "Introdu un număr de telefon valid."
 
     if errors:
-        return _json_or_text(request, {"success": False, "errors": errors, "message": "Formular incomplet."}, status=400)
+        return _json_or_text(
+            request,
+            {"success": False, "errors": errors, "message": "Formular incomplet."},
+            status=400,
+        )
 
     email_subject = "Cerere nouă de pe UNITEX"
     email_body = f"Nume: {name}\nTelefon: {phone}\nMesaj: {message or '—'}"
@@ -48,11 +51,20 @@ def submit_form(request):
             settings.EMAIL_HOST_USER,
             [settings.EMAIL_HOST_USER],
         )
-    except Exception as exc:  # pragma: no cover - defensive
+    except Exception:  # pragma: no cover - defensive
         return _json_or_text(
             request,
-            {"success": False, "message": "Nu am putut trimite formularul. Încearcă din nou în câteva minute."},
+            {
+                "success": False,
+                "message": "Nu am putut trimite formularul. Încearcă din nou în câteva minute.",
+            },
             status=500,
         )  # noqa: PERF203
 
-    return _json_or_text(request, {"success": True, "message": "Mulțumim! Echipa noastră te va contacta în scurt timp."})
+    return _json_or_text(
+        request,
+        {
+            "success": True,
+            "message": "Mulțumim! Echipa noastră te va contacta în scurt timp.",
+        },
+    )

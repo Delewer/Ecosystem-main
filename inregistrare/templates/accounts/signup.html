@@ -1,23 +1,26 @@
 ﻿{% extends 'accounts/base.html' %}
 {% load static %}
 
-{% block title %}Creeaza cont - UnITex{% endblock %}
+{% block title %}Creează cont - UnITex{% endblock %}
 
 {% block auth_content %}
 <section class="auth-shell auth-shell--wide">
     <div class="auth-panel auth-panel--hero">
-        <span class="auth-tag">Alatura-te comunitatii</span>
-        <h1 class="auth-title">Creeaza-ti avatarul si incepe sa programezi.</h1>
-        <p class="auth-subtitle">Completeaza formularul din dreapta pentru a-ti activa contul. In cateva minute poti explora lectii, misiuni si proiecte adaptate varstei tale.</p>
+        <span class="auth-tag">Alătură-te comunității</span>
+        <h1 class="auth-title">Creează-ți avatarul și începe să programezi.</h1>
+        <p class="auth-subtitle">Completează formularul din dreapta pentru a-ți activa contul. În câteva minute poți explora lecții, misiuni și proiecte adaptate vârstei tale.</p>
         <ul class="auth-feature-list">
-            <li><i class="fa-solid fa-puzzle-piece"></i>Lectii interactive cu jocuri si quiz-uri.</li>
-            <li><i class="fa-solid fa-award"></i>Sistem de XP, insigne si niveluri pentru motivatie.</li>
+            <li><i class="fa-solid fa-puzzle-piece"></i>Lecții interactive cu jocuri și quiz-uri.</li>
+            <li><i class="fa-solid fa-award"></i>Sistem de XP, insigne și niveluri pentru motivație.</li>
             <li><i class="fa-solid fa-shield"></i>Conturile profesorilor sunt confirmate cu un cod unic.</li>
         </ul>
-        <img class="auth-illustration" src="https://illustrations.popsy.co/emerald/idea-sharing.svg" alt="Echipa creativa pregatita de inregistrare" loading="lazy">
+        <div class="auth-visual">
+            <span class="auth-visual__icon" aria-hidden="true"><i class="fa-solid fa-rocket"></i></span>
+            <img class="auth-illustration" src="{% static 'inregistrare/illustrations/auth-signup-hero.svg' %}" alt="Echipa creativă pregătită de înregistrare" loading="lazy">
+        </div>
     </div>
     <div class="auth-panel auth-panel--form">
-        <h2 class="auth-form__title">Creeaza un cont</h2>
+        <h2 class="auth-form__title">Creează un cont</h2>
         {% if form.non_field_errors %}
             <div class="auth-alert auth-alert--error">
                 <i class="fa-solid fa-circle-exclamation me-2"></i>{{ form.non_field_errors|join:' ' }}
@@ -38,6 +41,12 @@
                 {{ form.email }}
                 {{ form.email.errors }}
             </div>
+            <div class="input-group">
+                {{ form.age.label_tag }}
+                {{ form.age }}
+                <small class="form-hint">Folosește vârsta reală pentru a primi activități potrivite nivelului tău.</small>
+                {{ form.age.errors }}
+            </div>
             <div class="input-group input-group--role">
                 {{ form.role.label_tag }}
                 <div class="role-selector" data-role-selector data-teacher-value="{{ form.fields.role.choices.1.0 }}">
@@ -49,7 +58,7 @@
             <div class="input-group teacher-code" data-teacher-code>
                 {{ form.teacher_code.label_tag }}
                 {{ form.teacher_code }}
-                <small class="form-hint">Pentru conturile de profesor foloseste codul primit de la coordonatorul UnITex.</small>
+                <small class="form-hint">Pentru conturile de profesor folosește codul primit de la coordonatorul UnITex.</small>
                 {{ form.teacher_code.errors }}
             </div>
             <div class="input-group">
@@ -62,16 +71,27 @@
                 {{ form.password2 }}
                 {{ form.password2.errors }}
             </div>
-            <button type="submit" class="btn btn-primary auth-submit"><i class="fa-solid fa-user-plus me-2"></i>Creeaza contul</button>
+            <div class="input-group input-group--checkbox">
+                <label class="checkbox-field" for="{{ form.accept_terms.id_for_label }}">
+                    {{ form.accept_terms }}
+                    <span>
+                        Am citit și accept <a href="{% url 'termeni_si_conditii' %}" target="_blank" rel="noopener">Termenii și condițiile</a>
+                        și <a href="{% url 'politica_cookie' %}" target="_blank" rel="noopener">Politica cookie</a>.
+                    </span>
+                </label>
+                <small class="form-hint">{{ form.accept_terms.help_text }}</small>
+                {{ form.accept_terms.errors }}
+            </div>
+            <button type="submit" class="btn btn-primary auth-submit"><i class="fa-solid fa-user-plus me-2"></i>Creează contul</button>
         </form>
-        <p class="auth-switch">Ai deja un cont? <a href="{% url 'login' %}">Autentifica-te</a></p>
+        <p class="auth-switch">Ai deja un cont? <a href="{% url 'login' %}">Autentifică-te</a></p>
     </div>
 </section>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    (function () {
         const wrapper = document.querySelector('[data-role-selector]');
         const teacherField = document.querySelector('[data-teacher-code]');
         if (!wrapper || !teacherField) {
@@ -108,6 +128,6 @@
         };
         inputs.forEach((input) => input.addEventListener('change', handleChange));
         handleChange();
-    });
+    })();
 </script>
 {% endblock %}

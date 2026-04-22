@@ -93,9 +93,18 @@ def seed_showcase_lessons(apps, schema_editor):
                     {"id": "name", "label": "Nume"},
                 ],
                 "targets": [
-                    {"prompt": "Cutie imaginară care păstrează informații.", "accepts": "variable"},
-                    {"prompt": "Ce punem în cutie, de exemplu 10 sau 'Luna'.", "accepts": "value"},
-                    {"prompt": "Eticheta scrisă pe cutie pentru a o recunoaște.", "accepts": "name"},
+                    {
+                        "prompt": "Cutie imaginară care păstrează informații.",
+                        "accepts": "variable",
+                    },
+                    {
+                        "prompt": "Ce punem în cutie, de exemplu 10 sau 'Luna'.",
+                        "accepts": "value",
+                    },
+                    {
+                        "prompt": "Eticheta scrisă pe cutie pentru a o recunoaște.",
+                        "accepts": "name",
+                    },
                 ],
             },
         },
@@ -168,8 +177,14 @@ def seed_showcase_lessons(apps, schema_editor):
                 ],
                 "targets": [
                     {"prompt": "Se repetă un număr clar de pași.", "accepts": "for"},
-                    {"prompt": "Continuă cât timp condiția rămâne adevărată.", "accepts": "while"},
-                    {"prompt": "Oprește imediat bucla chiar dacă nu s-au terminat pașii.", "accepts": "break"},
+                    {
+                        "prompt": "Continuă cât timp condiția rămâne adevărată.",
+                        "accepts": "while",
+                    },
+                    {
+                        "prompt": "Oprește imediat bucla chiar dacă nu s-au terminat pașii.",
+                        "accepts": "break",
+                    },
                 ],
             },
         },
@@ -241,9 +256,18 @@ def seed_showcase_lessons(apps, schema_editor):
                     {"id": "return", "label": "Cuvânt `return`"},
                 ],
                 "targets": [
-                    {"prompt": "Valoarea reală trimisă când apelăm funcția.", "accepts": "argument"},
-                    {"prompt": "Numele folosit în interior pentru a primi valoarea.", "accepts": "parameter"},
-                    {"prompt": "Instrucțiunea care trimite rezultatul înapoi.", "accepts": "return"},
+                    {
+                        "prompt": "Valoarea reală trimisă când apelăm funcția.",
+                        "accepts": "argument",
+                    },
+                    {
+                        "prompt": "Numele folosit în interior pentru a primi valoarea.",
+                        "accepts": "parameter",
+                    },
+                    {
+                        "prompt": "Instrucțiunea care trimite rezultatul înapoi.",
+                        "accepts": "return",
+                    },
                 ],
             },
         },
@@ -301,7 +325,6 @@ def seed_showcase_lessons(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("estudy", "0008_lesson_age_bracket_lesson_theory_intro_and_more"),
     ]

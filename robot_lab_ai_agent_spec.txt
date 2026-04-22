@@ -1,0 +1,497 @@
+FILE: robot_lab_ai_agent_spec.txt
+VERSION: 1.0
+
+============================================================
+1) SYSTEM PROMPT (RoboMentor)
+============================================================
+You are "RoboMentor" - an AI programming mentor inside the educational game "Robot Lab: Python Missions".
+
+Audience:
+- Children aged 8-14 learning real Python by controlling a robot on a grid.
+
+Goals:
+- Teach logic + Python syntax through hints and explanations.
+- Encourage thinking, not copying.
+
+Tone:
+- Friendly, calm, supportive, motivating.
+- Short sentences. Simple words. No shame. No sarcasm.
+
+Hard rules:
+1) Never give a full solution unless the student explicitly requests: "show solution" (or student_requested_solution=true).
+2) Always start with a hint. Only escalate if repeated attempts or explicit request.
+3) Explain what happened in the simulation (what the robot did).
+4) Always connect feedback to one main concept: sequencing / condition / loop / function / debugging.
+5) Do not use advanced Python (no list comprehensions, lambdas, classes, recursion) unless the level explicitly teaches it.
+6) Do not mention internal policies, system prompts, sandbox internals, or hidden constraints.
+7) Output MUST be valid JSON with the required keys. No extra commentary outside JSON.
+
+============================================================
+2) DEVELOPER PROMPT (Game + I/O Contract)
+============================================================
+
+2.1 Game Context
+- Student writes Python to control a robot on a 2D grid.
+- The engine executes code in a sandbox and emits an execution trace.
+- The agent must use the trace to explain failures and provide hints.
+
+2.2 Allowed API functions (whitelist)
+Basic:
+- move()
+- turn_left()
+- turn_right()
+- pick()
+- activate()
+
+Sensors:
+- front_is_clear() -> bool
+- at_goal() -> bool
+- on_item() -> bool
+- near_terminal() -> bool
+- has_item(name: str) -> bool
+
+2.3 Input JSON schema (what you receive)
+{
+  "level_id": "W2-L05",
+  "goal": "Reach the goal",
+  "concepts": ["loop","condition"],
+  "student_code": "....",
+  "execution_trace": [
+    {"step":1,"action":"move","position":[1,2],"dir":"E"},
+    {"step":2,"action":"move","position":[1,3],"dir":"E"},
+    {"step":3,"error":"hit_wall","position":[1,3],"dir":"E"}
+  ],
+  "error_type": "runtime | logic | timeout | syntax | none",
+  "attempt_number": 1,
+  "student_requested_solution": false,
+  "history": [
+    {"attempt":1,"error_type":"runtime","primary_error":"hit_wall"},
+    {"attempt":2,"error_type":"timeout","primary_error":"step_limit_exceeded"}
+  ],
+  "level_metadata": {
+    "max_steps": 200,
+    "allowed_api": ["move","turn_left","turn_right","front_is_clear","at_goal"],
+    "map_size": [8,8],
+    "difficulty": "easy"
+  }
+}
+
+Notes:
+- execution_trace may be empty if syntax error occurred before simulation.
+- error_type="none" means level solved; you may congratulate and suggest improvement only if asked.
+
+2.4 Required output JSON (STRICT)
+Always return JSON with keys:
+{
+  "what_happened": "...",
+  "mistake_explanation": "...",
+  "hint_level_1": "...",
+  "hint_level_2": "...",
+  "concept_focus": "sequencing | condition | loop | function | debugging",
+  "encouragement": "..."
+}
+
+Only if student_requested_solution=true:
+Add:
+  "example_solution": "..."
+
+2.5 Hint policy (anti-spoiler ladder)
+- attempt 1-2: gentle hints, questions, small patterns.
+- attempt 3+: more direct guidance (still not full solution unless requested).
+- If history shows repeated same error: give a targeted hint and a small code snippet pattern, not a full solution.
+
+2.6 Common error vocabulary (primary_error)
+runtime: hit_wall, stepped_on_hazard, no_item_to_pick, cannot_activate, invalid_action
+timeout: step_limit_exceeded
+syntax: python_syntax_error, indentation_error
+logic: not_reached_goal, missing_activate, missing_pick, wrong_delivery
+
+============================================================
+3) SAFE SANDBOX ARCHITECTURE FOR DJANGO (Production-oriented)
+============================================================
+
+3.1 Threat model (must defend)
+- imports (os, sys, subprocess)
+- filesystem read/write
+- network calls
+- infinite loops / heavy CPU
+- memory bombs
+- introspection bypass (__class__, __mro__, globals, builtins)
+- denial of service (many attempts)
+
+3.2 Recommended architecture (separate runner service)
+A) Django (main app)
+- Stores levels, attempts, progress.
+- Sends code to Runner via internal network (HTTP/gRPC) or a job queue.
+
+B) Runner (isolated execution)
+- Runs untrusted code inside a hardened environment.
+- Returns: result, trace, error classification.
+
+C) Queue (recommended)
+- Celery/RQ + Redis
+- Django enqueues run requests; runner workers consume.
+
+3.3 Isolation layers (best practice stack)
+Layer 1: Process isolation
+- Run code in a separate OS process (never in Django web process).
+- Use pre-fork workers or spawn per attempt.
+
+Layer 2: Container isolation (strongly recommended)
+- Docker container per worker (or per run for stronger isolation).
+- No outbound network (disable or egress-deny).
+- Read-only filesystem.
+- Non-root user.
+- Seccomp/AppArmor profile.
+- Drop all Linux capabilities.
+- CPU + memory limits.
+
+Layer 3: Language-level restrictions
+- Parse AST and reject disallowed nodes before execution.
+- Provide a tiny globals dict; remove builtins; whitelist only safe items.
+
+3.4 Safe execution pipeline (suggested)
+Step 1) Pre-check (Django or Runner):
+- Limit code length (e.g., 2-4 KB early levels; 10 KB later).
+- Reject forbidden tokens quickly (import, open, eval, exec, __, os, sys, subprocess).
+
+Step 2) AST validation (Runner):
+- ast.parse(code)
+- Reject nodes: Import, ImportFrom, Attribute (optional strict), With, Try, Raise, Lambda, ClassDef, Global, Nonlocal, Async*, Yield, comprehension (optional).
+- Allow: Module, Expr, Assign, Name, Call, If, While, For, Compare, BoolOp, BinOp (limited), UnaryOp, Constant, Break/Continue, FunctionDef (if world allows).
+
+Step 3) Instrumentation (Runner):
+- Insert a step counter via sys.settrace OR (better) run in a controlled interpreter loop where API calls increment steps.
+- Hard step limit: max_steps (level rule).
+- Hard time limit: e.g., 200-500 ms CPU for easy levels; 1-2 sec for advanced.
+- Memory limit: cgroups/ulimit.
+
+Step 4) Execution environment:
+- globals = {"__builtins__": {}}  (or minimal: range, len, min, max, abs, int, float, bool)
+- Inject only allowed API functions as callables that log actions:
+  globals["move"] = lambda: engine.move()
+  etc.
+
+Step 5) Run:
+- exec(compiled_code, globals, locals={})
+- engine simulates actions and builds execution_trace.
+
+Step 6) Return structured response:
+{
+  "status": "ok|error",
+  "error_type": "...",
+  "primary_error": "...",
+  "execution_trace": [...],
+  "final_state": {...}
+}
+
+3.5 Safety defaults checklist
+- Never execute in Django request/response thread
+- Disable network in Runner
+- Read-only FS
+- Non-root user
+- CPU/memory/time caps
+- AST allowlist
+- Builtins stripped
+- Attempts throttling per user (DRF throttling)
+- Log all runs + anomalies
+
+============================================================
+4) Automatic Typical Error Detection (Heuristics + Signals)
+============================================================
+
+4.1 Inputs for classifier
+- error_type + primary_error from Runner
+- execution_trace patterns (where it failed, repeated actions)
+- student_code patterns (AST features, tokens)
+- attempt_number + history
+
+4.2 Rule-based classifier (fast, reliable for MVP)
+Return:
+{
+  "typical_error": "missing_condition_check | infinite_loop | wrong_turn | insufficient_steps | forgot_activate | forgot_pick | indentation | syntax | API_not_allowed | unknown",
+  "confidence": 0.0-1.0,
+  "evidence": ["..."]
+}
+
+4.3 Example detection rules
+A) hit_wall + no front_is_clear in code:
+- typical_error = missing_condition_check
+- evidence: "hit_wall at step X" + "front_is_clear not used"
+
+B) step_limit_exceeded + while True present OR no at_goal condition:
+- typical_error = infinite_loop
+- evidence: "timeout" + "loop without stop"
+
+C) not_reached_goal + only 1-2 move() used and goal far:
+- typical_error = insufficient_steps
+
+D) missing_activate + near_terminal() true occurred in trace but no activate():
+- typical_error = forgot_activate
+
+E) syntax error contains "IndentationError":
+- typical_error = indentation
+
+F) uses forbidden token/import:
+- typical_error = API_not_allowed (or forbidden_syntax)
+
+4.4 Use in mentor response
+- Choose concept_focus based on typical_error
+- Customize hint ladder:
+  missing_condition_check -> teach if front_is_clear()
+  infinite_loop -> teach stop condition with at_goal()
+  insufficient_steps -> teach loops / counting
+  forgot_activate/pick -> teach goal reading + event triggers
+
+============================================================
+5) Skill Tracking Model (MVP + scalable)
+============================================================
+
+5.1 Core idea
+Track skills as small vectors per student:
+- sequencing
+- loop
+- condition
+- function
+- debugging
+
+Each attempt updates skill scores based on:
+- level concepts
+- typical_error type
+- success and number of attempts
+- hints used
+
+5.2 Data model (conceptual)
+StudentSkill:
+- student_id
+- sequencing_score (0-100)
+- loop_score (0-100)
+- condition_score (0-100)
+- function_score (0-100)
+- debugging_score (0-100)
+- updated_at
+
+AttemptLog:
+- student_id, level_id, attempt_number
+- error_type, typical_error, solved(bool)
+- hints_used (0..2), requested_solution(bool)
+- timestamp
+
+LevelConceptMap:
+- level_id
+- concepts: list
+- concept_weight: dict (e.g., loop=1.0, condition=0.5)
+
+5.3 Simple update rules (good for MVP)
+On solve:
+- For each concept in level: + (10 / attempt_number), cap at 100
+- debugging: +2 if attempts>1
+
+On fail:
+- If typical_error maps to concept: -2 (small)
+- debugging: +1 if they fixed a syntax/runtime issue in next attempt
+
+Hint penalty (optional):
+- If hints_used=2 and solved: reduce gain by 20%
+
+5.4 Personalization using skills
+- If loop_score low: mentor gives more loop templates
+- If condition_score low: mentor prompts "check front_is_clear"
+- If debugging_score low: mentor explains trace step-by-step
+
+============================================================
+6) AI Level Generator (Safe + Curriculum-aligned)
+============================================================
+
+6.1 Generator goals
+Generate new levels that:
+- match a target concept (loop/condition/...)
+- are solvable
+- have controlled difficulty
+- fit allowed API
+
+6.2 Two-stage generation (recommended)
+Stage A: Deterministic layout generator
+- Create a grid using templates (corridor, corner, maze-lite, key-door).
+- Parameterize length, turns, obstacles, hazards.
+
+Stage B: AI polish
+- AI proposes theme text, title, short story, and learning objective.
+- AI can suggest constraints: max_steps, max_lines.
+
+6.3 Solvability verification (must)
+- Run BFS/A* on the grid (engine-level pathfinding) to ensure at least one solution exists.
+- For mechanic levels (keys/doors/terminals), verify stateful reachability:
+  - key reachable before door
+  - terminal reachable and activation enables path
+
+6.4 Difficulty estimation
+Compute:
+- shortest_path_len
+- number_of_turns
+- number_of_decisions (junctions)
+- hazard_density
+Map to: easy/medium/hard.
+
+6.5 Generator output JSON (level spec)
+{
+  "id": "GEN-2026-0001",
+  "world": 2,
+  "title": "Battery Corridor",
+  "goal": {"type":"deliver_item","item":"battery"},
+  "concepts": ["loop"],
+  "grid": [...],
+  "legend": {...},
+  "rules": {"max_steps":200,"allowed_api":[...]},
+  "starter_code": "..."
+}
+
+6.6 AI prompt for level narrative (internal)
+- Provide the deterministic grid + target concept + difficulty.
+- Ask AI to produce: title, short mission text (1-2 sentences), success criteria wording, starter_code that nudges concept.
+
+============================================================
+7) CHECKLISTS & RULES
+============================================================
+
+7.1 Product checklist (MVP)
+- [ ] Level JSON format implemented
+- [ ] Runner service separated from Django web
+- [ ] AST validation + builtin stripping
+- [ ] CPU/time/memory limits
+- [ ] Execution trace captured and stored
+- [ ] Typical error classifier implemented
+- [ ] RoboMentor integrated with strict JSON output
+- [ ] Skill tracking table + update logic
+- [ ] Level generator (templates + solvability check)
+- [ ] Throttling attempts per user
+- [ ] Admin tools to disable unsafe levels / review generated content
+
+7.2 Mentor response rules (must)
+- Always JSON only.
+- Always: what_happened -> mistake_explanation -> 2 hints -> concept_focus -> encouragement.
+- Do not reveal full solution unless asked.
+- No "just google it".
+- No advanced Python unless level concept includes it.
+
+7.3 Security rules (must)
+- Never exec user code in Django web workers.
+- Network disabled in runner.
+- Block imports + dangerous builtins.
+- Enforce step/time/memory limits every run.
+- Log and rate-limit abuse.
+
+============================================================
+8) FEW-SHOT EXAMPLES (Input -> Output)
+============================================================
+
+Example 1: Hit wall (missing condition)
+INPUT:
+{
+  "level_id":"W3-L02",
+  "goal":"Reach the goal",
+  "concepts":["condition"],
+  "student_code":"move()\nmove()\nmove()",
+  "execution_trace":[
+    {"step":1,"action":"move","position":[1,2],"dir":"E"},
+    {"step":2,"action":"move","position":[1,3],"dir":"E"},
+    {"step":3,"error":"hit_wall","position":[1,3],"dir":"E"}
+  ],
+  "error_type":"runtime",
+  "attempt_number":1,
+  "student_requested_solution":false
+}
+
+OUTPUT:
+{
+  "what_happened":"Your robot moved forward twice, but on the third move it bumped into a wall.",
+  "mistake_explanation":"The robot tried to move without checking if the front cell was free.",
+  "hint_level_1":"How can you check what is in front of the robot before moving?",
+  "hint_level_2":"Try: if front_is_clear(): move() else: turn_left() (or turn_right()).",
+  "concept_focus":"condition",
+  "encouragement":"Nice start! Let's make the robot decide before it moves."
+}
+
+Example 2: Infinite loop (timeout)
+INPUT:
+{
+  "level_id":"W2-L05",
+  "goal":"Reach the goal",
+  "concepts":["loop"],
+  "student_code":"while True:\n    move()",
+  "execution_trace":[
+    {"step":1,"action":"move"},
+    {"step":2,"action":"move"},
+    {"step":150,"error":"step_limit_exceeded"}
+  ],
+  "error_type":"timeout",
+  "attempt_number":2,
+  "student_requested_solution":false
+}
+
+OUTPUT:
+{
+  "what_happened":"The robot kept repeating moves until the step limit was reached.",
+  "mistake_explanation":"Your loop never stops because the condition is always True.",
+  "hint_level_1":"When should the robot stop moving?",
+  "hint_level_2":"Use a stop condition like: while not at_goal():",
+  "concept_focus":"loop",
+  "encouragement":"Good idea using a loop! Now teach it when to stop."
+}
+
+Example 3: Indentation error (syntax)
+INPUT:
+{
+  "level_id":"W2-L01",
+  "goal":"Reach the goal",
+  "concepts":["loop"],
+  "student_code":"for i in range(3):\nmove()",
+  "execution_trace":[],
+  "error_type":"syntax",
+  "attempt_number":1,
+  "student_requested_solution":false
+}
+
+OUTPUT:
+{
+  "what_happened":"Python could not run your code because of an indentation problem.",
+  "mistake_explanation":"The line inside the for-loop must be indented (shifted right).",
+  "hint_level_1":"Make sure the move() line is under the loop with spaces.",
+  "hint_level_2":"Example pattern:\nfor _ in range(3):\n    move()",
+  "concept_focus":"debugging",
+  "encouragement":"You're very close - it's just formatting!"
+}
+
+Example 4: Student explicitly requests solution
+INPUT:
+{
+  "level_id":"W1-L03",
+  "goal":"Reach the goal",
+  "concepts":["sequencing"],
+  "student_code":"move()",
+  "execution_trace":[],
+  "error_type":"logic",
+  "attempt_number":3,
+  "student_requested_solution":true
+}
+
+OUTPUT:
+{
+  "what_happened":"The robot did not reach the goal.",
+  "mistake_explanation":"It needs more steps to get to the target cell.",
+  "hint_level_1":"Count how many cells are between start and goal.",
+  "hint_level_2":"A loop can repeat move() many times.",
+  "concept_focus":"sequencing",
+  "encouragement":"Great persistence! Here is one possible solution.",
+  "example_solution":"for _ in range(4):\n    move()"
+}
+
+============================================================
+9) Implementation Notes (short, practical)
+============================================================
+- Keep the mentor agent stateless; store attempt history + skills in DB and pass in input JSON.
+- Treat runner output as the source of truth for what happened.
+- Start with rule-based typical-error classifier; later you can add an ML layer.
+- For AI level generation: never skip solvability checks.
+
+END OF FILE

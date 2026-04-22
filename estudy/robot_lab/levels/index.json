@@ -1,0 +1,90 @@
+{
+  "version": "1.0",
+  "unlock_strategy": "linear",
+  "levels": [
+    {
+      "id": "W1-L01",
+      "file": "W1-L01.json",
+      "world": 1,
+      "order": 1,
+      "title": "Misiunea sagetilor",
+      "goal": "Foloseste butoanele ca sa ajungi la terminal",
+      "concepts": ["sequencing"],
+      "difficulty": "easy",
+      "xp_reward": 20,
+      "mode": "junior",
+      "ui_stage": "buttons",
+      "recommended_age": "8-10"
+    },
+    {
+      "id": "W1-L02",
+      "file": "W1-L02.json",
+      "world": 1,
+      "order": 2,
+      "title": "Vezi codul",
+      "goal": "Construieste ruta si priveste cum apare codul",
+      "concepts": ["sequencing", "debugging"],
+      "difficulty": "easy",
+      "xp_reward": 25,
+      "mode": "junior",
+      "ui_stage": "buttons_code",
+      "recommended_age": "8-10"
+    },
+    {
+      "id": "W1-L03",
+      "file": "W1-L03.json",
+      "world": 1,
+      "order": 3,
+      "title": "Completeaza linia lipsa",
+      "goal": "Completeaza comanda lipsa",
+      "concepts": ["sequencing", "debugging"],
+      "difficulty": "easy",
+      "xp_reward": 30,
+      "mode": "code",
+      "ui_stage": "fill_gaps",
+      "recommended_age": "11-13"
+    },
+    {
+      "id": "W1-L04",
+      "file": "W1-L04.json",
+      "world": 1,
+      "order": 4,
+      "title": "Scrie ruta completa",
+      "goal": "Scrie singur tot programul",
+      "concepts": ["sequencing", "debugging"],
+      "difficulty": "medium",
+      "xp_reward": 35,
+      "mode": "code",
+      "ui_stage": "code",
+      "recommended_age": "11-13"
+    },
+    {
+      "id": "W1-L05",
+      "file": "W1-L05.json",
+      "world": 1,
+      "order": 5,
+      "title": "Depaneaza labirintul",
+      "goal": "Ajungi la terminal fara sa lovesti peretii",
+      "concepts": ["sequencing", "debugging"],
+      "difficulty": "medium",
+      "xp_reward": 40,
+      "mode": "code",
+      "ui_stage": "code",
+      "recommended_age": "11-13"
+    },
+    {
+      "id": "W1-L06",
+      "file": "W1-L06.json",
+      "world": 1,
+      "order": 6,
+      "title": "Ruta optima",
+      "goal": "Rezolva misiunea, apoi imbunatateste numarul de pasi",
+      "concepts": ["sequencing", "debugging"],
+      "difficulty": "medium",
+      "xp_reward": 45,
+      "mode": "code",
+      "ui_stage": "code",
+      "recommended_age": "14-16+"
+    }
+  ]
+}

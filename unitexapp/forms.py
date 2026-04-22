@@ -1,4 +1,3 @@
-from django import forms
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
+# Forms for unitexapp are not yet implemented.
 
+# When adding forms, import django.forms and relevant Django auth helpers here.

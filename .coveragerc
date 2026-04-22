@@ -1,0 +1,9 @@
+[run]
+omit =
+    */migrations/*
+    */__pycache__/*
+    myenv/*
+    manage.py
+
+[report]
+skip_covered = True

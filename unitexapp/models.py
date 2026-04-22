@@ -1,3 +1,3 @@
-from django.db import models
+# Models for unitexapp are not yet implemented.
 
-# Create your models here.
+# When adding models, import django.db.models here.

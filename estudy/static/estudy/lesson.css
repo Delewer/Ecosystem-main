@@ -90,9 +90,9 @@ body.lesson-page .btn--glow {
 
 .lesson-root {
     width: min(1280px, calc(100% - 2rem));
-    margin: clamp(3rem, 6vw, 4.5rem) auto clamp(4rem, 7vw, 5.5rem);
+    margin: clamp(1rem, 2.2vw, 1.9rem) auto clamp(2rem, 4vw, 3rem);
     display: grid;
-    gap: clamp(2.5rem, 5vw, 3.5rem);
+    gap: clamp(1.4rem, 2.8vw, 2.2rem);
 }
 
 .lesson-section {
@@ -110,6 +110,28 @@ body.lesson-page .btn--glow {
 
 .lesson-prose p {
     margin: 0;
+}
+
+.lesson-age-mode {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.7rem 1rem;
+    border-radius: 999px;
+    background: rgba(34, 211, 238, 0.12);
+    border: 1px solid rgba(34, 211, 238, 0.25);
+    color: var(--lesson-text);
+    font-size: 0.92rem;
+    width: fit-content;
+}
+
+.lesson-age-mode strong {
+    font-weight: 700;
+}
+
+.lesson-age-mode--auto {
+    box-shadow: 0 14px 28px -22px rgba(34, 211, 238, 0.65);
 }
 
 .lesson-prose ul,
@@ -213,6 +235,42 @@ body.lesson-page .btn--glow {
     gap: clamp(2rem, 4vw, 2.75rem);
 }
 
+.lesson-body > #concept {
+    order: 10;
+}
+
+.lesson-body > #example {
+    order: 20;
+}
+
+.lesson-body > #code-exercises {
+    order: 21;
+}
+
+.lesson-body > #practice {
+    order: 30;
+}
+
+.lesson-body > #test {
+    order: 40;
+}
+
+.lesson-body > #summary {
+    order: 50;
+}
+
+.lesson-body > #assistant {
+    order: 60;
+}
+
+.lesson-body > #reflection {
+    order: 70;
+}
+
+.lesson-body > #resources {
+    order: 80;
+}
+
 [data-animate] {
     opacity: 0;
     transform: translateY(28px);
@@ -230,14 +288,16 @@ body.lesson-page .btn--glow {
 
 .lesson-hero {
     display: grid;
-    gap: clamp(2rem, 4vw, 3rem);
+    grid-template-columns: minmax(0, 1.55fr) minmax(240px, 0.85fr);
+    gap: clamp(1.2rem, 2.4vw, 2rem);
     background: var(--lesson-surface);
     border-radius: var(--lesson-radius);
-    padding: clamp(2.4rem, 6vw, 3.1rem);
+    padding: clamp(1.4rem, 2.6vw, 2rem);
     box-shadow: var(--lesson-shadow);
     border: 1px solid var(--lesson-border);
     position: relative;
     overflow: hidden;
+    align-items: start;
 }
 
 .lesson-hero::after {
@@ -262,12 +322,13 @@ body.lesson-page .btn--glow {
 
 .lesson-hero__status {
     display: grid;
-    gap: 1.25rem;
+    gap: 0.9rem;
+    align-content: start;
 }
 
 .lesson-hero h1 {
     font-family: 'Poppins', 'Manrope', 'Inter', system-ui, sans-serif;
-    font-size: clamp(2.1rem, 5vw, 2.8rem);
+    font-size: clamp(1.9rem, 3.7vw, 2.45rem);
     color: var(--lesson-text);
     margin: 0;
     line-height: 1.2;
@@ -385,9 +446,9 @@ body.lesson-page .btn--glow {
 
 .lesson-hero__metrics {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 0.75rem;
-    margin-top: 0.5rem;
+    margin-top: 0.2rem;
 }
 
 .lesson-metric {
@@ -422,7 +483,7 @@ html[data-theme='light'] body.lesson-page .lesson-metric {
 }
 
 .lesson-hero__visual {
-    width: min(320px, 100%);
+    width: min(230px, 100%);
     margin-inline: auto;
     filter: drop-shadow(0 28px 45px rgba(8, 15, 32, 0.55));
 }
@@ -480,6 +541,218 @@ html[data-theme='light'] body.lesson-page .lesson-metric {
 }
 
 /* ==========================================================================
+   Adventure mode (intro + code arena)
+   ========================================================================== */
+
+.lesson-card--adventure {
+    overflow: hidden;
+    position: relative;
+}
+
+.lesson-card--adventure::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 15% 10%, rgba(59, 130, 246, 0.16), transparent 45%),
+        radial-gradient(circle at 85% 90%, rgba(20, 184, 166, 0.14), transparent 45%);
+}
+
+.lesson-card--adventure > * {
+    position: relative;
+    z-index: 1;
+}
+
+.adventure-intro {
+    display: grid;
+    gap: 1.1rem;
+}
+
+.adventure-intro__lead {
+    margin: 0;
+    font-size: 1.03rem;
+    color: var(--lesson-text-muted);
+}
+
+.adventure-cast {
+    display: grid;
+    gap: 0.85rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.adventure-cast__card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: start;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: var(--lesson-radius-sm);
+    background: rgba(15, 23, 42, 0.38);
+    border: 1px solid var(--lesson-border);
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.adventure-cast__card h3 {
+    margin: 0;
+    color: var(--lesson-text);
+}
+
+.adventure-cast__card small {
+    display: block;
+    margin-top: 0.1rem;
+    color: var(--lesson-text-subtle);
+}
+
+.adventure-cast__card p {
+    margin: 0.45rem 0 0;
+    color: var(--lesson-text-muted);
+    font-size: 0.95rem;
+    line-height: 1.55;
+}
+
+.adventure-cast__card.is-active {
+    transform: translateY(-3px);
+    border-color: var(--lesson-border-strong);
+    box-shadow: 0 16px 34px -24px rgba(59, 130, 246, 0.65);
+}
+
+.adventure-cast__emoji {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.2);
+    font-size: 1.2rem;
+    animation: lesson-float 3.6s ease-in-out infinite;
+}
+
+.adventure-path {
+    margin: 0;
+    padding-left: 1.2rem;
+    display: grid;
+    gap: 0.5rem;
+    color: var(--lesson-text-muted);
+}
+
+.code-arena {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+}
+
+.code-arena__theory,
+.code-arena__missions {
+    padding: 1rem 1.1rem;
+    border-radius: var(--lesson-radius-sm);
+    background: rgba(15, 23, 42, 0.36);
+    border: 1px solid var(--lesson-border);
+    display: grid;
+    gap: 0.85rem;
+}
+
+.code-arena__theory h3,
+.code-arena__missions h3 {
+    margin: 0;
+    color: var(--lesson-text);
+    font-size: 1.1rem;
+}
+
+.code-arena__theory p,
+.code-arena__theory li {
+    color: var(--lesson-text-muted);
+}
+
+.code-arena__theory ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 0.4rem;
+}
+
+.code-arena__mission-list {
+    display: grid;
+    gap: 0.55rem;
+}
+
+.arena-mission {
+    width: 100%;
+    text-align: left;
+    border: 1px solid var(--lesson-border);
+    border-radius: var(--lesson-radius-xs);
+    background: rgba(2, 6, 23, 0.45);
+    color: var(--lesson-text);
+    padding: 0.75rem 0.85rem;
+    display: grid;
+    gap: 0.2rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.arena-mission strong {
+    font-size: 0.96rem;
+}
+
+.arena-mission small {
+    color: var(--lesson-text-subtle);
+}
+
+.arena-mission__badge {
+    display: inline-flex;
+    width: fit-content;
+    padding: 0.18rem 0.58rem;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: rgba(59, 130, 246, 0.18);
+    color: #bfdbfe;
+}
+
+.arena-mission:hover,
+.arena-mission:focus-visible,
+.arena-mission.is-active {
+    transform: translateY(-1px);
+    border-color: var(--lesson-border-strong);
+    background: rgba(59, 130, 246, 0.16);
+}
+
+.code-arena__status {
+    padding: 0.9rem 1rem;
+    border-radius: var(--lesson-radius-xs);
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    display: grid;
+    gap: 0.6rem;
+}
+
+.code-arena__status h4 {
+    margin: 0;
+    color: var(--lesson-text);
+}
+
+.code-arena__status p {
+    margin: 0;
+    color: var(--lesson-text-muted);
+}
+
+.code-arena__status-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    font-weight: 600;
+    color: var(--lesson-success);
+}
+
+@keyframes lesson-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+/* ==========================================================================
    Cards
    ========================================================================== */
 
@@ -494,7 +767,7 @@ html[data-theme='light'] body.lesson-page .lesson-metric {
 .lesson-card__header {
     display: flex;
     gap: 1rem;
-    align-items: center;
+    align-items: flex-start;
     color: var(--lesson-text);
 }
 
@@ -518,7 +791,11 @@ html[data-theme='light'] body.lesson-page .lesson-metric {
     border-radius: 18px;
     background: var(--lesson-highlight-soft);
     color: var(--lesson-highlight);
-    font-size: 1.6rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    flex-shrink: 0;
 }
 
 .lesson-card__body {
@@ -580,7 +857,7 @@ html[data-theme='light'] body.lesson-page .lesson-metric {
 }
 
 .lesson-checklist li::before {
-    content: '✅';
+    content: '[ok]';
     position: absolute;
     left: 0;
     top: 0;
@@ -689,19 +966,364 @@ html[data-theme='light'] body.lesson-page .lesson-metric {
     overflow-x: auto;
 }
 
+.lesson-robotlab-preview {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
+    gap: 1rem;
+    padding: clamp(1rem, 2vw, 1.4rem);
+    border-radius: var(--lesson-radius);
+    background:
+        radial-gradient(circle at top left, rgba(34, 211, 238, 0.18), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.22), transparent 36%),
+        linear-gradient(140deg, rgba(23, 37, 84, 0.96), rgba(8, 15, 28, 0.98));
+    border: 1px solid rgba(96, 165, 250, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+}
+
+.lesson-robotlab-preview::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.03), transparent 42%);
+}
+
+.lesson-robotlab-preview__story,
+.lesson-robotlab-preview__board {
+    position: relative;
+    z-index: 1;
+}
+
+.lesson-robotlab-preview__story {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.lesson-robotlab-preview__eyebrow {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #67e8f9;
+}
+
+.lesson-robotlab-preview__title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.lesson-robotlab-preview__title-row h3 {
+    margin: 0 0 0.35rem;
+    font-size: clamp(1.2rem, 2vw, 1.55rem);
+    color: #f8fafc;
+}
+
+.lesson-robotlab-preview__title-row p,
+.lesson-robotlab-preview__board-head p,
+.lesson-robotlab-preview__note {
+    margin: 0;
+    color: rgba(226, 232, 240, 0.82);
+    line-height: 1.6;
+}
+
+.lesson-robotlab-preview__badge {
+    flex: 0 0 auto;
+    padding: 0.42rem 0.78rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.56);
+    border: 1px solid rgba(103, 232, 249, 0.24);
+    color: #e0f2fe;
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.lesson-robotlab-preview__flow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.lesson-robotlab-preview__flow-step {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.52);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    color: #f8fafc;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.lesson-robotlab-preview__goal {
+    margin: 0;
+    padding: 0.8rem 0.9rem;
+    border-radius: var(--lesson-radius-sm);
+    background: rgba(8, 15, 28, 0.44);
+    border: 1px solid rgba(45, 212, 191, 0.18);
+    color: #f8fafc;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.lesson-robotlab-preview__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 0.75rem;
+}
+
+.lesson-robotlab-preview__stat {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.8rem 0.85rem;
+    border-radius: var(--lesson-radius-sm);
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.lesson-robotlab-preview__stat strong {
+    font-size: 1.05rem;
+    color: #f8fafc;
+}
+
+.lesson-robotlab-preview__stat span {
+    color: rgba(203, 213, 225, 0.78);
+    font-size: 0.82rem;
+}
+
+.lesson-robotlab-preview__chips,
+.lesson-robotlab-preview__commands,
+.lesson-robotlab-preview__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.lesson-robotlab-preview__chip {
+    padding: 0.32rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.18);
+    border: 1px solid rgba(96, 165, 250, 0.18);
+    color: #dbeafe;
+    font-size: 0.84rem;
+    font-weight: 600;
+}
+
+.lesson-robotlab-preview__commands code {
+    padding: 0.38rem 0.72rem;
+    border-radius: 999px;
+    background: rgba(8, 15, 28, 0.72);
+    border: 1px solid rgba(103, 232, 249, 0.15);
+    color: #a5f3fc;
+    font-size: 0.84rem;
+}
+
+.lesson-robotlab-preview__snippet {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.lesson-robotlab-preview__snippet > span {
+    color: #e2e8f0;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.lesson-robotlab-preview__snippet pre {
+    margin: 0;
+    padding: 0.9rem 1rem;
+    border-radius: var(--lesson-radius-sm);
+    background: rgba(3, 7, 18, 0.92);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    overflow-x: auto;
+}
+
+.lesson-robotlab-preview__snippet code {
+    color: #e2e8f0;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.88rem;
+    line-height: 1.65;
+    white-space: pre;
+}
+
+.lesson-robotlab-preview__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.lesson-robotlab-preview__note {
+    font-size: 0.9rem;
+    max-width: 36rem;
+}
+
+.lesson-robotlab-preview__board {
+    display: grid;
+    gap: 0.85rem;
+    align-content: start;
+    padding: 1rem;
+    border-radius: var(--lesson-radius-sm);
+    background: rgba(2, 6, 23, 0.66);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.lesson-robotlab-preview__board-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.lesson-robotlab-preview__board-head strong {
+    color: #f8fafc;
+    font-size: 1rem;
+}
+
+.lesson-robotlab-preview__map {
+    display: grid;
+    grid-template-columns: repeat(var(--robotlab-preview-cols, 8), minmax(0, 1fr));
+    gap: 0.36rem;
+}
+
+.lesson-robotlab-preview__cell {
+    aspect-ratio: 1;
+    min-height: 42px;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    display: grid;
+    place-items: center;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.lesson-robotlab-preview__cell--wall {
+    background: linear-gradient(180deg, #334155, #0f172a);
+    color: #cbd5e1;
+}
+
+.lesson-robotlab-preview__cell--floor {
+    background: rgba(15, 23, 42, 0.7);
+    color: rgba(148, 163, 184, 0.6);
+}
+
+.lesson-robotlab-preview__cell--start {
+    background: linear-gradient(180deg, #2563eb, #0f172a);
+    border-color: rgba(96, 165, 250, 0.5);
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.16) inset;
+}
+
+.lesson-robotlab-preview__cell--goal {
+    background: linear-gradient(180deg, #16a34a, #052e16);
+    border-color: rgba(74, 222, 128, 0.5);
+}
+
+.lesson-robotlab-preview__cell--terminal {
+    background: linear-gradient(180deg, #06b6d4, #164e63);
+    border-color: rgba(103, 232, 249, 0.58);
+    box-shadow: 0 0 18px -10px rgba(34, 211, 238, 0.9);
+}
+
+.lesson-robotlab-preview__cell--battery {
+    background: linear-gradient(180deg, #f59e0b, #78350f);
+    border-color: rgba(253, 186, 116, 0.55);
+}
+
+.lesson-robotlab-preview__cell--key {
+    background: linear-gradient(180deg, #eab308, #713f12);
+    border-color: rgba(250, 204, 21, 0.55);
+}
+
+.lesson-robotlab-preview__cell--door {
+    background: linear-gradient(180deg, #fb7185, #4c0519);
+    border-color: rgba(251, 113, 133, 0.5);
+}
+
+.lesson-robotlab-preview__cell--hazard {
+    background: linear-gradient(180deg, #ef4444, #450a0a);
+    border-color: rgba(252, 165, 165, 0.45);
+}
+
+.lesson-robotlab-preview__legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: rgba(226, 232, 240, 0.84);
+}
+
+.lesson-robotlab-preview__legend-item small {
+    font-size: 0.8rem;
+}
+
+.lesson-robotlab-preview__legend-swatch {
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 10px;
+    display: inline-grid;
+    place-items: center;
+    font-style: normal;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #f8fafc;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.lesson-robotlab-preview__legend-swatch--wall {
+    background: #1e293b;
+}
+
+.lesson-robotlab-preview__legend-swatch--floor {
+    background: #0f172a;
+}
+
+.lesson-robotlab-preview__legend-swatch--start {
+    background: #2563eb;
+}
+
+.lesson-robotlab-preview__legend-swatch--goal {
+    background: #16a34a;
+}
+
+.lesson-robotlab-preview__legend-swatch--terminal {
+    background: #0891b2;
+}
+
+.lesson-robotlab-preview__legend-swatch--battery {
+    background: #d97706;
+}
+
+.lesson-robotlab-preview__legend-swatch--key {
+    background: #ca8a04;
+}
+
+.lesson-robotlab-preview__legend-swatch--door {
+    background: #e11d48;
+}
+
+.lesson-robotlab-preview__legend-swatch--hazard {
+    background: #dc2626;
+}
+
 .code-lab {
     display: grid;
     gap: 1.2rem;
-    padding: 1.5rem;
+    padding: clamp(1.1rem, 2vw, 1.5rem);
     border-radius: var(--lesson-radius);
-    background: var(--lesson-surface-alt);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.14), transparent 30%), linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(8, 15, 28, 0.98));
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .code-lab__header {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     gap: 1rem;
     font-weight: 600;
 }
@@ -720,10 +1342,66 @@ html[data-theme='light'] body.lesson-page .lesson-metric {
     font-size: 0.85rem;
 }
 
+.code-lab__mission {
+    display: grid;
+    gap: 0.55rem;
+    padding: 0.95rem 1rem;
+    border-radius: var(--lesson-radius-sm);
+    border: 1px solid rgba(34, 211, 238, 0.22);
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(139, 92, 246, 0.16));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.code-lab__mission-title {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--lesson-text);
+}
+
+.code-lab__mission-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.4rem;
+}
+
+.code-lab__mission-list li {
+    position: relative;
+    padding-left: 1.7rem;
+    color: var(--lesson-text-muted);
+    font-size: 0.94rem;
+}
+
+.code-lab__mission-list li::before {
+    content: '[ ]';
+    position: absolute;
+    left: 0;
+    top: 0.04rem;
+    color: var(--lesson-text-subtle);
+    font-weight: 700;
+}
+
+.code-lab__mission-list li.is-done {
+    color: var(--lesson-text);
+}
+
+.code-lab__mission-list li.is-done::before {
+    content: '[x]';
+    color: #22d3ee;
+}
+
+.code-lab__mission-status {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--lesson-text-subtle);
+}
+
 .code-lab__grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
     gap: 1rem;
+    align-items: stretch;
 }
 
 .code-lab__field {
@@ -731,10 +1409,21 @@ html[data-theme='light'] body.lesson-page .lesson-metric {
     gap: 0.5rem;
     color: var(--lesson-text-subtle);
     font-size: 0.95rem;
+    min-height: 100%;
+    padding: 0.9rem;
+    border-radius: var(--lesson-radius-sm);
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.code-lab__field > span {
+    color: var(--lesson-text);
+    font-weight: 600;
 }
 
 .code-lab__editor {
-    min-height: 220px;
+    width: 100%;
+    min-height: clamp(240px, 34vh, 360px);
     border-radius: var(--lesson-radius-sm);
     border: 1px solid var(--lesson-border);
     background: #0b1220;
@@ -744,6 +1433,13 @@ html[data-theme='light'] body.lesson-page .lesson-metric {
     line-height: 1.6;
     padding: 1rem;
     resize: vertical;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.code-lab__editor:focus {
+    outline: none;
+    border-color: rgba(56, 189, 248, 0.55);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
 }
 
 .code-lab__preview {
@@ -753,12 +1449,513 @@ html[data-theme='light'] body.lesson-page .lesson-metric {
     padding: 1rem;
     overflow: auto;
     font-size: 0.92rem;
+    display: flex;
 }
 
 .code-lab__preview code {
     background: transparent;
     display: block;
-    white-space: pre;
+    white-space: pre-wrap;
+    word-break: break-word;
+    flex: 1;
+}
+.code-lab__arena {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1rem 1.1rem;
+    border-radius: var(--lesson-radius-sm);
+    border: 1px solid rgba(59, 130, 246, 0.22);
+    background: linear-gradient(180deg, rgba(8, 16, 30, 0.82), rgba(2, 6, 23, 0.92));
+}
+
+.code-lab__arena-head {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.code-lab__arena-head p {
+    margin: 0;
+    color: var(--lesson-text-muted);
+    font-size: 0.9rem;
+}
+
+.code-lab__arena-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.35rem;
+}
+
+.code-lab__arena-cell {
+    min-height: 48px;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background: #0b1220;
+    display: grid;
+    place-items: center;
+    font-family: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #bfdbfe;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.code-lab__arena-cell.is-checkpoint {
+    border-color: rgba(14, 165, 233, 0.4);
+    color: #e2e8f0;
+}
+
+.code-lab__arena-cell.is-complete {
+    background: rgba(14, 116, 144, 0.35);
+    border-color: rgba(34, 211, 238, 0.5);
+}
+
+.code-lab__arena-cell.has-robot {
+    transform: translateY(-2px);
+    border-color: rgba(14, 165, 233, 0.75);
+    box-shadow: 0 10px 20px -14px rgba(14, 165, 233, 0.8);
+    color: #f8fafc;
+}
+
+.code-lab__arena-cell.is-goal.is-complete {
+    background: rgba(34, 197, 94, 0.3);
+    border-color: rgba(34, 197, 94, 0.7);
+}
+
+.code-lab__arena-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    font-size: 0.82rem;
+    color: var(--lesson-text-subtle);
+}
+
+.lesson-example-grid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.lesson-example-card {
+    border-radius: var(--lesson-radius-sm);
+    border: 1px solid var(--lesson-border);
+    background: rgba(15, 23, 42, 0.35);
+    padding: 0.85rem;
+    display: grid;
+    gap: 0.5rem;
+}
+
+.lesson-example-card h3 {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.lesson-example-card p {
+    margin: 0;
+    color: var(--lesson-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.lesson-example-card pre {
+    margin: 0;
+    padding: 0.6rem;
+    border-radius: var(--lesson-radius-xs);
+    background: rgba(2, 6, 23, 0.75);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    overflow-x: auto;
+    font-size: 0.82rem;
+}
+
+.junior-games {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.junior-games__summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.15rem;
+    border-radius: var(--lesson-radius-sm);
+    border: 1px solid rgba(96, 165, 250, 0.18);
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.84));
+}
+
+.junior-games__summary h3,
+.junior-game-card__header h3 {
+    margin: 0;
+    font-size: 1.08rem;
+}
+
+.junior-games__summary p,
+.junior-game-card__header p {
+    margin: 0.35rem 0 0;
+    color: var(--lesson-text-subtle);
+}
+
+.junior-games__eyebrow {
+    display: inline-flex;
+    margin-bottom: 0.25rem;
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #93c5fd;
+}
+
+.junior-games__progress {
+    min-width: 110px;
+    text-align: right;
+}
+
+.junior-games__progress strong {
+    display: block;
+    font-size: 1.6rem;
+    color: #f8fafc;
+}
+
+.junior-games__progress span {
+    color: var(--lesson-text-subtle);
+    font-size: 0.88rem;
+}
+
+.junior-games__grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.junior-game-card {
+    display: grid;
+    gap: 1rem;
+    padding: 1.1rem;
+    border-radius: var(--lesson-radius-sm);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(8, 15, 28, 0.98));
+    box-shadow: 0 18px 30px -28px rgba(15, 23, 42, 0.9);
+}
+
+.junior-game-card.is-complete {
+    border-color: rgba(34, 197, 94, 0.48);
+    box-shadow: 0 18px 34px -22px rgba(34, 197, 94, 0.35);
+}
+
+.junior-game-card__header {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: start;
+}
+
+.junior-game-card__badge {
+    display: inline-flex;
+    align-items: center;
+    height: fit-content;
+    border-radius: 999px;
+    padding: 0.35rem 0.7rem;
+    background: rgba(96, 165, 250, 0.16);
+    color: #bfdbfe;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.junior-game-card__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.junior-game-card__feedback {
+    margin: 0;
+    min-height: 1.5rem;
+    font-size: 0.92rem;
+    color: var(--lesson-text-subtle);
+}
+
+.junior-game-card__feedback.is-success {
+    color: #86efac;
+}
+
+.junior-game-card__feedback.is-error {
+    color: #fca5a5;
+}
+
+.junior-game-card__counter {
+    color: var(--lesson-text-subtle);
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.junior-games__reward {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.95rem 1rem;
+    border-radius: var(--lesson-radius-sm);
+    border: 1px solid rgba(34, 197, 94, 0.32);
+    background: rgba(34, 197, 94, 0.12);
+    color: #dcfce7;
+}
+
+.junior-order {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.junior-order__board {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.junior-order__row {
+    display: grid;
+    gap: 0.45rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.junior-order__cell {
+    position: relative;
+    min-height: 68px;
+    border-radius: 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 0.45rem;
+    font-size: 0.8rem;
+    color: #e2e8f0;
+    overflow: hidden;
+}
+
+.junior-order__cell span {
+    max-width: 64px;
+    line-height: 1.25;
+}
+
+.junior-order__cell--start,
+.junior-order__cell--path {
+    background: rgba(15, 118, 110, 0.18);
+}
+
+.junior-order__cell--terminal {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+.junior-order__cell--wall {
+    background: rgba(71, 85, 105, 0.38);
+    color: rgba(226, 232, 240, 0.65);
+}
+
+.junior-order__cell.is-robot::after {
+    content: 'R';
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: #facc15;
+    color: #111827;
+    display: grid;
+    place-items: center;
+    font-size: 0.82rem;
+    font-weight: 800;
+    box-shadow: 0 8px 20px -10px rgba(250, 204, 21, 0.85);
+}
+
+.junior-order__controls {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.junior-order__bank,
+.junior-order__slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.junior-token,
+.junior-order__slot,
+.junior-color-card,
+.junior-action-card,
+.junior-memory__card {
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    background: rgba(15, 23, 42, 0.82);
+    color: #f8fafc;
+}
+
+.junior-token {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 0.95rem;
+    font-weight: 700;
+}
+
+.junior-token:disabled {
+    opacity: 0.45;
+}
+
+.junior-token__icon {
+    width: 1.7rem;
+    height: 1.7rem;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: rgba(96, 165, 250, 0.15);
+}
+
+.junior-order__slot {
+    width: 58px;
+    height: 58px;
+    border-radius: 1rem;
+    display: grid;
+    place-items: center;
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.junior-order__slot.is-filled {
+    border-color: rgba(96, 165, 250, 0.42);
+    background: rgba(30, 41, 59, 0.95);
+}
+
+.junior-order__slot.is-wrong {
+    border-color: rgba(248, 113, 113, 0.6);
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.16);
+}
+
+.junior-colors {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.junior-colors__column {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.junior-color-card,
+.junior-action-card {
+    width: 100%;
+    padding: 0.8rem 0.9rem;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    text-align: left;
+    font-weight: 700;
+}
+
+.junior-color-card__swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--junior-card-color, #93c5fd);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--junior-card-color, #93c5fd) 20%, transparent);
+}
+
+.junior-color-card.is-selected,
+.junior-action-card.is-selected {
+    border-color: rgba(96, 165, 250, 0.52);
+    transform: translateY(-1px);
+}
+
+.junior-color-card.is-matched,
+.junior-action-card.is-matched {
+    border-color: rgba(34, 197, 94, 0.52);
+    background: rgba(20, 83, 45, 0.48);
+}
+
+.junior-memory {
+    display: grid;
+    gap: 0.7rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.junior-memory__card {
+    position: relative;
+    min-height: 92px;
+    border-radius: 1rem;
+    perspective: 900px;
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.junior-memory__card.is-flipped {
+    transform: rotateY(180deg);
+}
+
+.junior-memory__card.is-matched {
+    border-color: rgba(34, 197, 94, 0.52);
+    box-shadow: 0 12px 24px -18px rgba(34, 197, 94, 0.58);
+}
+
+.junior-memory__face {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    gap: 0.2rem;
+    padding: 0.7rem;
+    backface-visibility: hidden;
+    border-radius: inherit;
+}
+
+.junior-memory__face--front {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.16), rgba(15, 23, 42, 0.95));
+    font-size: 1.45rem;
+    font-weight: 800;
+}
+
+.junior-memory__face--back {
+    transform: rotateY(180deg);
+    background: linear-gradient(180deg, rgba(14, 165, 233, 0.18), rgba(15, 23, 42, 0.96));
+    text-align: center;
+}
+
+.junior-memory__face--back strong {
+    font-size: 1.1rem;
+}
+
+.junior-memory__face--back small {
+    color: var(--lesson-text-subtle);
+}
+
+html[data-theme='light'] body.lesson-page .junior-games__summary,
+html[data-theme='light'] body.lesson-page .junior-game-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(239, 246, 255, 0.96));
+    border-color: rgba(148, 163, 184, 0.22);
+}
+
+html[data-theme='light'] body.lesson-page .junior-games__progress strong,
+html[data-theme='light'] body.lesson-page .junior-order__cell,
+html[data-theme='light'] body.lesson-page .junior-token,
+html[data-theme='light'] body.lesson-page .junior-order__slot,
+html[data-theme='light'] body.lesson-page .junior-color-card,
+html[data-theme='light'] body.lesson-page .junior-action-card,
+html[data-theme='light'] body.lesson-page .junior-memory__card {
+    color: #0f172a;
+}
+
+html[data-theme='light'] body.lesson-page .junior-token,
+html[data-theme='light'] body.lesson-page .junior-order__slot,
+html[data-theme='light'] body.lesson-page .junior-color-card,
+html[data-theme='light'] body.lesson-page .junior-action-card,
+html[data-theme='light'] body.lesson-page .junior-memory__card {
+    background: rgba(255, 255, 255, 0.92);
+}
+
+html[data-theme='light'] body.lesson-page .junior-memory__face--front,
+html[data-theme='light'] body.lesson-page .junior-memory__face--back {
+    color: #0f172a;
 }
 
 .code-lab__field--inline input {
@@ -780,6 +1977,10 @@ html[data-theme='light'] body.lesson-page .lesson-metric {
 .code-lab__status {
     font-weight: 600;
     color: var(--lesson-text-muted);
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.12);
+    border: 1px solid rgba(148, 163, 184, 0.16);
 }
 
 .code-lab__buttons {
@@ -797,6 +1998,8 @@ html[data-theme='light'] body.lesson-page .lesson-metric {
     font-size: 0.92rem;
     color: var(--lesson-text);
     overflow-x: auto;
+    white-space: pre-wrap;
+    line-height: 1.65;
 }
 
 .code-lab__reward {
@@ -849,6 +2052,15 @@ html[data-theme='light'] body.lesson-page .lesson-output {
     color: #1F2937;
 }
 
+html[data-theme='light'] body.lesson-page .code-lab__mission {
+    border-color: rgba(45, 212, 191, 0.36);
+    background: rgba(45, 212, 191, 0.12);
+}
+
+html[data-theme='light'] body.lesson-page .code-lab__mission-list li.is-done::before {
+    color: #0891b2;
+}
+
 /* ==========================================================================
    Practice
    ========================================================================== */
@@ -857,13 +2069,14 @@ html[data-theme='light'] body.lesson-page .lesson-output {
     display: grid;
     gap: clamp(1.5rem, 3vw, 2rem);
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    align-items: start;
 }
 
 .practice-subcard {
-    background: var(--lesson-surface-alt);
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.82), rgba(8, 15, 28, 0.94));
     border-radius: var(--lesson-radius-sm);
-    border: 1px solid var(--lesson-border);
-    padding: 1.5rem 1.6rem;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    padding: clamp(1.2rem, 2vw, 1.55rem);
     display: grid;
     gap: 1rem;
     position: relative;
@@ -923,7 +2136,8 @@ html[data-theme='light'] body.lesson-page .practice-editor {
 .match-columns {
     display: grid;
     gap: 1.5rem;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.1fr);
+    align-items: start;
 }
 
 .match-bank,
@@ -938,15 +2152,17 @@ html[data-theme='light'] body.lesson-page .practice-editor {
 .match-token {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    padding: 0.55rem 0.9rem;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 0.72rem 0.95rem;
     border-radius: 12px;
-    background: rgba(51, 65, 85, 0.8);
+    background: linear-gradient(135deg, rgba(91, 33, 182, 0.45), rgba(59, 130, 246, 0.26));
     color: #F8FAFC;
     font-weight: 600;
     cursor: grab;
-    border: 1px solid transparent;
+    border: 1px solid rgba(139, 92, 246, 0.24);
     transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 14px 24px -22px rgba(59, 130, 246, 0.8);
 }
 
 .match-token:focus-visible,
@@ -957,13 +2173,13 @@ html[data-theme='light'] body.lesson-page .practice-editor {
 }
 
 .match-slot {
-    background: rgba(15, 23, 42, 0.35);
+    background: rgba(4, 11, 24, 0.74);
     border-radius: 14px;
-    padding: 0.85rem 1rem;
+    padding: 1rem 1.05rem;
     border: 1px dashed rgba(148, 163, 184, 0.35);
     display: grid;
     gap: 0.45rem;
-    min-height: 78px;
+    min-height: 116px;
 }
 
 .match-slot__label {
@@ -974,6 +2190,9 @@ html[data-theme='light'] body.lesson-page .practice-editor {
 .match-slot__drop {
     font-size: 0.9rem;
     color: var(--lesson-text-subtle);
+    min-height: 52px;
+    display: flex;
+    align-items: center;
 }
 
 .match-slot.is-correct {
@@ -1002,6 +2221,10 @@ html[data-theme='light'] body.lesson-page .practice-editor {
     color: var(--lesson-success);
     opacity: 0;
     transition: opacity 0.3s ease, transform 0.3s ease;
+    width: fit-content;
+    padding: 0.65rem 0.95rem;
+    border-radius: 999px;
+    background: rgba(34, 211, 238, 0.12);
 }
 
 .practice-celebration.is-visible {
@@ -1054,8 +2277,8 @@ html[data-theme='light'] body.lesson-page .practice-editor {
     margin-top: 1rem;
     padding: 1rem;
     border-radius: var(--lesson-radius-xs);
-    border: 1px solid rgba(148, 163, 184, 0.3);
-    background: rgba(15, 23, 42, 0.35);
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    background: rgba(8, 16, 30, 0.78);
     color: var(--lesson-text-muted);
     font-size: 0.95rem;
 }
@@ -1095,8 +2318,8 @@ html[data-theme='light'] body.lesson-page .match-slot {
 
 .test-accordion {
     border-radius: var(--lesson-radius);
-    border: 1px solid var(--lesson-border);
-    background: var(--lesson-surface-alt);
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(8, 15, 28, 0.95));
     overflow: hidden;
 }
 
@@ -1113,11 +2336,17 @@ html[data-theme='light'] body.lesson-page .match-slot {
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.test-accordion__toggle:hover,
+.test-accordion__toggle:focus-visible {
+    background: rgba(59, 130, 246, 0.08);
 }
 
 .test-accordion__panel {
     display: none;
-    padding: 1rem 1.2rem;
+    padding: 1.15rem 1.25rem 1.25rem;
 }
 
 .test-accordion__panel.is-open {
@@ -1127,12 +2356,22 @@ html[data-theme='light'] body.lesson-page .match-slot {
 .lesson-card--quiz .quiz-card {
     display: grid;
     gap: 1.4rem;
+    padding: clamp(1.15rem, 2vw, 1.45rem);
+    border-radius: var(--lesson-radius-sm);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.76), rgba(8, 15, 28, 0.95));
 }
 
 .quiz-question {
     margin: 0;
-    font-size: 1.15rem;
+    font-size: 1.18rem;
     color: var(--lesson-text);
+    line-height: 1.45;
+}
+
+.quiz-form {
+    display: grid;
+    gap: 1rem;
 }
 
 .quiz-options {
@@ -1145,17 +2384,25 @@ html[data-theme='light'] body.lesson-page .match-slot {
     grid-template-columns: auto 1fr;
     gap: 0.8rem;
     align-items: center;
-    padding: 0.9rem 1.1rem;
+    padding: 1rem 1.1rem;
     border-radius: var(--lesson-radius-xs);
-    border: 1px solid var(--lesson-border);
-    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    background: rgba(15, 23, 42, 0.55);
     transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
+    min-height: 74px;
 }
 
 .quiz-option input {
     margin: 0;
     accent-color: var(--lesson-highlight);
+    width: 1rem;
+    height: 1rem;
+}
+
+.quiz-option span {
+    color: var(--lesson-text);
+    font-weight: 600;
 }
 
 .quiz-option:hover,
@@ -1189,14 +2436,23 @@ html[data-theme='light'] body.lesson-page .match-slot {
 .quiz-feedback {
     font-weight: 600;
     font-size: 0.98rem;
+    margin: 0;
+    padding: 0.95rem 1rem;
+    border-radius: var(--lesson-radius-xs);
+    background: rgba(15, 23, 42, 0.42);
+    border: 1px solid transparent;
 }
 
 .quiz-feedback.success {
     color: var(--lesson-success);
+    background: rgba(34, 197, 94, 0.14);
+    border-color: rgba(34, 197, 94, 0.22);
 }
 
 .quiz-feedback.error {
     color: var(--lesson-danger);
+    background: rgba(239, 68, 68, 0.14);
+    border-color: rgba(239, 68, 68, 0.2);
 }
 
 .lesson-card--assistant .ai-hint-form {
@@ -1291,7 +2547,7 @@ html[data-theme='light'] body.lesson-page .match-slot {
 }
 
 .quiz-explanation {
-    margin-top: 1rem;
+    margin-top: 0;
     padding: 1rem 1.1rem;
     border-radius: var(--lesson-radius-xs);
     background: rgba(59, 130, 246, 0.12);
@@ -1391,6 +2647,427 @@ html[data-theme='light'] body.lesson-page .match-slot {
     color: var(--lesson-text-subtle);
 }
 
+/* ==========================================================================
+   Immersive split layout
+   ========================================================================== */
+
+body.lesson-page--immersive {
+    overflow-y: auto;
+}
+
+body.lesson-page--immersive .site-main {
+    padding-top: 0.75rem;
+    gap: 0;
+}
+
+body.lesson-page--immersive .workspace-shell {
+    gap: 0;
+}
+
+body.lesson-page--immersive .workspace-main {
+    width: min(100vw - 1.35rem, 1720px);
+    max-width: none;
+    min-height: calc(100vh - var(--navbar-height) - 0.75rem);
+    padding-inline: 0;
+    padding-bottom: 1rem;
+    gap: 0.75rem;
+}
+
+body.lesson-page--immersive .lesson-root {
+    width: 100%;
+    margin: 0;
+    height: auto;
+    min-height: auto;
+    gap: 0.75rem;
+    grid-template-rows: auto;
+}
+
+body.lesson-page--immersive .lesson-hero,
+body.lesson-page--immersive #warmup,
+body.lesson-page--immersive #adventure-mode,
+body.lesson-page--immersive #media-guide,
+body.lesson-page--immersive #code-exercises,
+body.lesson-page--immersive #assistant,
+body.lesson-page--immersive #resources,
+body.lesson-page--immersive #reflection {
+    display: none !important;
+}
+
+body.lesson-page--immersive .lesson-layout {
+    height: auto;
+    min-height: auto;
+    grid-template-columns: minmax(260px, 25%) minmax(0, 1fr);
+    gap: 0.9rem;
+    align-items: start;
+}
+
+body.lesson-page--immersive .lesson-sidebar {
+    position: sticky;
+    top: calc(var(--navbar-height, 4.5rem) + 0.9rem);
+    height: auto;
+    min-height: auto;
+    max-height: calc(100vh - var(--navbar-height, 4.5rem) - 1.25rem);
+    overflow: auto;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+body.lesson-page--immersive .lesson-sidebar__theory {
+    display: grid;
+    gap: 0.7rem;
+}
+
+body.lesson-page--immersive .lesson-sidebar__theory h2 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+body.lesson-page--immersive .lesson-sidebar__theory p {
+    margin: 0;
+    color: var(--lesson-text-muted);
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+body.lesson-page--immersive .lesson-sidebar__theory-list {
+    margin: 0;
+    padding-left: 1rem;
+    display: grid;
+    gap: 0.35rem;
+    color: var(--lesson-text-muted);
+    font-size: 0.88rem;
+}
+
+body.lesson-page--immersive .lesson-sidebar__hint {
+    width: 100%;
+}
+
+body.lesson-page--immersive .lesson-sidebar__select {
+    display: none;
+}
+
+body.lesson-page--immersive .lesson-nav__link {
+    transform: none;
+}
+
+body.lesson-page--immersive .lesson-nav__link.is-active,
+body.lesson-page--immersive .lesson-nav__link:hover,
+body.lesson-page--immersive .lesson-nav__link:focus-visible {
+    transform: none;
+}
+
+body.lesson-page--immersive .lesson-body {
+    display: grid;
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+}
+
+body.lesson-page--immersive .lesson-body > .lesson-section {
+    display: none;
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+    padding: 1.1rem;
+}
+
+body.lesson-page--immersive .lesson-body > .lesson-section.is-panel-active {
+    display: grid;
+}
+
+body.lesson-page--immersive .lesson-body > #example.is-panel-active {
+    grid-template-rows: auto;
+    overflow: visible;
+    gap: 0.85rem;
+    padding-bottom: 0;
+}
+
+body.lesson-page--immersive #example .lesson-card__header {
+    gap: 0.8rem;
+    align-items: center;
+}
+
+body.lesson-page--immersive #example .lesson-card__icon {
+    width: 2.7rem;
+    height: 2.7rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+body.lesson-page--immersive #example .lesson-card__header h2 {
+    font-size: clamp(1.3rem, 2vw, 1.75rem);
+    margin-bottom: 0.15rem;
+}
+
+body.lesson-page--immersive #example .lesson-card__header p {
+    font-size: 0.95rem;
+}
+
+body.lesson-page--immersive #example .lesson-robotlab-preview {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.86fr);
+    padding: 0.82rem;
+    gap: 0.72rem;
+}
+
+body.lesson-page--immersive #example .lesson-robotlab-preview__story {
+    gap: 0.72rem;
+}
+
+body.lesson-page--immersive #example .lesson-robotlab-preview__title-row h3 {
+    font-size: 1.15rem;
+}
+
+body.lesson-page--immersive #example .lesson-robotlab-preview__title-row p,
+body.lesson-page--immersive #example .lesson-robotlab-preview__goal,
+body.lesson-page--immersive #example .lesson-robotlab-preview__note {
+    font-size: 0.84rem;
+}
+
+body.lesson-page--immersive #example .lesson-robotlab-preview__flow-step,
+body.lesson-page--immersive #example .lesson-robotlab-preview__chip,
+body.lesson-page--immersive #example .lesson-robotlab-preview__commands code {
+    font-size: 0.76rem;
+}
+
+body.lesson-page--immersive #example .lesson-robotlab-preview__stat {
+    padding: 0.68rem 0.72rem;
+}
+
+body.lesson-page--immersive #example .lesson-robotlab-preview__stat strong {
+    font-size: 0.95rem;
+}
+
+body.lesson-page--immersive #example .lesson-robotlab-preview__stat span,
+body.lesson-page--immersive #example .lesson-robotlab-preview__legend-item small {
+    font-size: 0.74rem;
+}
+
+body.lesson-page--immersive #example .lesson-robotlab-preview__snippet pre,
+body.lesson-page--immersive #example .lesson-robotlab-preview__board {
+    padding: 0.72rem;
+}
+
+body.lesson-page--immersive #example .lesson-robotlab-preview__snippet code {
+    font-size: 0.78rem;
+}
+
+body.lesson-page--immersive #example .lesson-robotlab-preview__cell {
+    min-height: 34px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+}
+
+body.lesson-page--immersive #example .lesson-robotlab-preview__legend-swatch {
+    width: 1.55rem;
+    height: 1.55rem;
+    border-radius: 8px;
+    font-size: 0.68rem;
+}
+
+body.lesson-page--immersive #example .code-lab {
+    min-height: auto;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    padding: 0.9rem;
+    gap: 0.75rem;
+    grid-template-rows: auto;
+}
+
+body.lesson-page--immersive #example .code-lab__mission {
+    padding: 0.56rem 0.66rem;
+    gap: 0.25rem;
+}
+
+body.lesson-page--immersive #example .code-lab__mission-list li {
+    font-size: 0.82rem;
+}
+
+body.lesson-page--immersive #example .code-lab__mission-status {
+    font-size: 0.78rem;
+}
+
+body.lesson-page--immersive #example .code-lab__header {
+    align-items: center;
+}
+
+body.lesson-page--immersive #example .code-lab__chips span {
+    font-size: 0.74rem;
+    padding: 0.16rem 0.55rem;
+}
+
+body.lesson-page--immersive #example .code-lab__grid {
+    min-height: auto;
+    height: auto;
+    gap: 0.65rem;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+}
+
+body.lesson-page--immersive #example .code-lab__field {
+    min-height: auto;
+}
+
+body.lesson-page--immersive #example .code-lab__editor {
+    min-height: 220px;
+    height: auto;
+    resize: vertical;
+    padding: 0.66rem;
+    font-size: 0.84rem;
+    line-height: 1.35;
+}
+
+body.lesson-page--immersive #example .code-lab__preview {
+    min-height: 220px;
+    height: auto;
+    padding: 0.66rem;
+    font-size: 0.82rem;
+}
+
+body.lesson-page--immersive #example .code-lab__arena {
+    padding: 0.62rem 0.72rem;
+    gap: 0.45rem;
+}
+
+body.lesson-page--immersive #example .code-lab__arena-grid {
+    gap: 0.28rem;
+}
+
+body.lesson-page--immersive #example .code-lab__arena-cell {
+    min-height: 34px;
+    border-radius: 10px;
+    font-size: 0.82rem;
+}
+
+body.lesson-page--immersive #example .code-lab__arena-legend {
+    font-size: 0.76rem;
+    gap: 0.5rem;
+}
+
+body.lesson-page--immersive #example .code-lab__field--inline {
+    display: none;
+}
+
+body.lesson-page--immersive #example .code-lab__field--inline input {
+    padding: 0.4rem 0.56rem;
+    font-size: 0.82rem;
+}
+
+body.lesson-page--immersive #example .code-lab__actions {
+    gap: 0.38rem;
+}
+
+body.lesson-page--immersive #example .code-lab__status {
+    font-size: 0.82rem;
+}
+
+body.lesson-page--immersive #example .code-lab__buttons .btn {
+    padding: 0.45rem 0.84rem;
+}
+
+body.lesson-page--immersive #example .code-lab__console {
+    min-height: 96px;
+    max-height: none;
+    padding: 0.58rem 0.66rem;
+    font-size: 0.8rem;
+}
+
+body.lesson-page--immersive #example .code-lab__reward {
+    padding: 0.42rem 0.7rem;
+    font-size: 0.82rem;
+}
+
+body.lesson-page--immersive #example .lesson-code-caption {
+    display: block;
+}
+
+body.lesson-page--immersive .test-accordion__panel {
+    display: block;
+}
+
+body.lesson-page--immersive .test-accordion__toggle {
+    display: none;
+}
+
+body.lesson-page--immersive .scroll-top-button,
+body.lesson-page--immersive .scroll-progress {
+    display: none;
+}
+
+.lesson-hint-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 220;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+}
+
+.lesson-hint-modal[hidden] {
+    display: none;
+}
+
+.lesson-hint-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: rgba(3, 7, 18, 0.76);
+    cursor: pointer;
+}
+
+.lesson-hint-modal__dialog {
+    position: relative;
+    z-index: 1;
+    width: min(520px, calc(100vw - 2rem));
+    max-height: min(82vh, 620px);
+    overflow: auto;
+    display: grid;
+    gap: 0.55rem;
+    border-radius: var(--lesson-radius-sm);
+    border: 1px solid var(--lesson-border-strong);
+    background: var(--lesson-surface);
+    box-shadow: var(--lesson-shadow);
+    padding: 1rem;
+}
+
+.lesson-hint-modal__close {
+    position: absolute;
+    top: 0.45rem;
+    right: 0.5rem;
+    width: 1.95rem;
+    height: 1.95rem;
+    border-radius: 999px;
+    border: 1px solid var(--lesson-border);
+    background: transparent;
+    color: var(--lesson-text);
+    cursor: pointer;
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.lesson-hint-modal__eyebrow {
+    margin: 0;
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--lesson-text-subtle);
+}
+
+.lesson-hint-modal__dialog h3 {
+    margin: 0;
+}
+
+.lesson-hint-modal__content {
+    margin: 0;
+    white-space: pre-wrap;
+    color: var(--lesson-text-muted);
+    line-height: 1.6;
+}
+
+body.lesson-page--immersive.lesson-hint-modal-open {
+    overflow: hidden;
+}
+
 .lesson-completion-card .btn--ghost {
     color: #ecfdf5;
     border-color: rgba(255, 255, 255, 0.35);
@@ -1411,6 +3088,78 @@ body.lesson-page .hidden {
    ========================================================================== */
 
 @media (max-width: 1100px) {
+    body.lesson-page--immersive {
+        overflow: auto;
+    }
+
+    body.lesson-page--immersive .site-main {
+        padding-top: var(--section-gap-tight, 3rem);
+        gap: var(--section-gap, 4rem);
+    }
+
+    body.lesson-page--immersive .workspace-shell {
+        gap: clamp(3rem, 5vw, 4.5rem);
+    }
+
+    body.lesson-page--immersive .workspace-main {
+        width: min(1200px, calc(100% - 3rem));
+        min-height: auto;
+        padding-bottom: 0;
+    }
+
+    body.lesson-page--immersive .lesson-root {
+        width: min(1280px, calc(100% - 2rem));
+        margin: clamp(1rem, 2.2vw, 1.9rem) auto clamp(2rem, 4vw, 3rem);
+        height: auto;
+        min-height: auto;
+    }
+
+    body.lesson-page--immersive .lesson-layout {
+        height: auto;
+        min-height: auto;
+        grid-template-columns: 1fr;
+    }
+
+    body.lesson-page--immersive .lesson-sidebar {
+        height: auto;
+        overflow: visible;
+    }
+
+    body.lesson-page--immersive .lesson-sidebar__select {
+        display: grid;
+    }
+
+    body.lesson-page--immersive .lesson-body {
+        display: grid;
+        gap: clamp(2rem, 4vw, 2.75rem);
+        height: auto;
+        overflow: visible;
+    }
+
+    body.lesson-page--immersive .lesson-body > .lesson-section {
+        display: grid;
+        height: auto;
+        overflow: visible;
+        padding: clamp(2rem, 4vw, 2.4rem);
+    }
+
+    body.lesson-page--immersive .lesson-body > #media-guide,
+    body.lesson-page--immersive .lesson-body > #code-exercises,
+    body.lesson-page--immersive .lesson-body > #assistant,
+    body.lesson-page--immersive .lesson-body > #resources,
+    body.lesson-page--immersive .lesson-body > #reflection {
+        display: none;
+    }
+
+    body.lesson-page--immersive .test-accordion__toggle {
+        display: flex;
+    }
+
+    body.lesson-page--immersive .scroll-top-button,
+    body.lesson-page--immersive .scroll-progress {
+        display: block;
+    }
+
     .lesson-layout {
         grid-template-columns: 1fr;
     }
@@ -1447,8 +3196,29 @@ body.lesson-page .hidden {
         padding: 1.2rem;
     }
 
+    .code-arena {
+        grid-template-columns: 1fr;
+    }
+
+    .lesson-robotlab-preview {
+        grid-template-columns: 1fr;
+    }
+
+    .lesson-robotlab-preview__title-row,
+    .lesson-robotlab-preview__board-head {
+        flex-direction: column;
+    }
+
     .code-lab__grid {
         grid-template-columns: 1fr;
+    }
+
+    .match-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .code-lab__arena-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
     .code-lab__buttons {
@@ -1480,12 +3250,38 @@ body.lesson-page .hidden {
         padding: 1.25rem;
     }
 
+    .adventure-cast {
+        grid-template-columns: 1fr;
+    }
+
     .lesson-sidebar {
         gap: 1rem;
     }
 
     .lesson-nav__link {
         padding: 0.75rem;
+    }
+
+    .lesson-robotlab-preview {
+        padding: 0.95rem;
+    }
+
+    .lesson-robotlab-preview__stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lesson-robotlab-preview__actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .lesson-robotlab-preview__actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .lesson-robotlab-preview__cell {
+        min-height: 34px;
     }
 
     .code-lab__actions {
@@ -1501,6 +3297,10 @@ body.lesson-page .hidden {
         width: 100%;
     }
 
+    .code-lab__arena-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
     .quiz-option {
         grid-template-columns: minmax(0, 1fr);
     }
@@ -1511,3 +3311,894 @@ body.lesson-page .hidden {
     100% { opacity: 1; transform: scale(1); }
 }
 
+/* ==========================================================================
+   Child-friendly Robot Lab lesson preview
+   ========================================================================== */
+
+body.lesson-page #example .lesson-robotlab-preview {
+    display: grid;
+    grid-template-columns: minmax(0, 1.22fr) minmax(320px, 0.78fr);
+    gap: 1rem;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    overflow: visible;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__board,
+body.lesson-page #example .lesson-robotlab-preview__story {
+    position: relative;
+    overflow: hidden;
+    border: 4px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 22px 44px -30px rgba(8, 59, 104, 0.62);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__board {
+    display: grid;
+    gap: 0.85rem;
+    align-content: start;
+    min-height: 520px;
+    padding: 1rem;
+    border-radius: 34px;
+    background:
+        radial-gradient(circle at 14px 14px, rgba(255, 255, 255, 0.18) 2px, transparent 2.8px) 0 0 / 28px 28px,
+        linear-gradient(180deg, #19b7f6 0%, #29c1ff 28%, #36cf5f 28%, #25b748 100%);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__board::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 14% 16%, rgba(255, 255, 255, 0.16), transparent 16%),
+        radial-gradient(circle at 88% 14%, rgba(255, 255, 255, 0.12), transparent 14%);
+    pointer-events: none;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__story {
+    display: grid;
+    align-content: start;
+    gap: 0.8rem;
+    padding: 1rem;
+    border-radius: 30px;
+    background:
+        radial-gradient(circle at top right, rgba(255, 220, 99, 0.28), transparent 28%),
+        linear-gradient(180deg, #fff9dd, #fffdf6);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__board-top,
+body.lesson-page #example .lesson-robotlab-preview__story-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__eyebrow,
+body.lesson-page #example .lesson-robotlab-preview__story-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.42rem 0.88rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #7ee6ff, #46bff4);
+    border: 2px solid rgba(255, 255, 255, 0.86);
+    color: #15506c;
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    box-shadow: 0 10px 16px -14px rgba(21, 125, 175, 0.8);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__story-label {
+    letter-spacing: 0.08em;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__board-meta {
+    display: grid;
+    gap: 0.35rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__board-meta strong {
+    color: #ffffff;
+    font-size: clamp(1.2rem, 2vw, 1.55rem);
+    text-shadow: 0 4px 10px rgba(9, 78, 124, 0.35);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__board-side {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__stars {
+    display: flex;
+    gap: 0.42rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__stars span {
+    width: 1.55rem;
+    aspect-ratio: 1;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 93%, 50% 71%, 21% 93%, 32% 57%, 2% 35%, 39% 35%);
+    background: linear-gradient(180deg, #fff5a8, #ffb703);
+    box-shadow: 0 8px 14px -12px rgba(211, 143, 0, 0.92);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__speech {
+    position: relative;
+    justify-self: end;
+    max-width: 320px;
+    padding: 0.95rem 1.1rem;
+    border-radius: 26px;
+    background: rgba(255, 255, 255, 0.98);
+    color: #315573;
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 16px 28px -24px rgba(5, 58, 101, 0.72);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__speech::after {
+    content: '';
+    position: absolute;
+    left: 26px;
+    bottom: -10px;
+    width: 18px;
+    height: 18px;
+    background: rgba(255, 255, 255, 0.98);
+    transform: rotate(45deg);
+    border-right: 3px solid rgba(255, 255, 255, 0.9);
+    border-bottom: 3px solid rgba(255, 255, 255, 0.9);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__speech strong {
+    display: block;
+    margin-bottom: 0.18rem;
+    color: #1a5678;
+    font-size: 0.92rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__speech p {
+    margin: 0;
+    color: #456b88;
+    line-height: 1.55;
+    font-size: 0.9rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__playfield {
+    position: relative;
+    display: grid;
+    gap: 0.8rem;
+    align-items: end;
+    min-height: 290px;
+    padding: 0 0.2rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__mascot {
+    position: absolute;
+    left: 0.1rem;
+    top: 0.8rem;
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 34% 30%, #7feeff 0%, #45dcfa 28%, #21b6e7 68%, #157cb8 100%);
+    box-shadow:
+        inset 0 10px 18px -14px rgba(255, 255, 255, 0.86),
+        0 14px 26px -20px rgba(7, 67, 110, 0.76);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__mascot-eyes {
+    position: absolute;
+    top: 28px;
+    left: 22px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 30px 0 0 #ffffff;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__mascot-eyes::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #173d61;
+    box-shadow: 30px 0 0 #173d61;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__mascot-smile {
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    width: 34px;
+    height: 16px;
+    margin-left: -17px;
+    border-bottom: 4px solid #173d61;
+    border-radius: 0 0 24px 24px;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__map-frame {
+    margin-left: 4.9rem;
+    padding: 0.6rem 0.65rem 1.15rem;
+    border-radius: 32px;
+    background:
+        linear-gradient(180deg, rgba(44, 202, 72, 0.06), rgba(29, 177, 52, 0.08));
+    border: 3px solid rgba(255, 255, 255, 0.84);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__map {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--robotlab-preview-cols, 8), minmax(0, 1fr));
+    gap: 0.34rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell {
+    position: relative;
+    aspect-ratio: 1;
+    min-height: 48px;
+    border-radius: 16px;
+    border: 2px solid rgba(77, 179, 238, 0.46);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.72),
+        0 10px 16px -16px rgba(14, 99, 148, 0.82);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell--wall {
+    background: linear-gradient(180deg, #5be46a, #22b53e);
+    border-color: rgba(32, 154, 50, 0.46);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell--floor,
+body.lesson-page #example .lesson-robotlab-preview__cell--start,
+body.lesson-page #example .lesson-robotlab-preview__cell--goal,
+body.lesson-page #example .lesson-robotlab-preview__cell--terminal,
+body.lesson-page #example .lesson-robotlab-preview__cell--battery,
+body.lesson-page #example .lesson-robotlab-preview__cell--key,
+body.lesson-page #example .lesson-robotlab-preview__cell--door,
+body.lesson-page #example .lesson-robotlab-preview__cell--hazard {
+    background: linear-gradient(180deg, #c8f6ff, #63e0ff);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell-label {
+    position: relative;
+    z-index: 1;
+    display: none;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell--start .lesson-robotlab-preview__cell-label,
+body.lesson-page #example .lesson-robotlab-preview__cell--terminal .lesson-robotlab-preview__cell-label,
+body.lesson-page #example .lesson-robotlab-preview__cell--goal .lesson-robotlab-preview__cell-label,
+body.lesson-page #example .lesson-robotlab-preview__cell--battery .lesson-robotlab-preview__cell-label,
+body.lesson-page #example .lesson-robotlab-preview__cell--key .lesson-robotlab-preview__cell-label,
+body.lesson-page #example .lesson-robotlab-preview__cell--door .lesson-robotlab-preview__cell-label,
+body.lesson-page #example .lesson-robotlab-preview__cell--hazard .lesson-robotlab-preview__cell-label {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    font-size: 0.84rem;
+    font-weight: 900;
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.86);
+    box-shadow: 0 8px 14px -12px rgba(10, 67, 109, 0.74);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell--start .lesson-robotlab-preview__cell-label {
+    background: linear-gradient(180deg, #2b79ff, #1553d7);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell--terminal .lesson-robotlab-preview__cell-label {
+    background: linear-gradient(180deg, #26c8e8, #0aa2c7);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell--goal .lesson-robotlab-preview__cell-label {
+    background: linear-gradient(180deg, #ffd667, #ffb703);
+    color: #6b4800;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell--battery .lesson-robotlab-preview__cell-label {
+    background: linear-gradient(180deg, #ffc85a, #f59e0b);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell--key .lesson-robotlab-preview__cell-label {
+    background: linear-gradient(180deg, #ffe27d, #eab308);
+    color: #755200;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell--door .lesson-robotlab-preview__cell-label {
+    background: linear-gradient(180deg, #ffad7c, #f97316);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell--hazard .lesson-robotlab-preview__cell-label {
+    background: linear-gradient(180deg, #ff8ca0, #ef4444);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell--floor:nth-child(11n + 3)::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 93%, 50% 71%, 21% 93%, 32% 57%, 2% 35%, 39% 35%);
+    background: linear-gradient(180deg, #fff2a0, #ffb703);
+    opacity: 0.96;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__deck {
+    display: grid;
+    gap: 0.85rem;
+    margin-top: auto;
+    padding: 0.9rem 1rem 1rem;
+    border-radius: 28px;
+    background: linear-gradient(180deg, #ffe06a, #ffb703);
+    border: 3px solid rgba(255, 244, 187, 0.9);
+    box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.42);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__runbar {
+    height: 20px;
+    border-radius: 999px;
+    background: rgba(175, 118, 0, 0.22);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__runbar span {
+    display: block;
+    width: 28%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255, 247, 204, 0.96), rgba(255, 227, 118, 0.98));
+}
+
+body.lesson-page #example .lesson-robotlab-preview__controls {
+    display: flex;
+    justify-content: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__control {
+    position: relative;
+    width: 46px;
+    height: 46px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #63d8ff, #259be7);
+    border: 2px solid rgba(255, 255, 255, 0.84);
+    box-shadow: 0 10px 16px -16px rgba(13, 89, 143, 0.84);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__control::before {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 900;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__control--play {
+    width: 58px;
+    height: 58px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #89db51, #5aa72e);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__control--play::before {
+    content: '>';
+    font-size: 1.2rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__control--up::before {
+    content: '^';
+}
+
+body.lesson-page #example .lesson-robotlab-preview__control--right::before {
+    content: '>';
+}
+
+body.lesson-page #example .lesson-robotlab-preview__control--down::before {
+    content: 'v';
+}
+
+body.lesson-page #example .lesson-robotlab-preview__control--left::before {
+    content: '<';
+}
+
+body.lesson-page #example .lesson-robotlab-preview__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.28rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.28);
+    color: #ffffff;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__legend-item small {
+    color: #effcff;
+    font-size: 0.76rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__legend-swatch {
+    width: 1.55rem;
+    height: 1.55rem;
+    border-radius: 999px;
+    border: 2px solid rgba(255, 255, 255, 0.84);
+    font-size: 0.72rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__legend-swatch--wall {
+    background: linear-gradient(180deg, #5be46a, #22b53e);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__legend-swatch--floor {
+    background: linear-gradient(180deg, #c8f6ff, #63e0ff);
+    color: #1b5879;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__legend-swatch--start {
+    background: linear-gradient(180deg, #2b79ff, #1553d7);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__legend-swatch--goal {
+    background: linear-gradient(180deg, #ffd667, #ffb703);
+    color: #6b4800;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__legend-swatch--terminal {
+    background: linear-gradient(180deg, #26c8e8, #0aa2c7);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__legend-swatch--battery {
+    background: linear-gradient(180deg, #ffc85a, #f59e0b);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__legend-swatch--key {
+    background: linear-gradient(180deg, #ffe27d, #eab308);
+    color: #755200;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__legend-swatch--door {
+    background: linear-gradient(180deg, #ffad7c, #f97316);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__legend-swatch--hazard {
+    background: linear-gradient(180deg, #ff8ca0, #ef4444);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__badge {
+    padding: 0.44rem 0.86rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ffffff, #ebf8ff);
+    color: #27516f;
+    border: 2px solid rgba(95, 188, 239, 0.32);
+    font-size: 0.82rem;
+    font-weight: 800;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__title-row h3 {
+    margin: 0 0 0.32rem;
+    color: #234e6d;
+    font-size: clamp(1.25rem, 2vw, 1.6rem);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__title-row p,
+body.lesson-page #example .lesson-robotlab-preview__note {
+    margin: 0;
+    color: #5d7b93;
+    line-height: 1.6;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__flow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__flow-step {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 0.74rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ffffff, #eff9ff);
+    border: 2px solid rgba(115, 208, 245, 0.26);
+    color: #285777;
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__stat {
+    display: grid;
+    gap: 0.16rem;
+    padding: 0.8rem 0.9rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 2px solid rgba(117, 205, 247, 0.24);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__stat strong {
+    color: #214f71;
+    font-size: 1.12rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__stat span {
+    color: #6b879d;
+    font-size: 0.8rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__chips,
+body.lesson-page #example .lesson-robotlab-preview__commands {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__chip,
+body.lesson-page #example .lesson-robotlab-preview__commands code {
+    padding: 0.34rem 0.7rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #f7fcff, #ebf8ff);
+    border: 2px solid rgba(117, 205, 247, 0.26);
+    color: #285777;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__actions .btn {
+    padding: 0.62rem 1.1rem;
+    border-radius: 999px;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__snippet {
+    display: grid;
+    gap: 0.45rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__snippet > span {
+    color: #255272;
+    font-size: 0.86rem;
+    font-weight: 800;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__snippet pre {
+    margin: 0;
+    padding: 0.92rem 1rem;
+    border-radius: 24px;
+    background:
+        linear-gradient(transparent 29px, rgba(67, 141, 184, 0.08) 30px) 0 0 / 100% 30px,
+        linear-gradient(180deg, #ffffff, #f5fbff);
+    border: 2px solid rgba(117, 205, 247, 0.24);
+    overflow-x: auto;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__snippet code {
+    color: #1e3d58;
+    font-size: 0.84rem;
+    line-height: 1.72;
+    white-space: pre;
+}
+
+@media (max-width: 1180px) {
+    body.lesson-page #example .lesson-robotlab-preview {
+        grid-template-columns: 1fr;
+    }
+
+    body.lesson-page #example .lesson-robotlab-preview__board {
+        min-height: 0;
+    }
+}
+
+@media (max-width: 760px) {
+    body.lesson-page #example .lesson-robotlab-preview__speech {
+        justify-self: stretch;
+        max-width: none;
+    }
+
+    body.lesson-page #example .lesson-robotlab-preview__speech::after {
+        left: 18px;
+    }
+
+    body.lesson-page #example .lesson-robotlab-preview__map-frame {
+        margin-left: 0;
+    }
+
+    body.lesson-page #example .lesson-robotlab-preview__mascot {
+        position: relative;
+        left: 0;
+        top: 0;
+        margin-bottom: -0.25rem;
+    }
+
+    body.lesson-page #example .lesson-robotlab-preview__stats {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    body.lesson-page #example .lesson-robotlab-preview__board,
+    body.lesson-page #example .lesson-robotlab-preview__story {
+        padding: 0.85rem;
+        border-radius: 26px;
+    }
+
+    body.lesson-page #example .lesson-robotlab-preview__cell {
+        min-height: 38px;
+        border-radius: 12px;
+    }
+
+    body.lesson-page #example .lesson-robotlab-preview__control {
+        width: 40px;
+        height: 40px;
+    }
+
+    body.lesson-page #example .lesson-robotlab-preview__control--play {
+        width: 52px;
+        height: 52px;
+    }
+
+    body.lesson-page #example .lesson-robotlab-preview__stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   Executable Robot Lab lesson board
+   ========================================================================== */
+
+body.lesson-page #example .lesson-robotlab-preview {
+    grid-template-columns: 1fr;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__story,
+body.lesson-page #example .lesson-robotlab-preview__speech {
+    display: none;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__board {
+    min-height: 0;
+    gap: 0.7rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__status {
+    margin: 0;
+    padding: 0.78rem 0.95rem;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 2px solid rgba(255, 255, 255, 0.88);
+    color: #2a5877;
+    font-weight: 700;
+    line-height: 1.45;
+    box-shadow: 0 12px 20px -18px rgba(10, 73, 118, 0.72);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__status.is-success {
+    background: rgba(228, 255, 228, 0.96);
+    color: #1e6a37;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__playfield {
+    min-height: 0;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__map-frame {
+    margin-left: 5rem;
+    padding-bottom: 0.75rem;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell.is-robot {
+    background: radial-gradient(circle at 34% 28%, #8ef0ff 0%, #45dcfa 35%, #1fb4e7 72%, #157cb8 100%);
+    border-color: rgba(255, 255, 255, 0.92);
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.72),
+        0 0 0 3px rgba(255, 255, 255, 0.16),
+        0 12px 18px -14px rgba(12, 86, 133, 0.82);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell.is-robot::before {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 12px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 16px 0 0 #ffffff;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell.is-robot::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 11px;
+    width: 20px;
+    height: 10px;
+    margin-left: -10px;
+    border-bottom: 3px solid #173d61;
+    border-radius: 0 0 18px 18px;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell.is-robot .lesson-robotlab-preview__cell-icon,
+body.lesson-page #example .lesson-robotlab-preview__cell.is-robot .lesson-robotlab-preview__cell-label {
+    display: none;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell-icon {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--terminal {
+    width: 28px;
+    height: 22px;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #aef1ff, #3ec6e8);
+    border: 2px solid rgba(255, 255, 255, 0.88);
+    box-shadow: 0 8px 14px -12px rgba(9, 79, 120, 0.74);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--terminal::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    top: 4px;
+    bottom: 7px;
+    border-radius: 4px;
+    background: #14799b;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--terminal::after {
+    content: '';
+    position: absolute;
+    left: 10px;
+    bottom: -5px;
+    width: 8px;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: -4px 4px 0 -1px rgba(255, 255, 255, 0.92), 4px 4px 0 -1px rgba(255, 255, 255, 0.92);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--goal,
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--battery,
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--key,
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--door,
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--hazard {
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 8px 14px -12px rgba(9, 79, 120, 0.74);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--goal {
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 93%, 50% 71%, 21% 93%, 32% 57%, 2% 35%, 39% 35%);
+    border: 0;
+    background: linear-gradient(180deg, #fff5a8, #ffb703);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--battery {
+    background: linear-gradient(180deg, #ffc85a, #f59e0b);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--battery::before {
+    content: '+';
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 900;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--key {
+    background: linear-gradient(180deg, #ffe27d, #eab308);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--key::before {
+    content: 'K';
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #7a5500;
+    font-size: 0.8rem;
+    font-weight: 900;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--door {
+    background: linear-gradient(180deg, #ffad7c, #f97316);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--door::before {
+    content: 'D';
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 900;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--hazard {
+    background: linear-gradient(180deg, #ff8ca0, #ef4444);
+}
+
+body.lesson-page #example .lesson-robotlab-preview__cell-icon--hazard::before {
+    content: '!';
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 900;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__runbar span {
+    width: 16%;
+    transition: width 0.25s ease;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__controls {
+    align-items: center;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__control {
+    appearance: none;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__control:hover,
+body.lesson-page #example .lesson-robotlab-preview__control:focus-visible {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 18px -14px rgba(13, 89, 143, 0.84);
+    outline: none;
+}
+
+body.lesson-page #example .lesson-robotlab-preview__actions {
+    justify-content: flex-end;
+}
+
+@media (max-width: 760px) {
+    body.lesson-page #example .lesson-robotlab-preview__map-frame {
+        margin-left: 0;
+    }
+
+    body.lesson-page #example .lesson-robotlab-preview__status {
+        font-size: 0.88rem;
+    }
+}

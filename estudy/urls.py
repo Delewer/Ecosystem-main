@@ -1,7 +1,7 @@
-﻿from django.urls import path
+from django.urls import include, path
+from rest_framework.authtoken.views import obtain_auth_token
 
-from . import views
-
+from . import api_views, views
 
 app_name = "estudy"
 
@@ -19,9 +19,17 @@ urlpatterns = [
         name="lesson_module_digital_literacy",
     ),
     path("lessons/<slug:slug>/", views.lesson_detail, name="lesson_detail"),
-    path("lessons/<slug:slug>/toggle/", views.toggle_lesson_completion, name="toggle_lesson_completion"),
+    path(
+        "lessons/<slug:slug>/toggle/",
+        views.toggle_lesson_completion,
+        name="toggle_lesson_completion",
+    ),
     path("lessons/<slug:slug>/ai-hint/", views.ai_hint, name="ai_hint"),
-    path("tests/<int:test_id>/submit/", views.submit_test_attempt, name="submit_test_attempt"),
+    path(
+        "tests/<int:test_id>/submit/",
+        views.submit_test_attempt,
+        name="submit_test_attempt",
+    ),
     path("missions/", views.missions_view, name="missions"),
     path("leaderboard/", views.leaderboard_view, name="leaderboard"),
     path("notifications/", views.notifications_center, name="notifications"),
@@ -33,4 +41,98 @@ urlpatterns = [
     path("community/<int:pk>/", views.community_thread, name="community_thread"),
     path("overview/", views.study_overview, name="overview"),
     path("progress/", views.user_progress, name="user_progress"),
+    path("robot-lab/", views.robot_lab_hub, name="robot_lab_hub"),
+    path(
+        "robot-lab/level/<str:level_id>/", views.robot_lab_play, name="robot_lab_play"
+    ),
+    path("robot-lab/teacher/", views.robot_lab_teacher, name="robot_lab_teacher"),
+    path("api/run-code/", views.run_code_api, name="run_code_api"),
+    path("code-exercise/<int:pk>/", views.code_exercise_view, name="code_exercise"),
+    # Moderation
+    path("moderate/comments/", views.moderate_comments, name="moderate_comments"),
+    # API endpoints for new features
+    path("api/token/", obtain_auth_token, name="api_token"),
+]
+
+api_patterns = [
+    path(
+        "lessons/<slug:lesson_slug>/comments/",
+        api_views.LessonCommentsListCreateView.as_view(),
+        name="lesson_comments_api",
+    ),
+    path(
+        "comments/<int:pk>/",
+        api_views.LessonCommentDetailView.as_view(),
+        name="lesson_comment_detail_api",
+    ),
+    path(
+        "comments/<int:comment_id>/replies/",
+        api_views.CommentRepliesView.as_view(),
+        name="comment_replies_api",
+    ),
+    path(
+        "comments/<int:comment_id>/like/",
+        api_views.toggle_comment_like,
+        name="toggle_comment_like_api",
+    ),
+    path(
+        "lessons/<slug:lesson_slug>/rate/",
+        api_views.LessonRatingCreateView.as_view(),
+        name="lesson_rating_api",
+    ),
+    path(
+        "ratings/<int:pk>/",
+        api_views.LessonRatingDetailView.as_view(),
+        name="lesson_rating_detail_api",
+    ),
+    path(
+        "lessons/<slug:lesson_slug>/stats/",
+        api_views.lesson_stats,
+        name="lesson_stats_api",
+    ),
+    path(
+        "analytics/",
+        api_views.LessonAnalyticsView.as_view(),
+        name="lesson_analytics_api",
+    ),
+    path(
+        "analytics/<slug:lesson_slug>/",
+        api_views.LessonAnalyticsView.as_view(),
+        name="lesson_analytics_detail_api",
+    ),
+    path(
+        "progress/",
+        api_views.LessonProgressListView.as_view(),
+        name="lesson_progress_api",
+    ),
+    path(
+        "robot-lab/mentor/",
+        api_views.robot_lab_mentor_feedback,
+        name="robot_lab_mentor_api",
+    ),
+    path(
+        "robot-lab/levels/",
+        api_views.robot_lab_levels,
+        name="robot_lab_levels_api",
+    ),
+    path(
+        "robot-lab/levels/<str:level_id>/",
+        api_views.robot_lab_level_detail,
+        name="robot_lab_level_detail_api",
+    ),
+    path(
+        "robot-lab/runs/",
+        api_views.robot_lab_run,
+        name="robot_lab_run_api",
+    ),
+    path(
+        "robot-lab/progress/",
+        api_views.robot_lab_progress,
+        name="robot_lab_progress_api",
+    ),
+]
+
+urlpatterns += [
+    path("api/", include(api_patterns)),
+    path("api/v1/", include(api_patterns)),
 ]

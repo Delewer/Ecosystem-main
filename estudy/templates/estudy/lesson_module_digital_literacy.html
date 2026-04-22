@@ -11,7 +11,15 @@
                     <div class="col-lg-7 lesson-gate__intro-text">
                         <span class="badge bg-primary-subtle text-primary text-uppercase mb-3">Modul 1</span>
                         <h1 class="display-5 fw-bold text-primary mb-3">Alfabetizare digitală</h1>
-                        <p class="lead text-muted mb-4">Descoperim ce ascunde un computer, cum funcționează internetul, cum ne protejăm în lumea digitală și cum transformăm ideile în pași logici.</p>
+                        <p class="lead text-muted mb-4">Descoperim ce ascunde un computer, cum funcționează internetul si cum ramanem in siguranta online prin teorie clara si exercitii usoare.</p>
+                        {% if digital_literacy_entry_slug %}
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
+                            <a class="btn btn-primary" href="{% url 'estudy:lesson_detail' slug=digital_literacy_entry_slug %}">
+                                Deschide lecția nouă
+                            </a>
+                            <span class="text-muted small">Teorie scurta, exemple clare si verificari simple.</span>
+                        </div>
+                        {% endif %}
                         <div class="lesson-gate__stats d-flex flex-wrap gap-4">
                             <div class="d-grid gap-1">
                                 <span class="d-block text-uppercase small text-muted">Durată</span>
@@ -31,23 +39,20 @@
                         <div class="card border-0 shadow-sm lesson-gate__panel" data-lesson-panel>
                             <div class="card-body lesson-gate__panel-front" data-panel-front hidden>
                                 <h2 class="h5 mb-3">Ce vei stăpâni la final</h2>
-                                
-                                <p class="text-muted small mt-3 mb-0">Sfat: pregătește un caiet pentru notițe și invită un coleg să jucați împreună mini-jocurile.</p>
                             </div>
                             <div class="card-body lesson-gate__panel-steps" data-panel-steps>
                                 <div class="lesson-gate__summary" data-lesson-summary>
                                     <div class="lesson-summary">
                                         <span class="badge bg-primary-subtle text-primary text-uppercase mb-2">Modul 1</span>
                                         <h2 class="h4 mb-2">Alfabetizare digitală</h2>
-                                        <p class="text-muted small mb-0">Aplicăm noțiunile despre hardware, internet și siguranță digitală, apoi le transformăm în exerciții practice și mini-jocuri.</p>
+                                        <p class="text-muted small mb-0">Aplicam notiunile despre hardware, internet si siguranta digitala in exercitii practice si mini-teste accesibile.</p>
                                         <ul class="lesson-gate__objectives list-unstyled text-muted small mt-3 mb-3">
-                                            <li><i class="fa-solid fa-circle-check text-success me-2"></i>Recuno?ti componentele de baz? ale unui computer ?i rolul fiec?reia.</li>
-                                            <li><i class="fa-solid fa-circle-check text-success me-2"></i>Folose?ti browserul ca s? ajungi ?n siguran?? pe site-urile dorite.</li>
-                                            <li><i class="fa-solid fa-circle-check text-success me-2"></i>Organizezi fi?ierele ?i le p?strezi ?n cloud pentru acces rapid.</li>
-                                            <li><i class="fa-solid fa-circle-check text-success me-2"></i>Construie?ti parole puternice ?i identifici link-urile periculoase.</li>
-                                            <li><i class="fa-solid fa-circle-check text-success me-2"></i>Transformi activit??ile zilnice ?n algoritmi simpli.</li>
+                                            <li><i class="fa-solid fa-circle-check text-success me-2"></i>Recunoști componentele de bază ale unui computer și rolul fiecăreia.</li>
+                                            <li><i class="fa-solid fa-circle-check text-success me-2"></i>Folosești browserul ca să ajungi în siguranță pe site-urile dorite.</li>
+                                            <li><i class="fa-solid fa-circle-check text-success me-2"></i>Organizezi fișierele și le păstrezi în cloud pentru acces rapid.</li>
+                                            <li><i class="fa-solid fa-circle-check text-success me-2"></i>Construiești parole puternice și identifici link-urile periculoase.</li>
                                         </ul>
-                                        <p class="text-muted small mb-0">Sfat: preg?te?te un caiet pentru noti?e ?i invit? un coleg s? juca?i ?mpreun? mini-jocurile.</p>
+                                        <p class="text-muted small mb-0">Sfat: pregateste un caiet pentru notite si rezuma fiecare lectie in 2-3 idei simple.</p>
                                     </div>
                                 </div>
 
@@ -63,9 +68,41 @@
                                                 <button type="button" class="btn btn-primary" data-step-next>Continuă</button>
                                             </div>
                                         </div>
+                                        <div class="lesson-flow__gamebar mt-3">
+                                            <div class="lesson-stars" data-step-stars aria-live="polite">
+                                                <span class="lesson-stars__label text-muted small">Stele pas curent</span>
+                                                <div class="lesson-stars__icons" data-stars-list>
+                                                    <i class="fa-solid fa-star" data-star-slot></i>
+                                                    <i class="fa-solid fa-star" data-star-slot></i>
+                                                    <i class="fa-solid fa-star" data-star-slot></i>
+                                                </div>
+                                                <span class="lesson-stars__score text-muted small" data-stars-score>0/3</span>
+                                            </div>
+                                            <div class="lesson-team" data-team-mode>
+                                                <div class="lesson-team__actions d-flex flex-wrap gap-2">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary is-active" data-team-mode-btn data-team-mode-value="solo">Solo</button>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" data-team-mode-btn data-team-mode-value="pair">În doi</button>
+                                                </div>
+                                                <div class="lesson-team__shared" data-team-progress hidden>
+                                                    <div class="lesson-team__label small text-muted" data-team-progress-label>Echipă: 0/4 pași</div>
+                                                    <div class="lesson-team__bar">
+                                                        <span class="lesson-team__bar-fill" data-team-progress-fill style="width: 0%;"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="lesson-flow__lock-hint text-danger small fw-semibold mt-2 mb-0" data-step-lock-hint hidden></p>
+                                        <div class="lesson-reward mt-2" data-step-reward hidden></div>
+                                        <div class="lesson-secret-bonus mt-2" data-secret-bonus hidden>
+                                            <i class="fa-solid fa-gift me-2"></i>Bonus secret: două provocări interactive rezolvate la rând!
+                                        </div>
+                                        <div class="lesson-mascot mt-3" data-mascot-feedback hidden>
+                                            <span class="lesson-mascot__emoji">🦊</span>
+                                            <p class="lesson-mascot__message mb-0" data-mascot-message>Perfect! Continuăm aventura digitală.</p>
+                                        </div>
 
                                         <div class="lesson-flow__content">
-        <section class="lesson-step" data-lesson-step data-step-title="Descoperim componentele hardware" data-step-button="Continuă">
+        <section class="lesson-step" data-lesson-step data-step-title="Descoperim componentele hardware" data-step-button="Continuă" data-step-requires="hardware-map" data-step-locked-message="Finalizează exercițiul hardware (toate piesele corecte), apoi poți continua.">
             <div class="d-flex align-items-start gap-3 mb-4">
                 <span class="fs-2">🧠</span>
                 <div>
@@ -74,7 +111,7 @@
                     <p class="text-muted small mb-0">Exersăm cu o placă de bază ilustrată: identificăm unde se conectează fiecare componentă și discutăm cum lucrează împreună cu software-ul.</p>
                 </div>
             </div>
-            <div class="module-interactive hardware-map" data-hardware-map>
+            <div class="module-interactive hardware-map" data-hardware-map data-step-requirement="hardware-map">
                 <p class="module-interactive__intro text-muted small mb-3">Trage fiecare etichetă pe zona corectă din placa de bază, apoi apasă „Verifică”.</p>
                 <div class="hardware-map__layout">
                     <div class="hardware-slot" data-slot="cpu" data-dropzone>
@@ -98,19 +135,19 @@
                     <span class="hardware-map__bank-title small text-muted">Piese de poziționat</span>
                     <div class="hardware-piece" draggable="true" data-piece="cpu" data-answer="cpu">
                         <span class="hardware-piece__emoji">🧠</span>
-                        <span class="hardware-piece__label">Creierul care execută toate comenzile</span>
+                        <span class="hardware-piece__label">CPU: execută comenzile</span>
                     </div>
                     <div class="hardware-piece" draggable="true" data-piece="gpu" data-answer="gpu">
                         <span class="hardware-piece__emoji">🎮</span>
-                        <span class="hardware-piece__label">Artistul care desenează rapid imaginea jocului</span>
+                        <span class="hardware-piece__label">GPU: desenează grafica</span>
                     </div>
                     <div class="hardware-piece" draggable="true" data-piece="ram" data-answer="ram">
                         <span class="hardware-piece__emoji">⚡</span>
-                        <span class="hardware-piece__label">Carnetul în care calculatorul notează ideile de moment</span>
+                        <span class="hardware-piece__label">RAM: ține datele active</span>
                     </div>
                     <div class="hardware-piece" draggable="true" data-piece="storage" data-answer="storage">
                         <span class="hardware-piece__emoji">💾</span>
-                        <span class="hardware-piece__label">Biblioteca digitală unde păstrăm teme și fotografii</span>
+                        <span class="hardware-piece__label">SSD/HDD: păstrează fișierele</span>
                     </div>
                 </div>
                 <div class="hardware-map__actions d-flex flex-wrap align-items-center gap-2 mt-3">
@@ -122,42 +159,26 @@
         </section>
 
         <section class="lesson-step" data-lesson-step hidden data-step-title="Explorăm internetul și cloud-ul" data-step-button="Continuă">
-            <div class="d-flex align-items-start gap-3 mb-4">
-                <span class="fs-2">🌐</span>
-                <div>
-                    <h3 class="h6 text-uppercase text-muted mb-1">Internet și browser, pe înțelesul tău</h3>
-                    <p class="text-muted small mb-2">Folosim o hartă cu „străzi” digitale pentru a explica ce înseamnă o adresă web (URL) și cum se citește ea. Copiii primesc o listă cu „destinații” și trebuie să potrivească adresa corectă cu pagina corespunzătoare.</p>
-                    <p class="text-muted small mb-0">Exersăm butoanele esențiale ale browserului: Înapoi, Înainte, Reîmprospătare și Favorite. Mini-experimentul: căutăm informații despre un animal și dictăm adresa prietenilor.</p>
-                </div>
-            </div>
-            <div class="d-flex align-items-start gap-3">
-                <span class="fs-2">🗂️</span>
-                <div>
-                    <h3 class="h6 text-uppercase text-muted mb-1">Organizarea fișierelor și magia cloud-ului</h3>
-                    <p class="text-muted small mb-2">Învățăm metoda „dosar cu etichete”: fiecare elev primește o listă de fișiere și trebuie să le pună în foldere tematice (Școală, Hobby-uri, Familie).</p>
-                    <p class="text-muted small mb-0">În cloud, învățăm să încărcăm tema, să o partajăm cu profesorul și să verificăm sincronizarea pe orice dispozitiv.</p>
-                </div>
+            <div class="lesson-step__compact">
+                <h3 class="h6 text-uppercase text-muted mb-2">Internet și cloud pe scurt</h3>
+                <ul class="lesson-step__bullets text-muted small mb-3">
+                    <li>URL-ul este adresa exactă a paginii pe care vrei să ajungi.</li>
+                    <li>Cloud-ul este un dosar online pe care îl poți deschide de pe orice dispozitiv.</li>
+                </ul>
+                <p class="lesson-step__action small mb-0"><strong>Acțiune:</strong> deschide browserul, caută un animal preferat și salvează rezultatul într-un folder „Școală”.</p>
             </div>
         </section>
 
-        <section class="lesson-step" data-lesson-step hidden data-step-title="Supereroi în siguranță digitală" data-step-button="Continuă">
-            <div class="d-flex align-items-start gap-3 mb-4">
-                <span class="fs-2">🛡️</span>
-                <div>
-                    <h3 class="h6 text-uppercase text-muted mb-1">Securitate digitală pentru supereroi</h3>
-                    <p class="text-muted small mb-2">Construim parole puternice cu metoda „povestea scurtă” și jucăm „Semaforul link-urilor” pentru a detecta mesajele suspecte.</p>
-                    <p class="text-muted small mb-0">Discutăm reguli de respect online și când cerem ajutorul unui adult.</p>
-                </div>
+        <section class="lesson-step" data-lesson-step hidden data-step-title="Supereroi în siguranță digitală" data-step-button="Continuă" data-step-requires="hardware-software-match" data-step-locked-message="Rezolvă jocul de potrivire hardware + software, apoi poți merge mai departe.">
+            <div class="lesson-step__compact mb-4">
+                <h3 class="h6 text-uppercase text-muted mb-2">Securitate digitală pentru supereroi</h3>
+                <ul class="lesson-step__bullets text-muted small mb-3">
+                    <li>O parolă bună combină litere, cifre și simboluri.</li>
+                    <li>Nu deschidem link-uri ciudate și cerem ajutorul unui adult.</li>
+                </ul>
+                <p class="lesson-step__action small mb-0"><strong>Acțiune:</strong> joacă provocarea de mai jos și potrivește fiecare sarcină cu dispozitivul și programul corect.</p>
             </div>
-            <div class="d-flex align-items-start gap-3 mb-4">
-                <span class="fs-2">🧠</span>
-                <div>
-                    <h3 class="h6 text-uppercase text-muted mb-1">Gândire algoritmică în viața de zi cu zi</h3>
-                    <p class="text-muted small mb-2">Ordonăm cartonașe pentru pregătirea ghiozdanului și realizarea unui sandviș, introducând condițiile „dacă... atunci...” și repetițiile.</p>
-                    <p class="text-muted small mb-0">Facem legătura cu blocurile Blockly și cu programarea reală.</p>
-                </div>
-            </div>
-            <div class="module-interactive module-match" data-hardware-software>
+            <div class="module-interactive module-match" data-hardware-software data-step-requirement="hardware-software-match">
                 <p class="module-interactive__intro text-muted small mb-3">Trage cartonașele potrivite spre fiecare sarcină: un dispozitiv și un program.</p>
                 <div class="module-match__board">
                     <div class="module-match__row" data-scenario="game">
@@ -254,11 +275,14 @@
                     <div class="module-match__feedback" data-match-feedback></div>
                 </div>
             </div>
+            <div class="alert alert-primary mt-3 mb-0 small">
+                <i class="fa-solid fa-rocket me-2"></i>Mini-lectie separată: „Gândire algoritmică în viața de zi cu zi” va fi parcursă separat, în ritm mai lent.
+            </div>
         </section>
 
         <section class="lesson-step" data-lesson-step hidden data-step-title="Aplicăm ce am învățat" data-step-button="Finalizează lecția">
             <div class="lesson-step__overview text-muted small mb-4">
-                <p class="mb-2">Alege una dintre provocările de mai jos pentru a transforma teoria în rezultate reale. Poți nota progresul în caiet sau în platformă.</p>
+                <p class="mb-2">Alege două provocări principale. Restul rămân opționale, la secțiunea Bonus.</p>
             </div>
             <div class="row g-4">
                 <div class="col-md-6">
@@ -289,6 +313,13 @@
                         </ul>
                     </div>
                 </div>
+            </div>
+            <div class="module-bonus mt-4">
+                <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+                    <h3 class="h6 mb-0 text-uppercase text-muted">Bonus (opțional)</h3>
+                    <span class="badge text-bg-warning">După ce termini activitățile principale</span>
+                </div>
+                <div class="row g-4">
                 <div class="col-md-6">
                     <div class="module-activity h-100 p-4">
                         <div class="d-flex align-items-center gap-3 mb-3">
@@ -316,6 +347,7 @@
                             <li>Se poate publica în galeria clasei pentru feedback</li>
                         </ul>
                     </div>
+                </div>
                 </div>
             </div>
             <div class="alert alert-info mt-4 mb-0 small fw-semibold border-0 text-primary">

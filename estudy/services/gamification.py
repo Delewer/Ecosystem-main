@@ -3,10 +3,8 @@
 from typing import Dict, List, Tuple
 
 from django.db.models import Count
-from django.utils import timezone
 
 from ..models import (
-    Badge,
     Lesson,
     LessonProgress,
     Mission,
@@ -14,6 +12,11 @@ from ..models import (
     UserMission,
     check_and_award_rewards,
 )
+from .cosmetic_perks import award_cosmetic_perks_for_user
+from .seasonal_events import record_seasonal_progress_for_lesson
+
+PROGRESS_CACHE_KEY_PREFIX = "estudy:progress:"
+PROGRESS_CACHE_TTL_SECONDS = 60
 
 DEFAULT_MISSIONS: Tuple[dict, ...] = (
     {
@@ -64,32 +67,65 @@ def ensure_user_missions(user) -> List[UserMission]:
     return user_missions
 
 
-def record_lesson_completion(user, lesson: Lesson, seconds_spent: int | None = None) -> Dict:
+def _progress_cache_key(user) -> str:
+    username = getattr(user, "username", "")
+    return f"{PROGRESS_CACHE_KEY_PREFIX}{user.id}:{username}"
+
+
+def invalidate_overall_progress_cache(user) -> None:
+    from django.core.cache import cache
+
+    try:
+        cache.delete(_progress_cache_key(user))
+    except Exception:
+        # Cache errors must not block primary learning flows.
+        pass
+
+
+def record_lesson_completion(
+    user, lesson: Lesson, seconds_spent: int | None = None
+) -> Dict:
     progress, _ = LessonProgress.objects.get_or_create(user=user, lesson=lesson)
     progress.mark_completed(seconds_spent=seconds_spent)
     check_and_award_rewards(user)
+    award_cosmetic_perks_for_user(user)
+    record_seasonal_progress_for_lesson(user=user, lesson=lesson)
 
     missions = ensure_user_missions(user)
     for mission in missions:
         if mission.mission.code == "daily-complete-lesson":
             mission.register_progress()
 
+    invalidate_overall_progress_cache(user)
     return build_overall_progress(user)
 
 
 def build_overall_progress(user) -> Dict[str, float | int]:
+    """Compute overall progress for a user and cache it briefly to reduce DB load."""
+    from django.core.cache import cache
+
+    cache_key = _progress_cache_key(user)
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
     total_lessons = Lesson.objects.count()
     completed = LessonProgress.objects.filter(user=user, completed=True).count()
     percent = round((completed / total_lessons) * 100, 2) if total_lessons else 0
-    return {
+    result = {
         "total": total_lessons,
         "completed": completed,
         "percent": percent,
     }
+    cache.set(cache_key, result, PROGRESS_CACHE_TTL_SECONDS)
+    return result
 
 
 def get_badge_summary(user) -> Dict[str, List[UserBadge]]:
-    badges = UserBadge.objects.filter(user=user).select_related("badge").order_by("-awarded_at")
+    badges = (
+        UserBadge.objects.filter(user=user)
+        .select_related("badge")
+        .order_by("-awarded_at")
+    )
     highlighted = badges[:3]
     return {
         "all": list(badges),

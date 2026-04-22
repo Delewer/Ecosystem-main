@@ -26,7 +26,7 @@
     {% block extra_css %}{% endblock %}
     <title>{% block page_title %}Scoala IT UNITEX{% endblock %}</title>
 </head>
-<body class="site-body {% block body_class %}{% endblock %}" data-barba="wrapper">
+<body class="site-body {% block body_class %}{% endblock %}">
     <div class="site-shell">
         <nav class="site-navbar" data-navbar>
             <div class="container navbar__inner">
@@ -41,13 +41,14 @@
                 </button>
                 <div class="navbar__menu" id="primary-nav" data-navbar-menu>
                     <ul class="navbar__links" role="list">
-                        <li><a class="navbar__link nav-link" href="{% url 'index' %}">Acasa</a></li>
-                        <li><a class="navbar__link nav-link" href="{% url 'estudy:lessons_list' %}">Lectii</a></li>
+                        <li><a class="navbar__link nav-link" href="{% url 'index' %}">Acasă</a></li>
+                        <li><a class="navbar__link nav-link" href="{% url 'estudy:lessons_list' %}">Lecții</a></li>
                         {% if user.is_authenticated %}
+                            <li><a class="navbar__link nav-link" href="{% url 'estudy:dashboard' %}">Dashboard</a></li>
                             <li><a class="navbar__link nav-link" href="{% url 'inregistrare_profile' %}">Profil</a></li>
                             <li><a class="navbar__link nav-link" href="{% url 'logout' %}">Deconectare</a></li>
                         {% else %}
-                            <li><a class="navbar__link nav-link" href="{% url 'signup' %}">Inregistrare</a></li>
+                            <li><a class="navbar__link nav-link" href="{% url 'signup' %}">Înregistrare</a></li>
                             <li><a class="navbar__link nav-link" href="{% url 'login' %}">Autentificare</a></li>
                         {% endif %}
                     </ul>
@@ -64,16 +65,65 @@
                 </div>
             </div>
         </nav>
-        <main id="main" class="site-main" tabindex="-1" data-barba="container" data-barba-namespace="{% block page_namespace %}default{% endblock %}">
+        <main id="main" class="site-main" tabindex="-1">
             {% block content %}{% endblock %}
         </main>
+        <footer class="site-footer">
+            <div class="container site-footer__inner">
+                <div class="site-footer__grid">
+                    <div class="site-footer__brand">
+                        <div class="site-footer__brand-logo">
+                            <span class="navbar__emblem">
+                                <img src="{% static 'images/logo.gif' %}" alt="Sigla UNITEX">
+                            </span>
+                            <span>UNITEX</span>
+                        </div>
+                        <p>Platformă educațională în limba română pentru lecții, jocuri și programare adaptată vârstei.</p>
+                    </div>
+                    <div>
+                        <h2>Navigare rapidă</h2>
+                        <ul class="list-plain">
+                            <li><a href="{% url 'index' %}">Acasă</a></li>
+                            <li><a href="{% url 'estudy:lessons_list' %}">Lecții</a></li>
+                            {% if user.is_authenticated %}
+                                <li><a href="{% url 'inregistrare_profile' %}">Profilul meu</a></li>
+                                <li><a href="{% url 'logout' %}">Deconectare</a></li>
+                            {% else %}
+                                <li><a href="{% url 'signup' %}">Înregistrare</a></li>
+                                <li><a href="{% url 'login' %}">Autentificare</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div>
+                        <h2>Legal</h2>
+                        <ul class="list-plain">
+                            <li><a href="{% url 'termeni_si_conditii' %}">Termeni și condiții</a></li>
+                            <li><a href="{% url 'politica_cookie' %}">Politica cookie</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="site-footer__meta">
+                    <span>&copy; {% now "Y" %} UNITEX</span>
+                    <span>Conținut și interfață în limba română.</span>
+                </div>
+            </div>
+        </footer>
     </div>
+    <section class="cookie-banner" data-cookie-banner hidden aria-label="Preferințe cookie">
+        <div class="cookie-banner__content">
+            <p>
+                Folosim cookie-uri esențiale pentru autentificare, securitate și salvarea preferințelor de utilizare.
+                Citește mai multe în <a href="{% url 'politica_cookie' %}">Politica cookie</a>.
+            </p>
+            <div class="cookie-banner__actions">
+                <button class="cookie-banner__button cookie-banner__button--secondary" type="button" data-cookie-consent="essential">Doar necesare</button>
+                <button class="cookie-banner__button" type="button" data-cookie-consent="accept">Am înțeles</button>
+            </div>
+        </div>
+    </section>
     <div class="scroll-progress" data-scroll-progress></div>
-    <button class="scroll-top-button" type="button" aria-label="Inapoi sus" data-scroll-top>↑</button>
-    <div class="page-transition-layer" data-page-transition aria-hidden="true"></div>
+    <button class="scroll-top-button" type="button" aria-label="Înapoi sus" data-scroll-top>↑</button>
     <script src="{% static 'unitexapp/script.js' %}" defer></script>
-    <script src="{% static 'unitexapp/vendor/barba.umd.js' %}" defer></script>
-    <script src="{% static 'unitexapp/page-transitions.js' %}" defer></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

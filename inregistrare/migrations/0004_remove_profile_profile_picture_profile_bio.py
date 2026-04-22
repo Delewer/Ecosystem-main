@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("inregistrare", "0003_alter_profile_profile_picture"),
     ]

@@ -8,7 +8,11 @@
             <h1>Învățare digitală simplă și practică</h1>
             <p>Alege lecțiile potrivite pentru ritmul tău și descoperă abilități noi.</p>
             <div class="lessons-hero__cta">
+                {% if user.is_authenticated %}
+                <a class="btn btn--primary" href="{% url 'estudy:dashboard' %}">Dashboardul meu</a>
+                {% else %}
                 <a class="btn btn--primary" href="{% url 'signup' %}">Creează contul</a>
+                {% endif %}
                 <a class="btn btn--ghost" href="#lesson-catalog">Vezi modulele</a>
             </div>
             <div class="lessons-hero__progress" role="group" aria-label="Progres general">
@@ -35,6 +39,11 @@
     <nav class="lessons-quick-nav" aria-label="Navigație UNITEX">
         <div class="container">
             <ul>
+                <li class="lessons-quick-nav__back">
+                    <a href="{% url 'estudy:dashboard' %}" data-history-back aria-label="Înapoi la pagina anterioară">
+                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Înapoi
+                    </a>
+                </li>
                 <li><a href="{% url 'estudy:dashboard' %}">Dashboard</a></li>
                 <li><a href="{% url 'estudy:lessons_list' %}" class="is-active">Lecții</a></li>
                 <li><a href="{% url 'estudy:missions' %}">Misiuni</a></li>
@@ -47,7 +56,6 @@
     </nav>
 </section>
 {% endblock %}
-
 {% block page_content %}
 <main class="catalog-layout" data-lessons-dashboard>
     <section class="catalog-filters" aria-labelledby="catalog-filters-title" data-filters>
@@ -130,12 +138,12 @@
                     <div class="module-card__icon" aria-hidden="true">💻</div>
                     <div class="module-card__head">
                         <h3>Alfabetizare digitală</h3>
-                        <p>Primii pași într-o lume sigură și responsabilă online.</p>
+                        <p>Teorie de baza, vocabular digital si mini-teste usoare.</p>
                     </div>
                     <ul class="module-card__points">
-                        <li>Reguli de siguranță și gestionarea datelor.</li>
-                        <li>Instrumente digitale utile pentru școală.</li>
-                        <li>Plan personal de învățare.</li>
+                        <li>Notiuni simple despre siguranta si folosirea dispozitivelor.</li>
+                        <li>Explicatii scurte, fara laborator de cod.</li>
+                        <li>Quiz-uri rapide si verificari usoare.</li>
                     </ul>
                     <div class="module-card__footer">
                         <div class="module-card__progress">
@@ -144,7 +152,11 @@
                             </div>
                             <span class="module-progress__label" data-module-progress-label>1 din 4 lecții</span>
                         </div>
-                        <a class="btn btn--primary" href="{% url 'estudy:lesson_module_digital_literacy' %}">Începe lecția</a>
+                        {% if digital_literacy_entry_slug %}
+                        <a class="btn btn--primary" href="{% url 'estudy:lesson_detail' slug=digital_literacy_entry_slug %}">Vezi teoria</a>
+                        {% else %}
+                        <a class="btn btn--primary" href="{% url 'estudy:lesson_module_digital_literacy' %}">Vezi teoria</a>
+                        {% endif %}
                     </div>
                 </article>
 
@@ -174,12 +186,13 @@
                     <div class="module-card__icon" aria-hidden="true">🐍</div>
                     <div class="module-card__head">
                         <h3>Programare în Python</h3>
-                        <p>Scrie cod real și construiește mini-aplicații utile.</p>
+                        <p>Modulul principal pentru programare: vizual la 8-10 ani, cod real la 11+.</p>
+                        <span class="module-card__age-mode">{{ python_mode_label }}</span>
                     </div>
                     <ul class="module-card__points">
-                        <li>Variabile, funcții și structuri de date.</li>
-                        <li>Proiecte practice în consolă și Jupyter.</li>
-                        <li>Provocări cu feedback imediat.</li>
+                        <li>8-10 ani: puzzle, potriviri si activitati cu minimum de text.</li>
+                        <li>11+ ani: teorie, intrebari de verificare si Robot Lab cu cod Python.</li>
+                        <li>Feedback clar la fiecare pas, inclusiv erori si hint-uri.</li>
                     </ul>
                     <div class="module-card__footer">
                         <div class="module-card__progress">
@@ -188,7 +201,11 @@
                             </div>
                             <span class="module-progress__label" data-module-progress-label>0 din 6 lecții</span>
                         </div>
-                        <button type="button" class="btn btn--ghost" disabled aria-disabled="true">În curând</button>
+                        {% if python_entry_slug %}
+                        <a class="btn btn--primary" href="{% url 'estudy:lesson_detail' slug=python_entry_slug %}">Intra in modul</a>
+                        {% else %}
+                        <button type="button" class="btn btn--ghost" disabled aria-disabled="true">In curand</button>
+                        {% endif %}
                     </div>
                 </article>
 
@@ -262,3 +279,4 @@
     </section>
 </main>
 {% endblock %}
+

@@ -13,21 +13,22 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from estudy import views
-from inregistrare import views as account_views
-from django.urls import path, include
+
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
+
+from inregistrare import views as account_views
 
 urlpatterns = [
-    path('login/', account_views.login_view, name='login'),
-    path('logout/', account_views.logout, name='logout'),
-    path('register/', account_views.register, name='register'),
-    path('accounts/login/', account_views.login_view),
-    path('accounts/logout/', account_views.logout),
-    path('admin/', admin.site.urls),
-    path('estudy/', include('estudy.urls')),
-    path('auth/', include('inregistrare.urls')),
-    path('', include('unitexapp.urls')),
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path("login/", account_views.login_view, name="login"),
+    path("logout/", account_views.logout, name="logout"),
+    path("register/", account_views.register, name="register"),
+    path("accounts/login/", account_views.login_view),
+    path("accounts/logout/", account_views.logout),
+    path("admin/", admin.site.urls),
+    path("estudy/", include("estudy.urls")),
+    path("auth/", include("inregistrare.urls")),
+    path("", include("unitexapp.urls")),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

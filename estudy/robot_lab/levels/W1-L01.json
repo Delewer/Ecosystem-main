@@ -1,0 +1,39 @@
+{
+  "id": "W1-L01",
+  "title": "Misiunea sagetilor",
+  "description": "Mod Junior: apasa butoanele mari si urmareste cum apare programul pas cu pas.",
+  "goal_text": "Trimite robotul la terminalul T folosind sagetile.",
+  "goal": {
+    "type": "reach_goal",
+    "target_tile": "T"
+  },
+  "concepts": ["sequencing"],
+  "difficulty": "easy",
+  "max_steps": 20,
+  "time_limit_ms": 500,
+  "xp_reward": 20,
+  "start_dir": "E",
+  "mode": "junior",
+  "ui_stage": "buttons",
+  "recommended_age": "8-10",
+  "allowed_api": [
+    "up",
+    "down",
+    "left",
+    "right",
+    "at_goal"
+  ],
+  "legend": {
+    "#": "perete",
+    ".": "spatiu",
+    "S": "start",
+    "T": "terminal"
+  },
+  "grid": [
+    "########",
+    "#S...#.#",
+    "#...T..#",
+    "########"
+  ],
+  "starter_code": ""
+}

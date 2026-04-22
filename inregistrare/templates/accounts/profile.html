@@ -9,65 +9,69 @@
 <section class="profile-shell">
     <aside class="profile-card" data-animate>
         <div class="profile-card__avatar">
-            {% if user_profile.avatar %}
-                <img src="{{ user_profile.avatar.url }}" alt="Avatar utilizator">
-            {% else %}
-                <img src="https://api.dicebear.com/7.x/bottts/svg?background=%23dbeafe&radius=50&seed={{ user_profile.user.username|default:user.username|urlencode }}" alt="Avatar generat pentru {{ user_profile.name|default:user.username }}">
-            {% endif %}
+            <img src="https://api.dicebear.com/7.x/bottts/svg?background=%23dbeafe&radius=50&seed={{ user_profile.user.username|default:user.username|urlencode }}" alt="Avatar generat pentru {{ user_profile.name|default:user.username }}">
             <span class="profile-card__sticker profile-card__sticker--rocket" aria-hidden="true">✨</span>
             <span class="profile-card__sticker profile-card__sticker--sparkle" aria-hidden="true">🧠</span>
         </div>
         <h1 class="profile-card__title">Salut, {{ user_profile.name|default:user.username }}!</h1>
-        <p class="profile-card__subtitle">{{ user_profile.bio|default:'Completeaza-ti profilul si porneste in urmatoarea misiune digitala.' }}</p>
+        <p class="profile-card__subtitle">{{ user_profile.bio|default:'Completează-ți profilul și continuă traseul de învățare în limba română.' }}</p>
         <div class="profile-card__stats">
             <span>
                 <strong>{{ global_progress.completed|default:0 }}</strong>
-                <small>lectii finalizate</small>
+                <small>lecții finalizate</small>
             </span>
             <span>
                 <strong>{{ global_progress.streak|default:0 }}</strong>
-                <small>zile consecutiv</small>
+                <small>zile consecutive</small>
             </span>
             <span>
                 <strong>{{ badge_summary.badges|default:0 }}</strong>
-                <small>insigne stralucitoare</small>
+                <small>insigne câștigate</small>
             </span>
         </div>
         <a class="btn btn--primary profile-card__action" href="{% url 'edit_profile' %}">
-            <i class="fa-solid fa-pen-to-square"></i> Editeaza profilul
+            <i class="fa-solid fa-pen-to-square"></i> Editează profilul
         </a>
     </aside>
 
-        <div class="profile-details" data-animate>
-            <div class="profile-details__header">
-                <div class="profile-details__title">
-                    <span class="profile-badge" aria-hidden="true">🛠️</span>
-                    <div>
-                    <h2>Card de explorator</h2>
-                    <p>Informatii rapide despre contul tau UNITEX</p>
+    <div class="profile-details" data-animate>
+        <div class="profile-details__header">
+            <div class="profile-details__title">
+                <span class="profile-badge" aria-hidden="true">🛠️</span>
+                <div>
+                    <h2>Card de utilizator</h2>
+                    <p>Datele contului tău UNITEX, afișate clar și complet.</p>
                 </div>
             </div>
-            <a class="link-ghost" href="{% url 'index' %}"><i class="fa-solid fa-home"></i> Inapoi la pagina principala</a>
+            <a class="link-ghost" href="{% url 'index' %}"><i class="fa-solid fa-home"></i> Înapoi la pagina principală</a>
         </div>
 
         <dl class="profile-list">
             <div class="profile-list__item">
-                <dt>Porecla</dt>
+                <dt>Nume de utilizator</dt>
                 <dd>{{ user_profile.user.username }}</dd>
             </div>
             <div class="profile-list__item">
-                <dt>Adresa de email</dt>
+                <dt>Nume complet</dt>
+                <dd>{{ user_profile.name|default:"Nu este completat încă" }}</dd>
+            </div>
+            <div class="profile-list__item">
+                <dt>Vârstă</dt>
+                <dd>{{ user_profile.age|default:"Nu este completată încă" }}</dd>
+            </div>
+            <div class="profile-list__item">
+                <dt>Adresă de email</dt>
                 <dd>
                     {% if user_profile.email %}
                         <a href="mailto:{{ user_profile.email }}">{{ user_profile.email }}</a>
                     {% else %}
-                        <span class="text-muted">Nu este completata inca</span>
+                        <span class="text-muted">Nu este completată încă</span>
                     {% endif %}
                 </dd>
             </div>
             <div class="profile-list__item">
                 <dt>Telefon</dt>
-                <dd>{{ user_profile.phone_number|default:'Adauga un numar pentru notificari rapide' }}</dd>
+                <dd>{{ user_profile.phone_number|default:"Adaugă un număr pentru notificări rapide" }}</dd>
             </div>
             <div class="profile-list__item">
                 <dt>Membru din</dt>
@@ -75,14 +79,24 @@
             </div>
             <div class="profile-list__item">
                 <dt>Rol activ</dt>
-                <dd>{{ user_profile.role|default:'Explorator' }}</dd>
+                <dd>{{ platform_role }}</dd>
+            </div>
+            <div class="profile-list__item">
+                <dt>Termeni și condiții</dt>
+                <dd>
+                    {% if user_profile.accepted_terms %}
+                        Acceptați{% if user_profile.accepted_terms_at %} la {{ user_profile.accepted_terms_at|date:"d F Y, H:i" }}{% endif %}
+                    {% else %}
+                        Nu este înregistrată încă acceptarea
+                    {% endif %}
+                </dd>
             </div>
         </dl>
 
         <section class="profile-awards">
             <header>
-                <h3>Trofee digitale</h3>
-                <p>Pastreaza ritmul pentru a colectiona promovari si stickere noi.</p>
+                <h3>Reperele tale</h3>
+                <p>Păstrează ritmul pentru a debloca lecții, jocuri și misiuni noi.</p>
             </header>
             <div class="profile-awards__grid">
                 {% if highlighted_badges %}
@@ -93,14 +107,14 @@
                             </span>
                             <div>
                                 <h4>{{ badge.badge.name }}</h4>
-                                <p>Obtinuta in {{ badge.acquired_at|date:"F Y" }}</p>
+                                <p>Obținută în {{ badge.acquired_at|date:"F Y" }}</p>
                             </div>
                         </article>
                     {% endfor %}
                 {% else %}
                     <article class="award-card award-card--empty">
-                        <h4>Niciun trofeu inca</h4>
-                        <p>Finalizeaza lectii si misiuni pentru a umple raftul cu trofee.</p>
+                        <h4>Niciun trofeu încă</h4>
+                        <p>Finalizează lecții și misiuni pentru a umple vitrina cu rezultate.</p>
                     </article>
                 {% endif %}
             </div>

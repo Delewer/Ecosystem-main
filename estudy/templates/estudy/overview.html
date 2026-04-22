@@ -1,13 +1,13 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 
-{% block title %}PanoramДѓ Estudy В· UnITex{% endblock %}
+{% block title %}Panoramă Estudy · UnITex{% endblock %}
 
 {% block page_content %}
 <section class="rounded-4 bg-white shadow-sm p-4 p-lg-5 mb-5">
     <div class="row g-4 align-items-center">
         <div class="col-lg-7">
-            <h1 class="display-6 fw-bold">Progresul tДѓu Г®n Estudy</h1>
-            <p class="lead text-muted">VizualizeazДѓ materia disponibilДѓ И™i planificДѓ urmДѓtoarele lecИ›ii pentru a-И›i menИ›ine ritmul.</p>
+            <h1 class="display-6 fw-bold">Progresul tău în Estudy</h1>
+            <p class="lead text-muted">Vizualizează materia disponibilă și planifică următoarele lecții pentru a-ți menține ritmul.</p>
             <div class="mt-4">
                 <span class="d-block text-uppercase small text-muted">Progres total</span>
                 <div class="progress mt-2" style="height: 14px;">
@@ -17,11 +17,11 @@
         </div>
         <div class="col-lg-5">
             <div class="bg-primary text-white rounded-4 p-4 h-100 d-flex flex-column justify-content-center">
-                <p class="mb-2">Иљine cont:</p>
+                <p class="mb-2">Ține cont:</p>
                 <ul class="mb-0 small opacity-75">
-                    <li>FinalizeazДѓ lecИ›iile din calendar pentru a debloca noi premii.</li>
-                    <li>RevizuieИ™te notiИ›ele dupДѓ fiecare quiz.</li>
-                    <li>Revenirea periodicДѓ consolideazДѓ informaИ›iile.</li>
+                    <li>Finalizează lecțiile din calendar pentru a debloca noi premii.</li>
+                    <li>Revizuiește notițele după fiecare quiz.</li>
+                    <li>Revenirea periodică consolidează informațiile.</li>
                 </ul>
             </div>
         </div>
@@ -37,23 +37,23 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h3 class="h5 mb-0">{{ subject.name }}</h3>
-                            <span class="badge bg-primary-subtle text-primary">{{ subject.lessons.count }} lecИ›ii</span>
+                            <span class="badge bg-primary-subtle text-primary">{{ subject.lessons.count }} lecții</span>
                         </div>
-                        <p class="text-muted small">{{ subject.description|default:"Nu existДѓ o descriere pentru acest subiect Г®ncДѓ." }}</p>
+                        <p class="text-muted small">{{ subject.description|default:"Nu există o descriere pentru acest subiect încă." }}</p>
                         <ul class="list-unstyled small text-muted">
                             {% for lesson in subject.lessons.all %}
                                 <li><i class="fa-regular fa-circle-dot me-2"></i>{{ lesson.title }}</li>
                             {% empty %}
-                                <li>Nu existДѓ lecИ›ii Г®ncДѓ.</li>
+                                <li>Nu există lecții încă.</li>
                             {% endfor %}
                         </ul>
-                        <a href="{% url 'estudy:lessons_list' %}?subject={{ subject.id }}" class="btn btn-sm btn-outline-primary">Vezi lecИ›iile</a>
+                        <a href="{% url 'estudy:lessons_list' %}?subject={{ subject.id }}" class="btn btn-sm btn-outline-primary">Vezi lecțiile</a>
                     </div>
                 </div>
             </div>
         {% empty %}
             <div class="col-12">
-                <p class="text-muted">Nu existДѓ materii Г®nregistrate momentan.</p>
+                <p class="text-muted">Nu există materii înregistrate momentan.</p>
             </div>
         {% endfor %}
     </div>

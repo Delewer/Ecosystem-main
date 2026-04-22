@@ -1,0 +1,39 @@
+{
+  "id": "W1-L03",
+  "title": "Completeaza linia lipsa",
+  "description": "Mod Cod: completeaza linia lipsa si invata forma exacta a comenzilor Python.",
+  "goal_text": "Completeaza programul: lipseste o singura comanda.",
+  "goal": {
+    "type": "reach_goal",
+    "target_tile": "T"
+  },
+  "concepts": ["sequencing", "debugging"],
+  "difficulty": "easy",
+  "max_steps": 20,
+  "time_limit_ms": 800,
+  "xp_reward": 30,
+  "start_dir": "E",
+  "mode": "code",
+  "ui_stage": "fill_gaps",
+  "recommended_age": "11-13",
+  "allowed_api": [
+    "up",
+    "down",
+    "left",
+    "right",
+    "at_goal"
+  ],
+  "legend": {
+    "#": "perete",
+    ".": "spatiu",
+    "S": "start",
+    "T": "terminal"
+  },
+  "grid": [
+    "########",
+    "#S...#.#",
+    "#...T..#",
+    "########"
+  ],
+  "starter_code": "right()\nright()\n___\nright()"
+}

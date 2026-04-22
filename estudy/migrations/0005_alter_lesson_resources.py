@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('estudy', '0004_reward_lesson_resources_test_userreward_and_more'),
+        ("estudy", "0004_reward_lesson_resources_test_userreward_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='lesson',
-            name='resources',
+            model_name="lesson",
+            name="resources",
             field=models.TextField(blank=True, null=True),
         ),
     ]

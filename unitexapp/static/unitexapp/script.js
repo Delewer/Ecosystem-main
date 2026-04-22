@@ -3,15 +3,25 @@
     const html = doc.documentElement;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const THEME_STORAGE_KEY = 'unitex-theme';
+    const COOKIE_CONSENT_KEY = 'unitex_cookie_consent';
+    const PAGE_READY_FLAG = 'unitexPageReadyHookBound';
 
     const ICON_LIGHT = '\u2600';
     const ICON_DARK = '\u263D';
     const themeToggle = doc.querySelector('[data-theme-toggle]');
     const themeLabel = themeToggle?.querySelector('[data-theme-toggle-label]');
     const themeIcon = themeToggle?.querySelector('.theme-toggle__icon');
-    const getCsrfToken = () => {
-        const match = doc.cookie.match(/csrftoken=([^;]+)/);
+    const getCookieValue = name => {
+        const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const match = doc.cookie.match(new RegExp(`(?:^|; )${escapedName}=([^;]+)`));
         return match ? decodeURIComponent(match[1]) : '';
+    };
+    const setCookieValue = (name, value, maxAgeSeconds) => {
+        const secureFlag = window.location.protocol === 'https:' ? '; Secure' : '';
+        doc.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; SameSite=Lax${secureFlag}`;
+    };
+    const getCsrfToken = () => {
+        return getCookieValue('csrftoken');
     };
 
     const applyTheme = (theme) => {
@@ -79,8 +89,16 @@
         });
     }
 
-    doc.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', event => {
+    if (html.dataset.unitexSmoothScrollBound !== 'true') {
+        html.dataset.unitexSmoothScrollBound = 'true';
+        doc.addEventListener('click', event => {
+            if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+                return;
+            }
+            const anchor = event.target instanceof Element ? event.target.closest('a[href^="#"]') : null;
+            if (!anchor) {
+                return;
+            }
             const targetId = anchor.getAttribute('href');
             if (!targetId || targetId === '#' || targetId === '#0') {
                 return;
@@ -95,7 +113,7 @@
                 requestAnimationFrame(() => target.focus({ preventScroll: true }));
             }
         });
-    });
+    }
 
     const scrollProgress = doc.querySelector('[data-scroll-progress]');
     const scrollTopButton = doc.querySelector('[data-scroll-top]');
@@ -123,29 +141,50 @@
         });
     }
 
-    const animatedBlocks = doc.querySelectorAll('[data-animate]');
-    if (animatedBlocks.length) {
+    const animationObserver = !prefersReducedMotion && 'IntersectionObserver' in window
+        ? new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    animationObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 })
+        : null;
+
+    const initializeAnimatedBlocks = () => {
+        const animatedBlocks = doc.querySelectorAll('[data-animate]');
+        if (!animatedBlocks.length) {
+            return;
+        }
         if (prefersReducedMotion) {
             animatedBlocks.forEach(el => el.classList.add('is-visible'));
-        } else if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.15 });
-            animatedBlocks.forEach(el => observer.observe(el));
-        } else {
-            animatedBlocks.forEach(el => el.classList.add('is-visible'));
+            return;
         }
-    }
+        if (!animationObserver) {
+            animatedBlocks.forEach(el => el.classList.add('is-visible'));
+            return;
+        }
+        animatedBlocks.forEach(el => {
+            if (el.dataset.unitexAnimateBound === 'true') {
+                return;
+            }
+            el.dataset.unitexAnimateBound = 'true';
+            animationObserver.observe(el);
+        });
+    };
 
-    if (!prefersReducedMotion) {
+    const initializeTiltTargets = () => {
+        if (prefersReducedMotion) {
+            return;
+        }
         const tiltTargets = doc.querySelectorAll('.card, .info-card, .learning-card, .category-card, .benefit-card');
         const MAX_ROTATION = 6;
         tiltTargets.forEach(el => {
+            if (el.dataset.unitexTiltBound === 'true') {
+                return;
+            }
+            el.dataset.unitexTiltBound = 'true';
             const handleMove = event => {
                 const rect = el.getBoundingClientRect();
                 const rotateX = ((event.clientY - rect.top) / rect.height - 0.5) * -MAX_ROTATION;
@@ -159,13 +198,17 @@
             el.addEventListener('pointerleave', reset);
             el.addEventListener('pointerup', reset);
         });
-    }
+    };
 
     const initLeadForm = () => {
         const leadForm = doc.querySelector('[data-lead-form]');
         if (!leadForm) {
             return;
         }
+        if (leadForm.dataset.unitexLeadBound === 'true') {
+            return;
+        }
+        leadForm.dataset.unitexLeadBound = 'true';
         const successNode = leadForm.querySelector('[data-lead-success]');
         const errorNode = leadForm.querySelector('[data-lead-error]');
         const submitButton = leadForm.querySelector('[type="submit"]');
@@ -235,11 +278,53 @@
         });
     };
 
-    initLeadForm();
+    const initCookieBanner = () => {
+        const banner = doc.querySelector('[data-cookie-banner]');
+        if (!banner || banner.dataset.unitexCookieBound === 'true') {
+            return;
+        }
+        banner.dataset.unitexCookieBound = 'true';
 
-    const progressBars = doc.querySelectorAll('[data-progress-bar]');
-    if (progressBars.length) {
+        const showBanner = () => {
+            banner.hidden = false;
+            requestAnimationFrame(() => {
+                banner.classList.add('is-visible');
+            });
+        };
+        const hideBanner = () => {
+            banner.classList.remove('is-visible');
+            window.setTimeout(() => {
+                banner.hidden = true;
+            }, 220);
+        };
+
+        if (getCookieValue(COOKIE_CONSENT_KEY)) {
+            banner.hidden = true;
+        } else {
+            showBanner();
+        }
+
+        banner.querySelectorAll('[data-cookie-consent]').forEach(button => {
+            button.addEventListener('click', () => {
+                const choice = button.getAttribute('data-cookie-consent') === 'accept'
+                    ? 'accept'
+                    : 'essential';
+                setCookieValue(COOKIE_CONSENT_KEY, choice, 60 * 60 * 24 * 365);
+                hideBanner();
+            });
+        });
+    };
+
+    const initializeProgressBars = () => {
+        const progressBars = doc.querySelectorAll('[data-progress-bar]');
+        if (!progressBars.length) {
+            return;
+        }
         progressBars.forEach(bar => {
+            if (bar.dataset.unitexProgressBound === 'true') {
+                return;
+            }
+            bar.dataset.unitexProgressBound = 'true';
             const targetValue = parseFloat(bar.dataset.progressInitial || bar.getAttribute('aria-valuenow') || '0');
             const clamped = Math.max(0, Math.min(100, isNaN(targetValue) ? 0 : targetValue));
             const valueOutput = bar.querySelector('[data-progress-percent]');
@@ -274,6 +359,24 @@
                 }
             };
             requestAnimationFrame(animate);
+        });
+    };
+
+    const initializePageInteractions = () => {
+        initializeAnimatedBlocks();
+        initializeTiltTargets();
+        initLeadForm();
+        initCookieBanner();
+        initializeProgressBars();
+        updateScrollState();
+    };
+
+    initializePageInteractions();
+
+    if (html.dataset[PAGE_READY_FLAG] !== 'true') {
+        html.dataset[PAGE_READY_FLAG] = 'true';
+        doc.addEventListener('unitex:page-ready', () => {
+            initializePageInteractions();
         });
     }
 })();

@@ -1,3 +1,3 @@
-from django.contrib import admin
+# Admin registrations intentionally left empty for now.
 
-# Register your models here.
+# If you add model admin registrations, import django.contrib.admin here.

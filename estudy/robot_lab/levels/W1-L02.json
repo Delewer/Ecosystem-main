@@ -1,0 +1,40 @@
+{
+  "id": "W1-L02",
+  "title": "Vezi codul",
+  "description": "Mod Junior: construieste programul cu butoane si vezi automat codul Python rezultat.",
+  "goal_text": "Construieste ruta si urmareste codul right()/down().",
+  "goal": {
+    "type": "reach_goal",
+    "target_tile": "T"
+  },
+  "concepts": ["sequencing", "debugging"],
+  "difficulty": "easy",
+  "max_steps": 24,
+  "time_limit_ms": 700,
+  "xp_reward": 25,
+  "start_dir": "E",
+  "mode": "junior",
+  "ui_stage": "buttons_code",
+  "recommended_age": "8-10",
+  "allowed_api": [
+    "up",
+    "down",
+    "left",
+    "right",
+    "at_goal"
+  ],
+  "legend": {
+    "#": "perete",
+    ".": "spatiu",
+    "S": "start",
+    "T": "terminal"
+  },
+  "grid": [
+    "########",
+    "#S...#.#",
+    "#....#.#",
+    "#..T...#",
+    "########"
+  ],
+  "starter_code": ""
+}

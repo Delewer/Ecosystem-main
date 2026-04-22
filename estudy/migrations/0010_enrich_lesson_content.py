@@ -62,10 +62,22 @@ def enrich_lessons(apps, schema_editor):
                     {"id": "display", "label": "print(mesaj)"},
                 ],
                 "targets": [
-                    {"prompt": "Numele variabilei care păstrează un text.", "accepts": "naming"},
-                    {"prompt": "Exemplu de valoare pentru o variabilă de tip string.", "accepts": "value"},
-                    {"prompt": "Instrucțiune ce mărește valoarea existentă.", "accepts": "update"},
-                    {"prompt": "Comandă ce afișează conținutul cutiei.", "accepts": "display"},
+                    {
+                        "prompt": "Numele variabilei care păstrează un text.",
+                        "accepts": "naming",
+                    },
+                    {
+                        "prompt": "Exemplu de valoare pentru o variabilă de tip string.",
+                        "accepts": "value",
+                    },
+                    {
+                        "prompt": "Instrucțiune ce mărește valoarea existentă.",
+                        "accepts": "update",
+                    },
+                    {
+                        "prompt": "Comandă ce afișează conținutul cutiei.",
+                        "accepts": "display",
+                    },
                 ],
             },
         },
@@ -120,9 +132,15 @@ def enrich_lessons(apps, schema_editor):
                 ],
                 "targets": [
                     {"prompt": "Repetă un număr fix de mișcări.", "accepts": "forloop"},
-                    {"prompt": "Continuă cât timp robotul mai are energie.", "accepts": "whileloop"},
+                    {
+                        "prompt": "Continuă cât timp robotul mai are energie.",
+                        "accepts": "whileloop",
+                    },
                     {"prompt": "Oprește bucla imediat.", "accepts": "break"},
-                    {"prompt": "Sari peste pasul curent și treci la următorul.", "accepts": "continue"},
+                    {
+                        "prompt": "Sari peste pasul curent și treci la următorul.",
+                        "accepts": "continue",
+                    },
                 ],
             },
         },
@@ -144,7 +162,9 @@ def enrich_lessons(apps, schema_editor):
                 " cu statistici pentru colegii din echipă. Fără `return`, funcția rulează, dar se păstrează tăcută."
                 "\n\n"
                 "Scrie docstring-uri scurte pentru a explica în câteva cuvinte ce face super-puterea ta:"
-                " `""Calculează bonusul în funcție de multiplu.""`. Când ai nevoie de aceeași logică în alt joc,"
+                " `"
+                "Calculează bonusul în funcție de multiplu."
+                "`. Când ai nevoie de aceeași logică în alt joc,"
                 " nu trebuie decât să inviți funcția la petrecere."
             ),
             "resources": [
@@ -176,9 +196,18 @@ def enrich_lessons(apps, schema_editor):
                 ],
                 "targets": [
                     {"prompt": "Linia unde definim funcția.", "accepts": "define"},
-                    {"prompt": "Variabila locală care primește valoarea trimisă.", "accepts": "param"},
-                    {"prompt": "Instrucțiunea care trimite rezultatul înapoi.", "accepts": "return"},
-                    {"prompt": "Exemplu de apel cu afișarea rezultatului.", "accepts": "call"},
+                    {
+                        "prompt": "Variabila locală care primește valoarea trimisă.",
+                        "accepts": "param",
+                    },
+                    {
+                        "prompt": "Instrucțiunea care trimite rezultatul înapoi.",
+                        "accepts": "return",
+                    },
+                    {
+                        "prompt": "Exemplu de apel cu afișarea rezultatului.",
+                        "accepts": "call",
+                    },
                 ],
             },
         },
@@ -221,7 +250,9 @@ def enrich_lessons(apps, schema_editor):
             }
             practice.intro = practice_data.get(
                 "intro",
-                getattr(practice, "intro", "Exersează prin potrivirea conceptelor corecte."),
+                getattr(
+                    practice, "intro", "Exersează prin potrivirea conceptelor corecte."
+                ),
             )
             practice.instructions = practice_data.get(
                 "instructions",
@@ -235,7 +266,6 @@ def enrich_lessons(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("estudy", "0009_seed_showcase_lessons"),
     ]

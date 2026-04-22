@@ -1,10 +1,9 @@
 from django.urls import path
+
 from . import views
-import estudy.views
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('estudy/', views.index, name='estudy'),
-    path('submit-form', views.submit_form, name='submit_form'),
-
+    path("", views.index, name="index"),
+    path("estudy/", views.index, name="estudy"),
+    path("submit-form", views.submit_form, name="submit_form"),
 ]

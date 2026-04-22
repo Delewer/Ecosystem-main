@@ -1,0 +1,61 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+.coverage
+.coverage.*
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+myenv/
+.python-version
+.pip/
+
+# Django / build artifacts
+staticfiles/
+media/
+db.sqlite3
+*.sqlite3
+*.log
+*.pot
+*.mo
+.cache/
+.pre-commit-cache/
+
+# Packaging
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+pip-wheel-metadata/
+
+# Testing / coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.mypy_cache/
+.ruff_cache/
+.benchmarks/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.orig
+*.tmp
+
+# Node
+node_modules/
+package-lock.json
+yarn.lock
+
+# Others
+.DS_Store
+Thumbs.db

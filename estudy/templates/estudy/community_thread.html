@@ -7,7 +7,7 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <h1 class="h4">{{ thread.title }}</h1>
-            <p class="text-muted small">Creat de {{ thread.created_by.get_short_name|default:thread.created_by.username }} · {{ thread.created_at|date:"d MMM, HH:mm" }}</p>
+            <p class="text-muted small">Creat de {{ thread.author.get_short_name|default:thread.author.username }} · {{ thread.created_at|date:"d MMM, HH:mm" }}</p>
             <p>{{ thread.body }}</p>
             {% if thread.tags %}
                 <div class="d-flex flex-wrap gap-2">
@@ -28,7 +28,7 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
-                            <span class="fw-semibold">{{ reply.created_by.get_short_name|default:reply.created_by.username }}</span>
+                            <span class="fw-semibold">{{ reply.author.get_short_name|default:reply.author.username }}</span>
                             <span class="small text-muted">{{ reply.created_at|date:"d MMM, HH:mm" }}</span>
                         </div>
                         <p class="mt-2 mb-0">{{ reply.body }}</p>

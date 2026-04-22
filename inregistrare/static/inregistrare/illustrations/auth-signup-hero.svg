@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="title desc">
+  <title id="title">Erou digital pentru inregistrare</title>
+  <desc id="desc">Personaj prietenos care pregateste un nou profil in platforma.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#0f766e"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d9f99d" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#86efac" stop-opacity="0.2"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="420" rx="28" fill="url(#bg)"/>
+  <circle cx="84" cy="70" r="4" fill="#bbf7d0" opacity=".8"/>
+  <circle cx="144" cy="88" r="3" fill="#bfdbfe" opacity=".7"/>
+  <circle cx="556" cy="64" r="5" fill="#99f6e4" opacity=".75"/>
+  <rect x="56" y="246" width="528" height="136" rx="20" fill="url(#card)" stroke="#a7f3d0" stroke-opacity=".35"/>
+  <rect x="88" y="278" width="196" height="16" rx="8" fill="#dcfce7" opacity=".8"/>
+  <rect x="88" y="306" width="152" height="12" rx="6" fill="#dcfce7" opacity=".55"/>
+  <rect x="88" y="332" width="98" height="24" rx="12" fill="#34d399" opacity=".85"/>
+  <g transform="translate(316 86)">
+    <rect x="0" y="0" width="224" height="188" rx="28" fill="#ecfeff"/>
+    <rect x="18" y="18" width="188" height="120" rx="16" fill="#0f172a"/>
+    <rect x="34" y="36" width="112" height="12" rx="6" fill="#60a5fa"/>
+    <rect x="34" y="56" width="96" height="10" rx="5" fill="#94a3b8"/>
+    <rect x="34" y="76" width="70" height="10" rx="5" fill="#94a3b8"/>
+    <circle cx="162" cy="90" r="26" fill="#14b8a6"/>
+    <path d="M149 91l9 9 17-17" fill="none" stroke="#ecfeff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="34" y="154" width="130" height="14" rx="7" fill="#cbd5e1"/>
+  </g>
+  <g transform="translate(230 128)">
+    <circle cx="52" cy="44" r="32" fill="#f8fafc"/>
+    <rect x="18" y="78" width="68" height="84" rx="18" fill="#f8fafc"/>
+    <circle cx="40" cy="42" r="4" fill="#2563eb"/>
+    <circle cx="64" cy="42" r="4" fill="#2563eb"/>
+    <path d="M40 58h24" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
+    <rect x="34" y="98" width="36" height="12" rx="6" fill="#a7f3d0"/>
+  </g>
+</svg>

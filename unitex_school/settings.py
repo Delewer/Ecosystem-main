@@ -10,9 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
-from pathlib import Path
 import os
-from django.conf.urls import handler403
+from pathlib import Path
+from typing import List
+
+# handler403 import removed (unused)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,72 +24,94 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-n(s4!u=$8s15j0gc4%ncx$e*7ht2lx9n!=)4v@n+s!$v29zkq#'
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-n(s4!u=$8s15j0gc4%ncx$e*7ht2lx9n!=)4v@n+s!$v29zkq#",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() == "true"
 
-ALLOWED_HOSTS = []
+
+def _split_env_list(value: str) -> List[str]:
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+ALLOWED_HOSTS = _split_env_list(os.environ.get("ALLOWED_HOSTS", ""))
+CSRF_TRUSTED_ORIGINS = _split_env_list(os.environ.get("CSRF_TRUSTED_ORIGINS", ""))
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'estudy',
-    'unitexapp',
-    'inregistrare',
-    
-    
-    
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "estudy",
+    "unitexapp",
+    "inregistrare",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "estudy.middleware.RequestProfilingMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "estudy.middleware.RequestIdempotencyMiddleware",
+    "estudy.middleware.RequestRateLimitMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'unitex_school.urls'
+ROOT_URLCONF = "unitex_school.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # Убедитесь, что ваш проект ищет шаблоны
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],  # Убедитесь, что ваш проект ищет шаблоны
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
 
-WSGI_APPLICATION = 'unitex_school.wsgi.application'
+WSGI_APPLICATION = "unitex_school.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+# Optional DATABASE_URL override (requires dj-database-url if provided)
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if DATABASE_URL:
+    try:
+        import dj_database_url
+
+        DATABASES["default"] = dj_database_url.parse(DATABASE_URL)
+    except Exception:
+        # Fallback to sqlite if parsing fails or library missing
+        pass
 
 
 # Password validation
@@ -94,16 +119,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -111,42 +136,188 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = os.environ.get("LANGUAGE_CODE", "en-us")
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = os.environ.get("TIME_ZONE", "UTC")
 
 USE_I18N = True
 
 USE_TZ = True
 
+LANGUAGES = [
+    ("en", "English"),
+    ("ro", "Romanian"),
+    ("ru", "Russian"),
+]
+LOCALE_PATHS = [BASE_DIR / "locale"]
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'unitexapp', 'static'),
-    os.path.join(BASE_DIR, 'estudy', 'static'),
+    os.path.join(BASE_DIR, "unitexapp", "static"),
+    os.path.join(BASE_DIR, "estudy", "static"),
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+# DRF defaults for API hardening and unified error format
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.openapi.AutoSchema",
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.UserRateThrottle",
+        "rest_framework.throttling.AnonRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "user": "1000/day",
+        "anon": "100/day",
+    },
+    "EXCEPTION_HANDLER": "estudy.api_exceptions.custom_exception_handler",
+}
+
+ESTUDY_PROFILE_ALWAYS = False
+ESTUDY_RATE_LIMIT_ENABLED = True
+ESTUDY_RATE_LIMIT_WINDOW_SECONDS = 60
+ESTUDY_RATE_LIMIT_RATES = {
+    "anon": 60,
+    "user": 120,
+}
+ESTUDY_RATE_LIMIT_EXEMPT_PREFIXES = []
+ESTUDY_TRUST_PROXY_HEADERS = False
+
+SECONDS_PER_MINUTE = 60
+MINUTES_PER_HOUR = 60
+HOURS_PER_DAY = 24
+
+DEFAULT_IDEMPOTENCY_TTL_SECONDS = SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY
+DEFAULT_IDEMPOTENCY_LOCK_SECONDS = SECONDS_PER_MINUTE
+ESTUDY_IDEMPOTENCY_ENABLED = True
+ESTUDY_IDEMPOTENCY_TTL_SECONDS = DEFAULT_IDEMPOTENCY_TTL_SECONDS
+ESTUDY_IDEMPOTENCY_LOCK_SECONDS = DEFAULT_IDEMPOTENCY_LOCK_SECONDS
+ESTUDY_IDEMPOTENCY_METHODS = ["POST"]
+ESTUDY_IDEMPOTENCY_PATH_PREFIXES = [
+    "/estudy/tests/",
+    "/estudy/projects/",
+    "/estudy/api/run-code/",
+]
+ESTUDY_CODE_RUNNER_ENABLED = DEBUG
+ROBOT_RUNNER_URL = os.environ.get("ROBOT_RUNNER_URL", "")
+ROBOT_RUNNER_TOKEN = os.environ.get("ROBOT_RUNNER_TOKEN", "")
+ROBOT_RUNNER_TIMEOUT_MS = int(os.environ.get("ROBOT_RUNNER_TIMEOUT_MS", "3000"))
+
+DEFAULT_AUDIT_TRAIL_ENABLED = True
+DEFAULT_AUDIT_TRAIL_HASH_ALGO = "sha256"
+DEFAULT_AUDIT_TRAIL_SOURCE = "app"
+DEFAULT_AUDIT_TRAIL_SECRET = SECRET_KEY
+
+ESTUDY_AUDIT_TRAIL_ENABLED = (
+    os.environ.get(
+        "ESTUDY_AUDIT_TRAIL_ENABLED", str(DEFAULT_AUDIT_TRAIL_ENABLED)
+    ).lower()
+    == "true"
+)
+ESTUDY_AUDIT_TRAIL_HASH_ALGO = os.environ.get(
+    "ESTUDY_AUDIT_TRAIL_HASH_ALGO", DEFAULT_AUDIT_TRAIL_HASH_ALGO
+)
+ESTUDY_AUDIT_TRAIL_SOURCE = os.environ.get(
+    "ESTUDY_AUDIT_TRAIL_SOURCE", DEFAULT_AUDIT_TRAIL_SOURCE
+)
+ESTUDY_AUDIT_TRAIL_SECRET = os.environ.get(
+    "ESTUDY_AUDIT_TRAIL_SECRET", DEFAULT_AUDIT_TRAIL_SECRET
+)
+
+DEFAULT_AI_COST_PROVIDER = "internal"
+DEFAULT_AI_COST_MODEL = "keyword-hints"
+DEFAULT_AI_COST_CURRENCY = "USD"
+DEFAULT_AI_COST_RATE = "0.000000"
+DEFAULT_AI_COST_CHARS_PER_TOKEN = 4
+DEFAULT_AI_COST_MIN_TOKENS = 1
+DEFAULT_AI_COST_ESTIMATED = True
+
+ESTUDY_AI_COST_PROVIDER = os.environ.get(
+    "ESTUDY_AI_COST_PROVIDER", DEFAULT_AI_COST_PROVIDER
+)
+ESTUDY_AI_COST_MODEL = os.environ.get("ESTUDY_AI_COST_MODEL", DEFAULT_AI_COST_MODEL)
+ESTUDY_AI_COST_CURRENCY = os.environ.get(
+    "ESTUDY_AI_COST_CURRENCY", DEFAULT_AI_COST_CURRENCY
+)
+ESTUDY_AI_COST_PER_1K_PROMPT = os.environ.get(
+    "ESTUDY_AI_COST_PER_1K_PROMPT", DEFAULT_AI_COST_RATE
+)
+ESTUDY_AI_COST_PER_1K_COMPLETION = os.environ.get(
+    "ESTUDY_AI_COST_PER_1K_COMPLETION", DEFAULT_AI_COST_RATE
+)
+ESTUDY_AI_COST_CHARS_PER_TOKEN = int(
+    os.environ.get(
+        "ESTUDY_AI_COST_CHARS_PER_TOKEN", str(DEFAULT_AI_COST_CHARS_PER_TOKEN)
+    )
+)
+ESTUDY_AI_COST_MIN_TOKENS = int(
+    os.environ.get("ESTUDY_AI_COST_MIN_TOKENS", str(DEFAULT_AI_COST_MIN_TOKENS))
+)
+ESTUDY_AI_COST_ESTIMATED = (
+    os.environ.get("ESTUDY_AI_COST_ESTIMATED", str(DEFAULT_AI_COST_ESTIMATED)).lower()
+    == "true"
+)
+
+# Cache configuration: prefer Redis if REDIS_URL provided, otherwise use locmem
+REDIS_URL = os.environ.get("REDIS_URL")
+if REDIS_URL:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": REDIS_URL,
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            },
+        }
+    }
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        }
+    }
+
+# Optional Sentry (set SENTRY_DSN env var in production)
+SENTRY_DSN = os.environ.get("SENTRY_DSN")
+if SENTRY_DSN:
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.django import DjangoIntegration
+
+        sentry_sdk.init(
+            dsn=SENTRY_DSN, integrations=[DjangoIntegration()], traces_sample_rate=0.1
+        )
+    except Exception:
+        # sentry-sdk not installed or init failed; ignore to keep dev env working
+        pass
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # Например, для Gmail это 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"  # Например, для Gmail это 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'andugd67@gmail.com'  # Ваш email
-EMAIL_HOST_PASSWORD = 'dpty hnlg vnbc jpcj'  # Ваш пароль или App password для Gmail
+EMAIL_HOST_USER = "andugd67@gmail.com"  # Ваш email
+EMAIL_HOST_PASSWORD = "dpty hnlg vnbc jpcj"  # Ваш пароль или App password для Gmail
 
-LOGIN_URL = '/login/'
-LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = "/login/"
+LOGOUT_REDIRECT_URL = "/"
 
-TEACHER_REGISTRATION_CODE = os.environ.get('UNITEX_TEACHER_CODE', 'MENTOR-2025')
+TEACHER_REGISTRATION_CODE = os.environ.get("UNITEX_TEACHER_CODE", "MENTOR-2025")

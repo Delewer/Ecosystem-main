@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('estudy', '0006_alter_lesson_options_remove_lesson_resources_and_more'),
+        ("estudy", "0006_alter_lesson_options_remove_lesson_resources_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='test',
-            name='practice_prompt',
+            model_name="test",
+            name="practice_prompt",
             field=models.TextField(blank=True),
         ),
         migrations.AddField(
-            model_name='test',
-            name='theory_summary',
+            model_name="test",
+            name="theory_summary",
             field=models.TextField(blank=True),
         ),
     ]

@@ -1,0 +1,1544 @@
+.robotlab-page {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.robotlab-page .card {
+    background: linear-gradient(160deg, rgba(15, 26, 54, 0.95), rgba(12, 44, 77, 0.92));
+    border: 1px solid rgba(83, 156, 255, 0.25);
+    border-radius: 14px;
+    padding: 1rem;
+    color: #d7e9ff;
+}
+
+.robotlab-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.robotlab-summary-grid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.robotlab-stat small {
+    display: block;
+    color: #95b4db;
+}
+
+.robotlab-stat strong {
+    font-size: 1.4rem;
+    line-height: 1.2;
+}
+
+.robotlab-level-list {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.robotlab-level-item {
+    border: 1px solid rgba(117, 166, 233, 0.3);
+    border-radius: 12px;
+    padding: 0.85rem;
+    background: rgba(5, 15, 35, 0.45);
+}
+
+.robotlab-level-item.is-completed {
+    border-color: rgba(37, 205, 130, 0.6);
+}
+
+.robotlab-level-item.is-locked {
+    opacity: 0.68;
+}
+
+.robotlab-level-item__meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: #93b5df;
+    margin-bottom: 0.45rem;
+}
+
+.robotlab-level-item h4 {
+    margin: 0.2rem 0 0.4rem;
+    font-size: 1.02rem;
+}
+
+.robotlab-level-item p {
+    min-height: 2.6em;
+    margin: 0 0 0.5rem;
+    color: #bdd3ed;
+}
+
+.robotlab-level-item__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 0.55rem;
+}
+
+.chip {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.76rem;
+    background: rgba(89, 145, 232, 0.25);
+    color: #d6e8ff;
+}
+
+.robotlab-level-item__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.robotlab-lock-label {
+    font-size: 0.8rem;
+    color: #f4adad;
+}
+
+.robotlab-page .card:hover,
+.robotlab-page .card:focus-within {
+    transform: none;
+}
+
+.robotlab-level-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.9rem;
+}
+
+.robotlab-level-header h2 {
+    margin: 0.25rem 0 0.35rem;
+}
+
+.robotlab-level-header p {
+    margin: 0;
+    color: #bdd3ed;
+}
+
+.robotlab-level-code {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0.25rem 0.68rem;
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: rgba(54, 130, 229, 0.2);
+    color: #d7e9ff;
+}
+
+.robotlab-level-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.6rem;
+}
+
+.robotlab-level-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.45rem;
+}
+
+.robotlab-split {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(260px, 25%) minmax(0, 1fr);
+    min-height: 0;
+}
+
+.robotlab-theory-panel {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    min-height: 0;
+    overflow: auto;
+}
+
+.robotlab-theory-head {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.robotlab-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    border-radius: 999px;
+    padding: 0.22rem 0.62rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: rgba(96, 165, 250, 0.2);
+}
+
+.robotlab-theory-panel h3 {
+    margin: 0;
+}
+
+.robotlab-theory-panel p {
+    margin: 0;
+    color: #bdd3ed;
+}
+
+.robotlab-theory-block {
+    border: 1px solid rgba(103, 157, 228, 0.28);
+    border-radius: 10px;
+    background: rgba(8, 23, 47, 0.55);
+    padding: 0.7rem;
+    display: grid;
+    gap: 0.45rem;
+}
+
+.robotlab-theory-block h4,
+.robotlab-hint-panel h4 {
+    margin: 0;
+    font-size: 0.93rem;
+}
+
+.robotlab-list {
+    margin: 0;
+    padding-left: 1.05rem;
+    display: grid;
+    gap: 0.3rem;
+    color: #d7e9ff;
+}
+
+.robotlab-command-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.robotlab-command-list code {
+    display: inline-flex;
+    padding: 0.2rem 0.45rem;
+    border-radius: 8px;
+    background: rgba(15, 34, 62, 0.8);
+    border: 1px solid rgba(103, 157, 228, 0.28);
+    color: #d7e9ff;
+    font-size: 0.8rem;
+}
+
+.robotlab-hint-panel {
+    border: 1px solid rgba(103, 157, 228, 0.32);
+    border-radius: 10px;
+    background: rgba(8, 23, 47, 0.55);
+    padding: 0.7rem;
+    display: grid;
+    gap: 0.5rem;
+}
+
+.robotlab-hint-actions {
+    display: grid;
+    gap: 0.42rem;
+}
+
+.robotlab-hint-btn {
+    justify-content: flex-start;
+}
+
+.robotlab-hint-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.robotlab-game-panel {
+    min-height: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-rows: minmax(0, 1fr) minmax(150px, 0.44fr);
+}
+
+.robotlab-runtime {
+    min-height: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(260px, 0.95fr) minmax(0, 1.05fr);
+}
+
+.robotlab-layout {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.robotlab-grid {
+    display: grid;
+    gap: 2px;
+    background: rgba(23, 55, 97, 0.5);
+    border: 1px solid rgba(88, 148, 224, 0.35);
+    padding: 6px;
+    border-radius: 10px;
+    min-height: 220px;
+}
+
+.robotlab-play .robotlab-grid-card,
+.robotlab-play .robotlab-editor-card,
+.robotlab-play .robotlab-trace-card {
+    min-height: 0;
+    display: grid;
+}
+
+.robotlab-play .robotlab-grid-card {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.robotlab-play .robotlab-editor-card {
+    grid-template-rows: auto auto auto auto auto;
+    align-content: start;
+}
+
+.robotlab-play .robotlab-trace-card {
+    grid-template-rows: auto minmax(0, 1fr);
+}
+
+.robotlab-play .robotlab-grid {
+    min-height: 0;
+    height: 100%;
+}
+
+.robotlab-cell {
+    min-height: 34px;
+    aspect-ratio: 1 / 1;
+    border-radius: 4px;
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    background: rgba(17, 32, 59, 0.9);
+    color: #d8e7f8;
+}
+
+.robotlab-cell::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    z-index: -1;
+    border-radius: 3px;
+    background-image: var(--robotlab-cell-sprite);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    image-rendering: pixelated;
+    opacity: 0.95;
+}
+
+.robotlab-cell.is-wall {
+    background: rgba(30, 48, 72, 0.92);
+}
+
+.robotlab-cell.is-goal {
+    background: rgba(48, 109, 70, 0.82);
+    color: #e3ffe8;
+}
+
+.robotlab-cell.is-terminal {
+    background: rgba(67, 82, 150, 0.82);
+    color: #dff0ff;
+}
+
+.robotlab-cell.is-item {
+    background: rgba(153, 109, 55, 0.78);
+    color: #fff4db;
+}
+
+.robotlab-cell.is-hazard {
+    background: rgba(157, 69, 69, 0.82);
+    color: #ffe6e6;
+}
+
+.robotlab-cell.has-robot {
+    outline: 2px solid #74bcff;
+    box-shadow: 0 0 0 1px rgba(8, 22, 44, 0.65) inset;
+}
+
+.robotlab-playback,
+.robotlab-actions {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+}
+
+.robotlab-field {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.robotlab-field textarea {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid rgba(103, 156, 232, 0.4);
+    background: rgba(4, 12, 24, 0.8);
+    color: #d7e9ff;
+    padding: 0.75rem;
+    font-family: "Consolas", "Monaco", monospace;
+}
+
+.robotlab-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+}
+
+.robotlab-status {
+    margin-top: 0.6rem;
+    color: #b9d8ff;
+}
+
+.robotlab-trace {
+    margin: 0;
+    padding-left: 1.2rem;
+    max-height: 300px;
+    overflow: auto;
+}
+
+.robotlab-trace li {
+    margin: 0.3rem 0;
+    color: #c0d9f5;
+}
+
+.robotlab-mentor-grid {
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.robotlab-mentor-grid article {
+    border: 1px solid rgba(103, 157, 228, 0.3);
+    border-radius: 10px;
+    padding: 0.6rem;
+    background: rgba(12, 27, 51, 0.55);
+}
+
+.robotlab-mentor-grid small {
+    color: #92b8e7;
+    display: block;
+    margin-bottom: 0.35rem;
+}
+
+.robotlab-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 220;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+}
+
+.robotlab-modal[hidden] {
+    display: none;
+}
+
+.robotlab-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: rgba(2, 8, 23, 0.78);
+    cursor: pointer;
+}
+
+.robotlab-modal__dialog {
+    position: relative;
+    z-index: 1;
+    width: min(560px, calc(100vw - 2rem));
+    max-height: min(82vh, 640px);
+    overflow: auto;
+    border-radius: 14px;
+    border: 1px solid rgba(83, 156, 255, 0.35);
+    background: linear-gradient(165deg, rgba(7, 24, 49, 0.98), rgba(10, 43, 78, 0.94));
+    color: #d7e9ff;
+    padding: 1rem 1rem 1.1rem;
+    display: grid;
+    gap: 0.55rem;
+}
+
+.robotlab-modal__close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.55rem;
+    width: 1.95rem;
+    height: 1.95rem;
+    border-radius: 999px;
+    border: 1px solid rgba(129, 191, 255, 0.4);
+    background: rgba(11, 28, 53, 0.88);
+    color: #d7e9ff;
+    cursor: pointer;
+    font-size: 1.15rem;
+    line-height: 1;
+}
+
+.robotlab-modal__eyebrow {
+    margin: 0;
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #95b4db;
+}
+
+.robotlab-modal__dialog h3 {
+    margin: 0;
+}
+
+.robotlab-modal__content {
+    margin: 0;
+    white-space: pre-wrap;
+    font: inherit;
+    color: #d7e9ff;
+    background: rgba(8, 22, 44, 0.72);
+    border: 1px solid rgba(103, 157, 228, 0.25);
+    border-radius: 10px;
+    padding: 0.8rem;
+}
+
+body.robotlab-play-page {
+    overflow: hidden;
+}
+
+body.robotlab-play-page.robotlab-modal-open {
+    overflow: hidden;
+}
+
+body.robotlab-play-page .scroll-top-button,
+body.robotlab-play-page .scroll-progress {
+    display: none;
+}
+
+body.robotlab-play-page .site-main {
+    padding-top: 0.7rem;
+    gap: 0;
+}
+
+body.robotlab-play-page .workspace-shell {
+    gap: 0;
+}
+
+body.robotlab-play-page .workspace-main {
+    width: min(100vw - 1.35rem, 1700px);
+    max-width: none;
+    padding-inline: 0;
+    padding-bottom: 0.35rem;
+    min-height: calc(100vh - var(--navbar-height) - 0.7rem);
+    gap: 0.7rem;
+}
+
+body.robotlab-play-page .robotlab-page.robotlab-play {
+    margin-bottom: 0;
+    height: 100%;
+    min-height: 0;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 0.7rem;
+}
+
+.robotlab-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.robotlab-table th,
+.robotlab-table td {
+    border-bottom: 1px solid rgba(111, 156, 219, 0.2);
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.robotlab-filters form {
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.robotlab-filters label {
+    display: grid;
+    gap: 0.25rem;
+    font-size: 0.84rem;
+    color: #aac8eb;
+}
+
+.robotlab-filters input {
+    border-radius: 8px;
+    border: 1px solid rgba(108, 155, 221, 0.35);
+    background: rgba(5, 13, 29, 0.8);
+    color: #d6e9ff;
+    padding: 0.38rem 0.5rem;
+}
+
+.robotlab-failed-list {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.robotlab-failed-item {
+    border: 1px solid rgba(110, 156, 224, 0.3);
+    border-radius: 8px;
+    padding: 0.55rem;
+    background: rgba(10, 24, 47, 0.55);
+}
+
+.robotlab-failed-item div {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.6rem;
+}
+
+@media (max-width: 960px) {
+    body.robotlab-play-page {
+        overflow: auto;
+    }
+
+    body.robotlab-play-page .site-main {
+        padding-top: var(--section-gap-tight);
+        gap: var(--section-gap);
+    }
+
+    body.robotlab-play-page .workspace-shell {
+        gap: clamp(3rem, 5vw, 4.5rem);
+    }
+
+    body.robotlab-play-page .workspace-main {
+        width: min(1200px, calc(100% - 3rem));
+        min-height: auto;
+        padding-bottom: 0;
+    }
+
+    body.robotlab-play-page .robotlab-page.robotlab-play {
+        height: auto;
+        min-height: auto;
+    }
+
+    .robotlab-split {
+        grid-template-columns: 1fr;
+    }
+
+    .robotlab-game-panel {
+        grid-template-rows: auto auto;
+    }
+
+    .robotlab-runtime {
+        grid-template-columns: 1fr;
+    }
+
+    .robotlab-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   Playful Robot Lab redesign
+   ========================================================================== */
+
+body.robotlab-play-page {
+    background:
+        radial-gradient(circle at 14px 14px, rgba(255, 255, 255, 0.14) 2px, transparent 2.4px) 0 0 / 28px 28px,
+        linear-gradient(180deg, #1db6f6 0%, #22a9ef 100%);
+}
+
+body.robotlab-play-page .site-main,
+body.robotlab-play-page .workspace-shell {
+    background: transparent;
+}
+
+body.robotlab-play-page .workspace-main {
+    position: relative;
+}
+
+body.robotlab-play-page .robotlab-page.robotlab-play {
+    gap: 1rem;
+}
+
+body.robotlab-play-page .robotlab-play .card {
+    background: linear-gradient(180deg, rgba(255, 252, 243, 0.98), rgba(244, 249, 255, 0.98));
+    border: 3px solid rgba(255, 255, 255, 0.86);
+    border-radius: 30px;
+    color: #26415f;
+    box-shadow: 0 22px 50px -28px rgba(7, 68, 122, 0.46);
+}
+
+body.robotlab-play-page .robotlab-play .btn {
+    border: none;
+    border-radius: 999px;
+    padding: 0.72rem 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    box-shadow: 0 10px 20px -16px rgba(24, 85, 128, 0.55);
+}
+
+body.robotlab-play-page .robotlab-play .btn--primary {
+    background: linear-gradient(180deg, #ffdd55, #ffb703);
+    color: #5d3d00;
+}
+
+body.robotlab-play-page .robotlab-play .btn--ghost {
+    background: linear-gradient(180deg, #52d2ff, #2599e6);
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.82);
+}
+
+body.robotlab-play-page .robotlab-play .btn:hover,
+body.robotlab-play-page .robotlab-play .btn:focus-visible {
+    transform: translateY(-1px);
+}
+
+body.robotlab-play-page .robotlab-level-header--play {
+    position: relative;
+    overflow: hidden;
+    align-items: center;
+    padding: 1.2rem 1.3rem;
+    background:
+        radial-gradient(circle at top right, rgba(93, 214, 255, 0.42), transparent 30%),
+        linear-gradient(180deg, rgba(252, 254, 255, 0.98), rgba(237, 248, 255, 0.98));
+}
+
+body.robotlab-play-page .robotlab-level-header--play::after {
+    content: "";
+    position: absolute;
+    inset: auto -30px -35px auto;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: rgba(255, 221, 85, 0.22);
+    pointer-events: none;
+}
+
+.robotlab-level-header__copy {
+    display: grid;
+    gap: 0.45rem;
+}
+
+body.robotlab-play-page .robotlab-level-header h2,
+body.robotlab-play-page .robotlab-grid-card h3,
+body.robotlab-play-page .robotlab-editor-card h3,
+body.robotlab-play-page .robotlab-trace-card h3,
+body.robotlab-play-page .robotlab-theory-panel h3 {
+    color: #214a6b;
+    font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+    line-height: 1.15;
+}
+
+body.robotlab-play-page .robotlab-level-header p,
+body.robotlab-play-page .robotlab-theory-panel p,
+body.robotlab-play-page .robotlab-editor-card__head p,
+body.robotlab-play-page .robotlab-guide__bubble p {
+    color: #496989;
+}
+
+body.robotlab-play-page .robotlab-level-code,
+body.robotlab-play-page .robotlab-eyebrow {
+    background: linear-gradient(180deg, #7de3ff, #44bff4);
+    color: #184a66;
+    border: 2px solid rgba(255, 255, 255, 0.84);
+    font-weight: 800;
+    box-shadow: 0 10px 18px -14px rgba(33, 145, 197, 0.66);
+}
+
+body.robotlab-play-page .robotlab-level-chips .chip,
+body.robotlab-play-page .robotlab-editor-card__chips .chip {
+    background: linear-gradient(180deg, #ffffff, #eaf8ff);
+    color: #29506e;
+    border: 2px solid rgba(117, 205, 247, 0.38);
+    padding: 0.35rem 0.72rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+body.robotlab-play-page .robotlab-level-nav--play {
+    position: relative;
+    z-index: 1;
+}
+
+body.robotlab-play-page .robotlab-split {
+    grid-template-columns: minmax(250px, 310px) minmax(0, 1fr);
+    align-items: start;
+}
+
+body.robotlab-play-page .robotlab-theory-panel {
+    background:
+        linear-gradient(180deg, rgba(255, 246, 207, 0.98), rgba(255, 238, 186, 0.98));
+    border-color: rgba(255, 255, 255, 0.92);
+    gap: 0.95rem;
+}
+
+body.robotlab-play-page .robotlab-theory-block,
+body.robotlab-play-page .robotlab-hint-panel {
+    border-radius: 24px;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+body.robotlab-play-page .robotlab-theory-block h4,
+body.robotlab-play-page .robotlab-hint-panel h4 {
+    color: #235678;
+    font-size: 1rem;
+}
+
+body.robotlab-play-page .robotlab-list {
+    color: #305778;
+}
+
+body.robotlab-play-page .robotlab-command-list code {
+    background: linear-gradient(180deg, #f7fbff, #e0f2ff);
+    border: 2px solid rgba(95, 188, 239, 0.32);
+    color: #255170;
+    border-radius: 999px;
+    padding: 0.35rem 0.68rem;
+    font-weight: 700;
+}
+
+body.robotlab-play-page .robotlab-hint-actions {
+    gap: 0.55rem;
+}
+
+body.robotlab-play-page .robotlab-hint-btn {
+    justify-content: center;
+    background: linear-gradient(180deg, #8e78ff, #6f55f0);
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.78);
+    box-shadow: 0 10px 18px -14px rgba(104, 78, 220, 0.72);
+}
+
+body.robotlab-play-page .robotlab-game-panel {
+    gap: 0.95rem;
+    grid-template-rows: minmax(0, 1fr) auto;
+}
+
+body.robotlab-play-page .robotlab-runtime {
+    grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+    align-items: stretch;
+}
+
+body.robotlab-play-page .robotlab-grid-card {
+    position: relative;
+    overflow: hidden;
+    padding: 1rem;
+    background:
+        radial-gradient(circle at 10% 14%, rgba(255, 255, 255, 0.28), transparent 14%),
+        radial-gradient(circle at 88% 10%, rgba(255, 255, 255, 0.2), transparent 14%),
+        linear-gradient(180deg, #53d9ff 0%, #62cfff 15%, #54d664 15%, #2bc045 100%);
+    border-color: rgba(255, 255, 255, 0.96);
+}
+
+body.robotlab-play-page .robotlab-grid-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 14% 28%, rgba(255, 255, 255, 0.16), transparent 20%),
+        radial-gradient(circle at 78% 74%, rgba(255, 255, 255, 0.1), transparent 18%);
+    pointer-events: none;
+}
+
+.robotlab-stage-banner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.7rem;
+}
+
+.robotlab-stage-banner__stars {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.robotlab-stage-banner__stars span {
+    width: 1.7rem;
+    aspect-ratio: 1;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 93%, 50% 71%, 21% 93%, 32% 57%, 2% 35%, 39% 35%);
+    background: linear-gradient(180deg, #fff9c4, #ffca28);
+    box-shadow: 0 5px 12px -8px rgba(255, 185, 0, 0.9);
+}
+
+.robotlab-guide {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    gap: 0.9rem;
+    margin-bottom: 0.9rem;
+}
+
+.robotlab-guide__avatar {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 34% 30%, #77eaff 0%, #46d8fb 28%, #20b7e9 65%, #188ac4 100%);
+    box-shadow:
+        inset 0 10px 18px -12px rgba(255, 255, 255, 0.85),
+        0 14px 28px -18px rgba(6, 69, 111, 0.65);
+}
+
+.robotlab-guide__avatar::before,
+.robotlab-guide__avatar::after {
+    content: "";
+    position: absolute;
+    top: -18px;
+    width: 18px;
+    height: 34px;
+    border-radius: 999px;
+    border: 4px solid rgba(255, 255, 255, 0.84);
+    background: rgba(146, 240, 255, 0.75);
+}
+
+.robotlab-guide__avatar::before {
+    left: 18px;
+    transform: rotate(-18deg);
+}
+
+.robotlab-guide__avatar::after {
+    right: 18px;
+    transform: rotate(18deg);
+}
+
+.robotlab-guide__eyes {
+    position: absolute;
+    top: 28px;
+    left: 22px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 30px 0 0 #ffffff;
+}
+
+.robotlab-guide__eyes::after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #163c61;
+    box-shadow: 30px 0 0 #163c61;
+}
+
+.robotlab-guide__smile {
+    position: absolute;
+    left: 50%;
+    bottom: 20px;
+    width: 30px;
+    height: 16px;
+    margin-left: -15px;
+    border-bottom: 4px solid #163c61;
+    border-radius: 0 0 24px 24px;
+}
+
+.robotlab-guide__bubble {
+    position: relative;
+    max-width: 360px;
+    padding: 1rem 1.2rem;
+    border-radius: 26px;
+    background: rgba(255, 255, 255, 0.98);
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 16px 32px -24px rgba(3, 48, 88, 0.62);
+}
+
+.robotlab-guide__bubble::after {
+    content: "";
+    position: absolute;
+    right: 100%;
+    bottom: 14px;
+    width: 16px;
+    height: 16px;
+    background: rgba(255, 255, 255, 0.98);
+    transform: rotate(45deg);
+    border-left: 3px solid rgba(255, 255, 255, 0.9);
+    border-bottom: 3px solid rgba(255, 255, 255, 0.9);
+}
+
+.robotlab-guide__bubble strong {
+    display: block;
+    margin-bottom: 0.2rem;
+    color: #1b5477;
+}
+
+.robotlab-grid-shell {
+    position: relative;
+    z-index: 1;
+    padding: 0.9rem;
+    border-radius: 32px;
+    background: linear-gradient(180deg, rgba(32, 190, 56, 0.15), rgba(18, 147, 41, 0.18));
+    border: 3px solid rgba(255, 255, 255, 0.78);
+}
+
+body.robotlab-play-page .robotlab-grid {
+    gap: 0.42rem;
+    padding: 0.7rem;
+    border-radius: 26px;
+    min-height: 360px;
+    background: linear-gradient(180deg, rgba(21, 179, 45, 0.14), rgba(8, 145, 33, 0.2));
+    border: none;
+}
+
+body.robotlab-play-page .robotlab-cell {
+    min-height: 54px;
+    border-radius: 18px;
+    border: 3px solid rgba(57, 170, 232, 0.45);
+    background: linear-gradient(180deg, #b9f4ff, #5bdfff);
+    color: #1f5273;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.72),
+        0 8px 14px -12px rgba(18, 115, 160, 0.75);
+}
+
+body.robotlab-play-page .robotlab-cell::before {
+    inset: 3px;
+    border-radius: 14px;
+    opacity: 0.18;
+    background-size: cover;
+}
+
+body.robotlab-play-page .robotlab-cell.is-wall {
+    background: linear-gradient(180deg, #5fe66a, #21b93a);
+    border-color: rgba(24, 138, 43, 0.56);
+}
+
+body.robotlab-play-page .robotlab-cell.is-wall::before {
+    opacity: 0.28;
+}
+
+body.robotlab-play-page .robotlab-cell.is-goal,
+body.robotlab-play-page .robotlab-cell.is-terminal,
+body.robotlab-play-page .robotlab-cell.is-item,
+body.robotlab-play-page .robotlab-cell.is-door,
+body.robotlab-play-page .robotlab-cell.is-hazard {
+    background: linear-gradient(180deg, #b9f4ff, #5bdfff);
+}
+
+.robotlab-cell__token {
+    position: relative;
+    z-index: 1;
+    display: inline-grid;
+    place-items: center;
+    width: 65%;
+    aspect-ratio: 1;
+    pointer-events: none;
+}
+
+.robotlab-cell__token::before {
+    content: "";
+    display: block;
+}
+
+.robotlab-cell__token--goal::before {
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 93%, 50% 71%, 21% 93%, 32% 57%, 2% 35%, 39% 35%);
+    background: linear-gradient(180deg, #fff7b0, #ffb703);
+    filter: drop-shadow(0 5px 10px rgba(255, 180, 0, 0.45));
+}
+
+.robotlab-cell__token--terminal::before,
+.robotlab-cell__token--battery::before,
+.robotlab-cell__token--key::before,
+.robotlab-cell__token--door::before,
+.robotlab-cell__token--hazard::before {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 1rem;
+    box-shadow: 0 8px 16px -12px rgba(24, 62, 110, 0.6);
+}
+
+.robotlab-cell__token--terminal::before {
+    content: "T";
+    background: linear-gradient(180deg, #b598ff, #6f5de8);
+}
+
+.robotlab-cell__token--battery::before {
+    content: "+";
+    background: linear-gradient(180deg, #ffd66b, #ff9f1c);
+}
+
+.robotlab-cell__token--key::before {
+    content: "K";
+    background: linear-gradient(180deg, #ffd66b, #f59e0b);
+}
+
+.robotlab-cell__token--door::before {
+    content: "D";
+    background: linear-gradient(180deg, #ffbf94, #f97316);
+}
+
+.robotlab-cell__token--hazard::before {
+    content: "!";
+    background: linear-gradient(180deg, #ff8798, #ef4444);
+}
+
+body.robotlab-play-page .robotlab-cell.has-robot {
+    border-color: rgba(255, 255, 255, 0.88);
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.74),
+        0 0 0 4px rgba(255, 255, 255, 0.14),
+        0 12px 20px -12px rgba(8, 94, 140, 0.82);
+}
+
+.robotlab-robot {
+    position: relative;
+    z-index: 2;
+    width: 78%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 34% 28%, #8ef0ff 0%, #55dbfa 32%, #21b6e8 72%, #1178b7 100%);
+    box-shadow:
+        inset 0 10px 18px -12px rgba(255, 255, 255, 0.8),
+        0 12px 18px -14px rgba(11, 71, 108, 0.82);
+}
+
+.robotlab-robot__eyes {
+    position: absolute;
+    top: 28%;
+    left: 24%;
+    width: 12%;
+    height: 12%;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 22px 0 0 #ffffff;
+}
+
+.robotlab-robot__eyes::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #173758;
+    box-shadow: 22px 0 0 #173758;
+}
+
+.robotlab-robot__smile {
+    position: absolute;
+    left: 50%;
+    bottom: 24%;
+    width: 32%;
+    height: 16%;
+    margin-left: -16%;
+    border-bottom: 3px solid #173758;
+    border-radius: 0 0 20px 20px;
+}
+
+.robotlab-robot__dir {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    display: inline-grid;
+    place-items: center;
+    background: linear-gradient(180deg, #ffe17a, #ffb703);
+    color: #644300;
+    font-size: 0.72rem;
+    font-weight: 900;
+    border: 2px solid rgba(255, 255, 255, 0.88);
+}
+
+.robotlab-control-deck {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 0.8rem;
+    margin-top: 0.9rem;
+    padding: 0.9rem 1rem 1rem;
+    border-radius: 26px;
+    background: linear-gradient(180deg, #ffe16a, #ffb703);
+    border: 3px solid rgba(255, 245, 184, 0.88);
+    box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.42);
+}
+
+.robotlab-control-deck__track {
+    height: 22px;
+    border-radius: 999px;
+    background: rgba(182, 126, 0, 0.24);
+    overflow: hidden;
+}
+
+.robotlab-control-deck__track::after {
+    content: "";
+    display: block;
+    width: 22%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255, 248, 208, 0.9), rgba(255, 224, 118, 0.95));
+}
+
+body.robotlab-play-page .robotlab-playback {
+    justify-content: center;
+    margin-top: 0;
+    gap: 0.6rem;
+}
+
+body.robotlab-play-page .robotlab-playback .btn {
+    min-width: 110px;
+}
+
+body.robotlab-play-page .robotlab-editor-card {
+    align-content: start;
+    gap: 0.8rem;
+    background:
+        radial-gradient(circle at top right, rgba(255, 221, 85, 0.26), transparent 28%),
+        linear-gradient(180deg, rgba(255, 250, 227, 0.98), rgba(255, 243, 207, 0.98));
+}
+
+.robotlab-editor-card__head {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.robotlab-editor-card__head p {
+    margin: 0;
+}
+
+.robotlab-editor-card__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+body.robotlab-play-page .robotlab-field {
+    gap: 0.5rem;
+}
+
+body.robotlab-play-page .robotlab-field span,
+body.robotlab-play-page .robotlab-checkbox span {
+    color: #244f70;
+    font-weight: 700;
+}
+
+body.robotlab-play-page .robotlab-field textarea {
+    border-radius: 24px;
+    border: 3px solid rgba(122, 205, 245, 0.4);
+    background:
+        linear-gradient(transparent 31px, rgba(67, 141, 184, 0.08) 32px) 0 0 / 100% 32px,
+        linear-gradient(180deg, #ffffff, #f5fbff);
+    color: #1c3954;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.8);
+    padding: 1rem 1rem 1rem 1.15rem;
+    line-height: 2rem;
+    font-size: 0.96rem;
+}
+
+body.robotlab-play-page .robotlab-checkbox {
+    margin-top: 0;
+}
+
+body.robotlab-play-page .robotlab-checkbox input {
+    width: 1.05rem;
+    height: 1.05rem;
+    accent-color: #ffb703;
+}
+
+body.robotlab-play-page .robotlab-actions {
+    margin-top: 0;
+    gap: 0.65rem;
+}
+
+body.robotlab-play-page .robotlab-status {
+    margin-top: 0;
+    padding: 0.85rem 1rem;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 2px solid rgba(123, 204, 245, 0.28);
+    color: #2c597b;
+    font-weight: 700;
+}
+
+body.robotlab-play-page .robotlab-status[data-status-kind="busy"] {
+    background: rgba(83, 210, 255, 0.18);
+    border-color: rgba(41, 153, 230, 0.32);
+}
+
+body.robotlab-play-page .robotlab-status[data-status-kind="success"] {
+    background: rgba(53, 200, 89, 0.15);
+    border-color: rgba(34, 160, 64, 0.35);
+    color: #1d6a33;
+}
+
+body.robotlab-play-page .robotlab-status[data-status-kind="warning"] {
+    background: rgba(255, 208, 77, 0.18);
+    border-color: rgba(232, 174, 0, 0.34);
+    color: #8f5b00;
+}
+
+body.robotlab-play-page .robotlab-status[data-status-kind="error"] {
+    background: rgba(255, 118, 140, 0.14);
+    border-color: rgba(229, 62, 90, 0.35);
+    color: #a82e47;
+}
+
+body.robotlab-play-page .robotlab-trace-card {
+    background: linear-gradient(180deg, rgba(243, 249, 255, 0.98), rgba(233, 246, 255, 0.98));
+}
+
+.robotlab-trace-card__head {
+    display: grid;
+    gap: 0.22rem;
+    margin-bottom: 0.55rem;
+}
+
+body.robotlab-play-page .robotlab-trace {
+    max-height: 240px;
+    padding-left: 1.15rem;
+}
+
+body.robotlab-play-page .robotlab-trace li {
+    color: #31597a;
+    margin: 0.42rem 0;
+    line-height: 1.55;
+}
+
+body.robotlab-play-page .robotlab-modal__backdrop {
+    background: rgba(10, 68, 120, 0.38);
+}
+
+body.robotlab-play-page .robotlab-modal__dialog {
+    border-radius: 28px;
+    border: 3px solid rgba(255, 255, 255, 0.84);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(241, 249, 255, 0.98));
+    color: #284967;
+}
+
+body.robotlab-play-page .robotlab-modal__close {
+    border: 2px solid rgba(255, 255, 255, 0.86);
+    background: linear-gradient(180deg, #ff8db0, #e5417a);
+    color: #ffffff;
+}
+
+body.robotlab-play-page .robotlab-modal__eyebrow {
+    color: #2d83ad;
+}
+
+body.robotlab-play-page .robotlab-modal__content {
+    background: rgba(255, 255, 255, 0.84);
+    border: 2px solid rgba(119, 199, 242, 0.28);
+    color: #375978;
+}
+
+@media (max-width: 1180px) {
+    body.robotlab-play-page .robotlab-runtime {
+        grid-template-columns: 1fr;
+    }
+
+    body.robotlab-play-page .robotlab-grid {
+        min-height: 320px;
+    }
+}
+
+@media (max-width: 860px) {
+    body.robotlab-play-page .robotlab-split {
+        grid-template-columns: 1fr;
+    }
+
+    .robotlab-stage-banner,
+    .robotlab-guide {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .robotlab-guide__bubble::after {
+        right: auto;
+        left: 18px;
+        bottom: -10px;
+        transform: rotate(45deg);
+    }
+
+    body.robotlab-play-page .robotlab-playback {
+        justify-content: stretch;
+    }
+
+    body.robotlab-play-page .robotlab-playback .btn {
+        flex: 1 1 140px;
+    }
+}
+
+@media (max-width: 640px) {
+    body.robotlab-play-page .workspace-main {
+        width: calc(100% - 1rem);
+    }
+
+    body.robotlab-play-page .robotlab-play .card {
+        border-radius: 24px;
+        padding: 0.95rem;
+    }
+
+    body.robotlab-play-page .robotlab-grid {
+        min-height: 260px;
+        gap: 0.3rem;
+        padding: 0.45rem;
+    }
+
+    body.robotlab-play-page .robotlab-cell {
+        min-height: 42px;
+        border-radius: 14px;
+    }
+
+    .robotlab-guide__avatar {
+        width: 74px;
+        height: 74px;
+    }
+
+    .robotlab-guide__bubble {
+        padding: 0.85rem 1rem;
+    }
+
+    body.robotlab-play-page .robotlab-playback .btn,
+    body.robotlab-play-page .robotlab-actions .btn {
+        width: 100%;
+    }
+}
+
+body.robotlab-play-page .robotlab-editor-card {
+    grid-template-rows: none;
+}
+
+.robotlab-builder {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.robotlab-builder__columns {
+    display: grid;
+    gap: 0.8rem;
+    grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1fr);
+}
+
+.robotlab-builder-card {
+    border-radius: 22px;
+    border: 2px solid rgba(119, 199, 242, 0.28);
+    background: rgba(255, 255, 255, 0.74);
+    padding: 0.9rem;
+    display: grid;
+    gap: 0.7rem;
+}
+
+.robotlab-builder-card__label,
+.robotlab-program-card__head strong,
+.robotlab-status-wrap__label {
+    color: #244f70;
+    font-weight: 800;
+}
+
+.robotlab-program-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    color: #567695;
+    font-size: 0.88rem;
+}
+
+.robotlab-direction-pad {
+    display: grid;
+    gap: 0.55rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+        ". up ."
+        "left . right"
+        ". down .";
+}
+
+.robotlab-direction-pad .dir--up {
+    grid-area: up;
+}
+
+.robotlab-direction-pad .dir--left {
+    grid-area: left;
+}
+
+.robotlab-direction-pad .dir--right {
+    grid-area: right;
+}
+
+.robotlab-direction-pad .dir--down {
+    grid-area: down;
+}
+
+.robotlab-command-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.robotlab-command-btn {
+    min-width: 68px;
+}
+
+.robotlab-command-btn--direction {
+    min-height: 60px;
+    font-size: 1.45rem;
+}
+
+.robotlab-program-list,
+.robotlab-console-list {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: #31597a;
+}
+
+.robotlab-program-list li,
+.robotlab-console-list li {
+    margin: 0.35rem 0;
+    line-height: 1.55;
+}
+
+.robotlab-console-card {
+    border-radius: 22px;
+    border: 2px solid rgba(119, 199, 242, 0.28);
+    background: rgba(255, 255, 255, 0.74);
+    padding: 0.95rem 1rem;
+    display: grid;
+    gap: 0.6rem;
+}
+
+.robotlab-console-card__head {
+    display: grid;
+    gap: 0.15rem;
+}
+
+.robotlab-console-card__head h3 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.robotlab-status-wrap {
+    display: grid;
+    gap: 0.35rem;
+}
+
+@media (max-width: 860px) {
+    .robotlab-builder__columns {
+        grid-template-columns: 1fr;
+    }
+}

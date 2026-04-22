@@ -1,0 +1,40 @@
+{
+  "id": "W1-L06",
+  "title": "Ruta optima",
+  "description": "Mod Cod: rezolva misiunea, apoi incearca sa ajungi la terminal cu numarul optim de pasi.",
+  "goal_text": "Ajungi la terminalul T si compara solutia cu ruta optima.",
+  "goal": {
+    "type": "reach_goal",
+    "target_tile": "T"
+  },
+  "concepts": ["sequencing", "debugging"],
+  "difficulty": "medium",
+  "max_steps": 40,
+  "time_limit_ms": 1100,
+  "xp_reward": 45,
+  "start_dir": "E",
+  "mode": "code",
+  "ui_stage": "code",
+  "recommended_age": "14-16+",
+  "allowed_api": [
+    "up",
+    "down",
+    "left",
+    "right",
+    "at_goal"
+  ],
+  "legend": {
+    "#": "perete",
+    ".": "spatiu",
+    "S": "start",
+    "T": "terminal"
+  },
+  "grid": [
+    "#########",
+    "#S......#",
+    "#..##...#",
+    "#..T....#",
+    "#########"
+  ],
+  "starter_code": "# Rezolva mai intai, apoi optimizeaza\n"
+}

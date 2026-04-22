@@ -1,0 +1,94 @@
+<section class="workspace-banner" aria-labelledby="workspace-banner-title" data-animate>
+    <div class="container workspace-banner__inner">
+        <div class="workspace-banner__copy">
+            <a
+                class="workspace-back-link"
+                href="{% url 'estudy:dashboard' %}"
+                data-history-back
+                aria-label="Înapoi la pagina anterioară"
+            >
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+                Înapoi
+            </a>
+            <span class="workspace-banner__tag">
+                <span aria-hidden="true">🚀</span>
+                Univers UNITEX
+            </span>
+            <h1 id="workspace-banner-title">
+                {% block workspace_title %}Învățare personalizată pentru fiecare explorator{% endblock %}
+            </h1>
+            <p class="workspace-banner__subtitle">
+                {% block workspace_subtitle %}
+                    Bine ai venit în hub-ul tău digital. Continuă lecțiile, revendică insigne strălucitoare și urcă în clasament cu fiecare misiune finalizată.
+                {% endblock %}
+            </p>
+            {% with current_url=request.resolver_match.url_name %}
+            <nav class="workspace-quick-nav" aria-label="Navigație workspace">
+                <ul role="list">
+                    <li>
+                        <a
+                            href="{% url 'estudy:dashboard' %}"
+                            class="{% if current_url == 'dashboard' or current_url == 'student_dashboard' or current_url == 'teacher_dashboard' or current_url == 'admin_dashboard' or current_url == 'parent_dashboard' %}is-active{% endif %}"
+                        >Dashboard</a>
+                    </li>
+                    <li>
+                        <a
+                            href="{% url 'estudy:lessons_list' %}"
+                            class="{% if current_url == 'lessons_list' or current_url == 'lesson_detail' or current_url == 'lesson_module_digital_literacy' %}is-active{% endif %}"
+                        >Lecții</a>
+                    </li>
+                    <li>
+                        <a
+                            href="{% url 'estudy:robot_lab_hub' %}"
+                            class="{% if current_url == 'robot_lab_hub' or current_url == 'robot_lab_play' or current_url == 'robot_lab_teacher' %}is-active{% endif %}"
+                        >Robot Lab</a>
+                    </li>
+                    <li>
+                        <a
+                            href="{% url 'estudy:missions' %}"
+                            class="{% if current_url == 'missions' %}is-active{% endif %}"
+                        >Misiuni</a>
+                    </li>
+                    <li>
+                        <a
+                            href="{% url 'estudy:leaderboard' %}"
+                            class="{% if current_url == 'leaderboard' %}is-active{% endif %}"
+                        >Clasament</a>
+                    </li>
+                    <li>
+                        <a
+                            href="{% url 'estudy:projects' %}"
+                            class="{% if current_url == 'projects' or current_url == 'project_submit' %}is-active{% endif %}"
+                        >Proiecte</a>
+                    </li>
+                    <li>
+                        <a
+                            href="{% url 'estudy:classrooms' %}"
+                            class="{% if current_url == 'classrooms' or current_url == 'classroom_detail' %}is-active{% endif %}"
+                        >Clase</a>
+                    </li>
+                    <li>
+                        <a
+                            href="{% url 'estudy:community' %}"
+                            class="{% if current_url == 'community' or current_url == 'community_thread' %}is-active{% endif %}"
+                        >Comunitate</a>
+                    </li>
+                </ul>
+            </nav>
+            {% endwith %}
+            {% block workspace_actions %}{% endblock %}
+        </div>
+        <div class="workspace-banner__visual" aria-hidden="true">
+            <div class="workspace-illustration">
+                <figure class="workspace-illustration__main">
+                    <img src="https://illustrations.popsy.co/emerald/online-learning.svg" alt="" loading="lazy">
+                </figure>
+                <figure class="workspace-illustration__card">
+                    <img src="https://illustrations.popsy.co/emerald/creative-teamwork.svg" alt="" loading="lazy">
+                </figure>
+            </div>
+            <div class="workspace-spot workspace-spot--one"></div>
+            <div class="workspace-spot workspace-spot--two"></div>
+        </div>
+    </div>
+</section>

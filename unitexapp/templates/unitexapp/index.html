@@ -9,7 +9,6 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'unitexapp/homepage.css' %}">
 {% endblock %}
-
 {% block meta %}
 <meta name="description" content="UNITEX îi ghidează pe elevi prin lecții digitale captivante și proiecte interactive pentru a construi abilități reale.">
 <meta property="og:title" content="UNITEX — învățare digitală jucăușă pentru copii și adolescenți">
@@ -56,7 +55,11 @@
                     UNITEX combină joaca și programarea ca să transformi curiozitatea în competențe reale.
                 </p>
                 <div class="hero__actions" data-layer="ctas">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'estudy:dashboard' %}" class="btn btn--primary" data-layer="cta-primary" aria-label="Continuă în dashboardul UNITEX">Continuă învățarea</a>
+                    {% else %}
                     <a href="{% url 'signup' %}" class="btn btn--primary" data-layer="cta-primary" aria-label="Începe acum cu UNITEX">Începe acum</a>
+                    {% endif %}
                     <a href="#how-it-works" class="btn btn--secondary" data-layer="cta-secondary" data-scroll aria-label="Vezi cum funcționează platforma UNITEX">Vezi cum funcționează</a>
                 </div>
                 <dl class="hero__stats" data-layer="hero-stats">
@@ -420,8 +423,13 @@
         </span>
         <div class="container final-cta__inner">
             <h2 class="final-cta__title">Începe călătoria ta digitală chiar azi</h2>
+            {% if user.is_authenticated %}
+            <p class="final-cta__subtitle">Contul tău este activ. Continuă cu lecțiile, misiunile și provocările tale din dashboard.</p>
+            <a href="{% url 'estudy:dashboard' %}" class="btn btn--primary final-cta__button" aria-label="Deschide dashboardul UNITEX">Deschide dashboard</a>
+            {% else %}
             <p class="final-cta__subtitle">Este gratuit. Îți ia sub 2 minute să creezi contul și să deblochezi lecțiile demo.</p>
             <a href="{% url 'signup' %}" class="btn btn--primary final-cta__button" aria-label="Creează cont UNITEX gratuit acum">Creează cont gratuit</a>
+            {% endif %}
         </div>
     </section>
 </article>
@@ -431,7 +439,7 @@
 <script src="{% static 'unitexapp/vendor/gsap.min.js' %}"></script>
 <script src="{% static 'unitexapp/vendor/ScrollTrigger.min.js' %}"></script>
 <script data-unitex-page-script>
-document.addEventListener('DOMContentLoaded', () => {
+(function () {
     const page = document.querySelector('[data-page="landing"]');
     if (!page) {
         return;
@@ -896,6 +904,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-});
+})();
 </script>
 {% endblock %}
+

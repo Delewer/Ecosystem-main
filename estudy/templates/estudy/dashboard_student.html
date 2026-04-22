@@ -1,18 +1,18 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 
-{% block title %}Dashboard elev В· UnITex{% endblock %}
+{% block title %}Dashboard elev · UnITex{% endblock %}
 
 {% block page_content %}
 <section class="dashboard-hero card shadow-lg">
     <div class="dashboard-hero__summary">
         <p class="dashboard-hero__greeting">Salut, {{ profile.display_or_username }}</p>
-        <h1 class="dashboard-hero__title">PregДѓtit pentru o nouДѓ aventurДѓ digitalДѓ?</h1>
-        <p class="dashboard-hero__intro">Progresul tДѓu general este de <strong>{{ progress.percent|default:0 }}%</strong>. ContinuДѓ sДѓ explorezi lecИ›iile, sДѓ strГўngi XP И™i sДѓ deblochezi insigne rare.</p>
+        <h1 class="dashboard-hero__title">Pregătit pentru o nouă aventură digitală?</h1>
+        <p class="dashboard-hero__intro">Progresul tău general este de <strong>{{ progress.percent|default:0 }}%</strong>. Continuă să explorezi lecțiile, să strângi XP și să deblochezi insigne rare.</p>
         <div class="dashboard-hero__progress">
             <div class="dashboard-hero__progress-bar">
                 <div class="dashboard-hero__progress-fill" style="width: {{ profile.progress_to_next_level|floatformat:0 }}%"></div>
             </div>
-            <span class="dashboard-hero__progress-label">Nivel {{ profile.level }} В· {{ profile.xp }} XP</span>
+            <span class="dashboard-hero__progress-label">Nivel {{ profile.level }} · {{ profile.xp }} XP</span>
         </div>
         <div class="dashboard-hero__stats">
             <div class="stat-chip">
@@ -24,21 +24,21 @@
                 <span class="stat-chip__value"><i class="fa-solid fa-fire me-1"></i>{{ profile.streak }} zile</span>
             </div>
             <div class="stat-chip">
-                <span class="stat-chip__label">LecИ›ii terminate</span>
+                <span class="stat-chip__label">Lecții terminate</span>
                 <span class="stat-chip__value">{{ progress.completed|default:0 }}/{{ progress.total|default:0 }}</span>
             </div>
         </div>
         <div class="dashboard-hero__actions">
-            {% if primary_recommendation %}
-                <a class="btn btn-primary" href="{% url 'estudy:lesson_detail' slug=primary_recommendation.lesson.slug %}"><i class="fa-solid fa-play me-2"></i>ContinuДѓ lecИ›ia recomandatДѓ</a>
+            {% if primary_recommendation and primary_recommendation.lesson.slug %}
+                <a class="btn btn-primary" href="{% url 'estudy:lesson_detail' slug=primary_recommendation.lesson.slug %}"><i class="fa-solid fa-play me-2"></i>Continuă lecția recomandată</a>
             {% else %}
-                <a class="btn btn-primary" href="{% url 'estudy:lessons_list' %}"><i class="fa-solid fa-compass me-2"></i>DescoperДѓ lecИ›ii noi</a>
+                <a class="btn btn-primary" href="{% url 'estudy:lessons_list' %}"><i class="fa-solid fa-compass me-2"></i>Descoperă lecții noi</a>
             {% endif %}
             <a class="btn btn-outline-light" href="{% url 'estudy:missions' %}"><i class="fa-solid fa-flag-checkered me-2"></i>Misiunile mele</a>
         </div>
     </div>
     <div class="dashboard-hero__badges">
-        <h2 class="dashboard-hero__badges-title">Insigne evidenИ›iate</h2>
+        <h2 class="dashboard-hero__badges-title">Insigne evidențiate</h2>
         <div class="badge-cloud">
             {% if highlighted_badges %}
                 {% for user_badge in highlighted_badges %}
@@ -51,7 +51,7 @@
                     </div>
                 {% endfor %}
             {% else %}
-                <p class="text-muted small mb-0">AdunДѓ XP completГўnd lecИ›ii pentru a debloca primele tale insigne.</p>
+                <p class="text-muted small mb-0">Adună XP completând lecții pentru a debloca primele tale insigne.</p>
             {% endif %}
         </div>
     </div>
@@ -63,7 +63,7 @@
             <div class="dashboard-card__header">
                 <div>
                     <h2 class="dashboard-card__title">Misiuni active</h2>
-                    <p class="dashboard-card__subtitle">CompleteazДѓ-le astДѓzi pentru bonus XP.</p>
+                    <p class="dashboard-card__subtitle">Completează-le astăzi pentru bonus XP.</p>
                 </div>
                 <a class="btn btn-sm btn-outline-primary" href="{% url 'estudy:missions' %}">Toate misiunile</a>
             </div>
@@ -86,7 +86,7 @@
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p class="text-muted mb-0">Nu ai misiuni active. Revino mai tГўrziu pentru provocДѓri noi!</p>
+                    <p class="text-muted mb-0">Nu ai misiuni active. Revino mai târziu pentru provocări noi!</p>
                 {% endif %}
             </div>
         </article>
@@ -94,8 +94,8 @@
         <article class="dashboard-card">
             <div class="dashboard-card__header">
                 <div>
-                    <h2 class="dashboard-card__title">LecИ›ii recomandate</h2>
-                    <p class="dashboard-card__subtitle">Selectate pe baza lecИ›iilor finalizate.</p>
+                    <h2 class="dashboard-card__title">Lecții recomandate</h2>
+                    <p class="dashboard-card__subtitle">Selectate pe baza lecțiilor finalizate.</p>
                 </div>
             </div>
             <div class="dashboard-card__body">
@@ -107,12 +107,16 @@
                                     <div class="lesson-reco__title">{{ rec.lesson.title }}</div>
                                     <div class="lesson-reco__meta">{{ rec.reason }}</div>
                                 </div>
-                                <a class="btn btn-sm btn-outline-primary" href="{% url 'estudy:lesson_detail' slug=rec.lesson.slug %}">Start</a>
+                                {% if rec.lesson.slug %}
+                                    <a class="btn btn-sm btn-outline-primary" href="{% url 'estudy:lesson_detail' slug=rec.lesson.slug %}">Start</a>
+                                {% else %}
+                                    <span class="text-muted small">În pregătire</span>
+                                {% endif %}
                             </li>
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p class="text-muted mb-0">Ai parcurs toate lecИ›iile sugerate. Alege un nou subiect!</p>
+                    <p class="text-muted mb-0">Ai parcurs toate lecțiile sugerate. Alege un nou subiect!</p>
                 {% endif %}
             </div>
         </article>
@@ -120,8 +124,8 @@
         <article class="dashboard-card">
             <div class="dashboard-card__header">
                 <div>
-                    <h2 class="dashboard-card__title">Ultimele notificДѓri</h2>
-                    <p class="dashboard-card__subtitle">RДѓmГўi la curent cu noutДѓИ›ile И™i feedback-ul.</p>
+                    <h2 class="dashboard-card__title">Ultimele notificări</h2>
+                    <p class="dashboard-card__subtitle">Rămâi la curent cu noutățile și feedback-ul.</p>
                 </div>
                 <a class="btn btn-sm btn-outline-secondary" href="{% url 'estudy:notifications' %}">Toate</a>
             </div>
@@ -132,12 +136,12 @@
                             <li class="notification-item">
                                 <div class="notification-item__title">{{ item.title }}</div>
                                 <p class="notification-item__desc">{{ item.message }}</p>
-                                <span class="notification-item__time">{{ item.created_at|date:"d MMM В· HH:mm" }}</span>
+                                <span class="notification-item__time">{{ item.created_at|date:"d MMM · HH:mm" }}</span>
                             </li>
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p class="text-muted mb-0">Nu existДѓ notificДѓri noi momentan.</p>
+                    <p class="text-muted mb-0">Nu există notificări noi momentan.</p>
                 {% endif %}
             </div>
         </article>
@@ -149,8 +153,8 @@
         <article class="dashboard-card">
             <div class="dashboard-card__header">
                 <div>
-                    <h2 class="dashboard-card__title">ProvocДѓri zilnice</h2>
-                    <p class="dashboard-card__subtitle">CompleteazДѓ provocДѓrile pentru bonusuri speciale.</p>
+                    <h2 class="dashboard-card__title">Provocări zilnice</h2>
+                    <p class="dashboard-card__subtitle">Completează provocările pentru bonusuri speciale.</p>
                 </div>
             </div>
             <div class="dashboard-card__body">
@@ -165,7 +169,7 @@
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p class="text-muted mb-0">Nicio provocare activДѓ acum. ReГ®ncarcДѓ pagina mai tГўrziu!</p>
+                    <p class="text-muted mb-0">Nicio provocare activă acum. Reîncarcă pagina mai târziu!</p>
                 {% endif %}
             </div>
         </article>
@@ -174,7 +178,7 @@
             <div class="dashboard-card__header">
                 <div>
                     <h2 class="dashboard-card__title">Clasament rapid</h2>
-                    <p class="dashboard-card__subtitle">Top 5 elevi din aceastДѓ sДѓptДѓmГўnДѓ.</p>
+                    <p class="dashboard-card__subtitle">Top 5 elevi din această săptămână.</p>
                 </div>
                 <a class="btn btn-sm btn-outline-primary" href="{% url 'estudy:leaderboard' %}">Clasament complet</a>
             </div>
@@ -190,7 +194,7 @@
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p class="text-muted mb-0">Clasamentul se pregДѓteИ™te. ParticipДѓ la lecИ›ii pentru a apДѓrea aici!</p>
+                    <p class="text-muted mb-0">Clasamentul se pregătește. Participă la lecții pentru a apărea aici!</p>
                 {% endif %}
             </div>
         </article>
@@ -199,7 +203,7 @@
             <div class="dashboard-card__header">
                 <div>
                     <h2 class="dashboard-card__title">Proiecte recente</h2>
-                    <p class="dashboard-card__subtitle">LucrДѓrile tale И™i feedback-ul profesorilor.</p>
+                    <p class="dashboard-card__subtitle">Lucrările tale și feedback-ul profesorilor.</p>
                 </div>
                 <a class="btn btn-sm btn-outline-secondary" href="{% url 'estudy:projects' %}">Toate proiectele</a>
             </div>
@@ -210,14 +214,14 @@
                             <li class="project-item">
                                 <div>
                                     <div class="project-item__title">{{ submission.project.title }}</div>
-                                    <span class="project-item__status">{{ submission.get_status_display|default:"ГЋn progres" }}</span>
+                                    <span class="project-item__status">{{ submission.get_status_display|default:"În progres" }}</span>
                                 </div>
                                 <span class="project-item__time">{{ submission.uploaded_at|date:"d MMM" }}</span>
                             </li>
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p class="text-muted mb-0">ГЋncДѓ nu ai Г®ncДѓrcat proiecte. ГЋncearcДѓ unul din secИ›iunea вЂћProiecteвЂќ.</p>
+                    <p class="text-muted mb-0">Încă nu ai încărcat proiecte. Încearcă unul din secțiunea „Proiecte”.</p>
                 {% endif %}
             </div>
         </article>

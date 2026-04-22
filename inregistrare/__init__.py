@@ -1,1 +1,1 @@
-default_app_config = 'inregistrare.apps.AuthappConfig'
+default_app_config = "inregistrare.apps.AuthappConfig"

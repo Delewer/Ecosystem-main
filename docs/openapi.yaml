@@ -1,0 +1,29 @@
+openapi: 3.0.0
+info:
+  title: Ecosystem API
+  version: 0.1.0
+  description: Minimal spec stub for lessons, comments, ratings.
+paths:
+  /estudy/api/lessons/{lesson_slug}/comments/:
+    get:
+      summary: List comments
+      responses:
+        "200":
+          description: OK
+    post:
+      summary: Create comment
+      responses:
+        "201":
+          description: Created
+  /estudy/api/comments/{comment_id}/like/:
+    post:
+      summary: Toggle like
+      responses:
+        "200":
+          description: OK
+  /estudy/api/lessons/{lesson_slug}/rate/:
+    post:
+      summary: Rate lesson
+      responses:
+        "201":
+          description: Created

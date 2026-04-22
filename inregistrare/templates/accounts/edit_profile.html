@@ -1,7 +1,7 @@
 {% extends 'accounts/base.html' %}
 {% load static %}
 
-{% block title %}Editeaza profilul - UNITEX{% endblock %}
+{% block title %}Editează profilul - UNITEX{% endblock %}
 
 {% block body_class %}auth-body profile-body{% endblock %}
 
@@ -9,62 +9,73 @@
 <section class="profile-shell profile-shell--form">
     <aside class="profile-card profile-card--compact" data-animate>
         <div class="profile-card__avatar">
-            {% if user_profile.avatar %}
-                <img src="{{ user_profile.avatar.url }}" alt="Avatar utilizator">
-            {% else %}
-                <img src="https://api.dicebear.com/7.x/bottts/svg?background=%23d1fae5&radius=50&seed={{ user_profile.user.username|default:user.username|urlencode }}" alt="Avatar generat pentru {{ user_profile.name|default:user.username }}">
-            {% endif %}
+            <img src="https://api.dicebear.com/7.x/bottts/svg?background=%23d1fae5&radius=50&seed={{ user_profile.user.username|default:user.username|urlencode }}" alt="Avatar generat pentru {{ user_profile.name|default:user.username }}">
             <span class="profile-card__sticker profile-card__sticker--rocket" aria-hidden="true">🚀</span>
             <span class="profile-card__sticker profile-card__sticker--sparkle" aria-hidden="true">💡</span>
         </div>
-        <h1 class="profile-card__title">Personalizeaza-ti profilul</h1>
+        <h1 class="profile-card__title">Actualizează-ți profilul</h1>
         <p class="profile-card__subtitle">
-            Actualizeaza datele de contact, adauga o descriere si incarca o imagine reprezentativa ca sa te recunoasca echipa.
+            Poți modifica vârsta, datele de contact și descrierea profilului direct din această pagină.
         </p>
         <ul class="profile-card__tips">
-            <li><i class="fa-solid fa-wand-magic-sparkles"></i> Alege un avatar clar si prietenos.</li>
-            <li><i class="fa-solid fa-shield-heart"></i> Pastreaza datele de contact actualizate.</li>
-            <li><i class="fa-solid fa-meteor"></i> Foloseste bio-ul pentru a spune ce misiuni iti plac.</li>
+            <li><i class="fa-solid fa-user-check"></i> Păstrează numele și emailul actualizate.</li>
+            <li><i class="fa-solid fa-cake-candles"></i> Vârsta este folosită pentru recomandări potrivite.</li>
+            <li><i class="fa-solid fa-book-open-reader"></i> Profilul complet ajută la personalizarea lecțiilor.</li>
         </ul>
     </aside>
 
     <div class="profile-form" data-animate>
-        <form method="post" enctype="multipart/form-data" class="profile-form__body">
+        <form method="post" class="profile-form__body">
             {% csrf_token %}
-            <div class="form-field form-field--file">
-                <label for="id_avatar" class="form-label">Avatar</label>
-                <div class="form-file-control">
-                    {{ form.avatar }}
-                    <span class="form-file-control__hint"><i class="fa-solid fa-cloud-arrow-up"></i> Incarca imagine PNG sau JPG (max 2MB)</span>
-                </div>
-            </div>
 
             <div class="form-grid">
                 <div class="form-field">
-                    <label for="id_name" class="form-label">Nume complet</label>
+                    <label for="{{ form.name.id_for_label }}" class="form-label">Nume complet</label>
                     {{ form.name }}
+                    {{ form.name.errors }}
                 </div>
                 <div class="form-field">
-                    <label for="id_email" class="form-label">Email</label>
+                    <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
                     {{ form.email }}
+                    {{ form.email.errors }}
                 </div>
             </div>
 
             <div class="form-grid">
                 <div class="form-field">
-                    <label for="id_phone_number" class="form-label">Telefon</label>
+                    <label for="{{ form.phone_number.id_for_label }}" class="form-label">Telefon</label>
                     {{ form.phone_number }}
+                    {{ form.phone_number.errors }}
                 </div>
                 <div class="form-field">
-                    <label for="id_role" class="form-label">Rol</label>
-                    {{ form.role }}
+                    <label for="{{ form.age.id_for_label }}" class="form-label">Vârstă</label>
+                    {{ form.age }}
+                    {{ form.age.errors }}
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-field">
+                    <label class="form-label">Rol în platformă</label>
+                    <div class="form-static-field">{{ platform_role }}</div>
+                </div>
+                <div class="form-field">
+                    <label class="form-label">Termeni și condiții</label>
+                    <div class="form-static-field">
+                        {% if user_profile.accepted_terms %}
+                            Acceptați{% if user_profile.accepted_terms_at %} la {{ user_profile.accepted_terms_at|date:"d F Y, H:i" }}{% endif %}
+                        {% else %}
+                            Nu este înregistrată încă acceptarea
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
             <div class="form-field">
-                <label for="id_bio" class="form-label">Bio</label>
+                <label for="{{ form.bio.id_for_label }}" class="form-label">Despre mine</label>
                 {{ form.bio }}
-                <p class="form-hint">Ex: „Coordonez misiunile de robotica si iubesc provocarile logice”.</p>
+                <p class="form-hint">Exemplu: „Îmi place Python și rezolv provocări logice.”</p>
+                {{ form.bio.errors }}
             </div>
 
             {% if form.non_field_errors %}
@@ -74,8 +85,8 @@
             {% endif %}
 
             <div class="form-actions">
-                <button type="submit" class="btn btn--primary"><i class="fa-solid fa-floppy-disk"></i> Salveaza modificarile</button>
-                <a class="btn btn--ghost" href="{% url 'inregistrare_profile' %}"><i class="fa-solid fa-circle-chevron-left"></i> Renunta</a>
+                <button type="submit" class="btn btn--primary"><i class="fa-solid fa-floppy-disk"></i> Salvează modificările</button>
+                <a class="btn btn--ghost" href="{% url 'inregistrare_profile' %}"><i class="fa-solid fa-circle-chevron-left"></i> Renunță</a>
             </div>
         </form>
     </div>

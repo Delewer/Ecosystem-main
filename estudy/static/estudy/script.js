@@ -1,5 +1,7 @@
 ﻿/* eslint-env browser */
 
+(() => {
+
 const STORAGE_KEYS = {
     theme: 'unitex-theme',
     lessonFilters: 'unitex-lessons-filters',
@@ -43,6 +45,10 @@ const initializeThemeControls = () => {
     applyTheme(stored || (prefersDark ? 'dark' : 'light'));
 
     document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+        if (button.dataset.unitexThemeBound === 'true') {
+            return;
+        }
+        button.dataset.unitexThemeBound = 'true';
         button.addEventListener('click', () => {
             const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
             const next = current === 'dark' ? 'light' : 'dark';
@@ -175,31 +181,31 @@ const getNextButtonMeta = (button) => ({
     url: button.dataset.nextUrl || button.getAttribute('href') || '#',
     enabledClass: button.dataset.nextEnabledClass || 'btn-primary',
     disabledClass: button.dataset.nextDisabledClass || 'btn-outline-secondary',
-    labelLocked: button.dataset.nextLabelLocked || '<i class=\"fa-solid fa-lock me-2\"></i>Lectia urmatoare',
-    labelUnlocked: button.dataset.nextLabelUnlocked || '<i class=\"fa-solid fa-arrow-right me-2\"></i>Lectia urmatoare',
+    labelLocked: button.dataset.nextLabelLocked || '<i class="fa-solid fa-lock me-2"></i>Lecția următoare',
+    labelUnlocked: button.dataset.nextLabelUnlocked || '<i class="fa-solid fa-arrow-right me-2"></i>Lecția următoare',
 });
 
-const applyNextButtonState = (isUnlocked) => {
+const setNextButtonState = (isUnlocked) => {
     const button = getNextButton();
     if (!button) {
         return;
     }
+
     const meta = getNextButtonMeta(button);
     if (isUnlocked) {
         removeClasses(button, meta.disabledClass);
-        button.classList.remove('disabled');
         addClasses(button, meta.enabledClass);
-        button.href = meta.url;
-        button.dataset.locked = 'false';
+        button.classList.remove('disabled');
         button.removeAttribute('aria-disabled');
+        button.dataset.locked = 'false';
+        button.href = meta.url;
         button.innerHTML = meta.labelUnlocked;
     } else {
         removeClasses(button, meta.enabledClass);
         addClasses(button, meta.disabledClass);
         button.classList.add('disabled');
-        button.href = '#';
-        button.dataset.locked = 'true';
         button.setAttribute('aria-disabled', 'true');
+        button.dataset.locked = 'true';
         button.innerHTML = meta.labelLocked;
     }
 };
@@ -209,13 +215,20 @@ const initializeNextButtonState = () => {
     if (!button) {
         return;
     }
+
     const meta = getNextButtonMeta(button);
-    button.dataset.nextLabelLocked = button.dataset.nextLabelLocked || meta.labelLocked;
-    button.dataset.nextLabelUnlocked = button.dataset.nextLabelUnlocked || meta.labelUnlocked;
+    if (!button.dataset.nextLabelLocked) {
+        button.dataset.nextLabelLocked = meta.labelLocked;
+    }
+    if (!button.dataset.nextLabelUnlocked) {
+        button.dataset.nextLabelUnlocked = meta.labelUnlocked;
+    }
+
     const isLocked = button.dataset.locked === 'true'
         || button.classList.contains('disabled')
         || button.getAttribute('aria-disabled') === 'true';
-    applyNextButtonState(!isLocked);
+
+    setNextButtonState(!isLocked);
 };
 
 const setLessonCompletionUI = (completed, sourceButton) => {
@@ -233,14 +246,14 @@ const setLessonCompletionUI = (completed, sourceButton) => {
             sourceButton.classList.toggle('btn-light', !completed);
             sourceButton.classList.toggle('text-primary', !completed);
             sourceButton.innerHTML = completed
-                ? '<i class=\"fa-solid fa-check me-2\"></i>Bifat deja'
-                : '<i class=\"fa-regular fa-circle-check me-2\"></i>MarcheazДѓ reuИ™ita';
+                ? '<i class="fa-solid fa-check me-2"></i>Bifat deja'
+                : '<i class="fa-regular fa-circle-check me-2"></i>Marchează reușita';
         } else {
             sourceButton.classList.toggle('btn-success', completed);
             sourceButton.classList.toggle('btn-outline-success', !completed);
             sourceButton.innerHTML = completed
-                ? '<i class=\"fa-solid fa-check me-1\"></i>FinalizatДѓ'
-                : '<i class=\"fa-regular fa-circle-check me-1\"></i>MarcheazДѓ finalizarea';
+                ? '<i class="fa-solid fa-check me-1"></i>Finalizată'
+                : '<i class="fa-regular fa-circle-check me-1"></i>Marchează finalizarea';
         }
     } else {
         document.querySelectorAll('.lesson-card').forEach((card) => {
@@ -252,10 +265,10 @@ const setLessonCompletionUI = (completed, sourceButton) => {
     }
 
     if (statusEl) {
-        statusEl.textContent = completed ? 'FinalizatДѓ' : 'ГЋn curs';
+        statusEl.textContent = completed ? 'Finalizată' : 'În curs';
         statusEl.classList.toggle('text-success', completed);
     }
-    applyNextButtonState(completed);
+    setNextButtonState(completed);
 };
 
 const wireToggleCompletion = () => {
@@ -289,7 +302,7 @@ const wireToggleCompletion = () => {
                 });
             } catch (error) {
                 console.error('Failed to toggle lesson completion', error);
-                alert('Nu am putut actualiza starea lecИ›iei. ГЋncearcДѓ din nou.');
+                alert('Nu am putut actualiza starea lecției. Încearcă din nou.');
             } finally {
                 button.disabled = false;
             }
@@ -319,14 +332,16 @@ const wireQuizForms = () => {
             const answer = formData.get('answer');
             if (!answer) {
                 if (feedbackEl) {
-                    feedbackEl.textContent = 'SelecteazДѓ un rДѓspuns Г®nainte de a trimite.';
+                    feedbackEl.textContent = 'Selectează un răspuns înainte de a trimite.';
+                        feedbackEl.textContent = 'Selectează un răspuns înainte de a trimite.';
                     feedbackEl.classList.add('text-danger');
                 }
                 return;
             }
 
             feedbackEl?.classList.remove('text-success', 'text-danger');
-            feedbackEl.textContent = 'Se verificДѓ rДѓspunsul...';
+            feedbackEl.textContent = 'Se verifică răspunsul...';
+                feedbackEl.textContent = 'Se verifică răspunsul...';
 
             try {
                 const response = await fetch(submitUrl, {
@@ -345,7 +360,8 @@ const wireQuizForms = () => {
                 const data = await response.json();
                 const correct = Boolean(data.is_correct);
 
-                feedbackEl.textContent = correct ? 'Excelent! Acesta este rДѓspunsul corect.' : 'RДѓspuns greИ™it. ГЋncearcДѓ din nou!';
+                feedbackEl.textContent = correct ? 'Excelent! Acesta este răspunsul corect.' : 'Răspuns greșit. Încearcă din nou!';
+                    feedbackEl.textContent = correct ? 'Excelent! Acesta este răspunsul corect.' : 'Răspuns greșit. Încearcă din nou!';
                 feedbackEl.classList.toggle('text-success', correct);
                 feedbackEl.classList.toggle('text-danger', !correct);
 
@@ -367,7 +383,8 @@ const wireQuizForms = () => {
                 }
             } catch (error) {
                 console.error('Quiz submission failed', error);
-                feedbackEl.textContent = 'A apДѓrut o eroare. ГЋncearcДѓ din nou.';
+                feedbackEl.textContent = 'A apărut o eroare. Încearcă din nou.';
+                    feedbackEl.textContent = 'A apărut o eroare. Încearcă din nou.';
                 feedbackEl.classList.add('text-danger');
             }
         });
@@ -510,7 +527,7 @@ const wirePracticeDragDrop = () => {
                 }
 
                 if (zone.classList.contains('practice-dropzone--filled')) {
-                    showFeedback('AceastДѓ zonДѓ este deja completatДѓ. Alege altДѓ pereche.');
+                    showFeedback('Această zonă este deja completată. Alege altă pereche.');
                     return;
                 }
 
@@ -519,7 +536,7 @@ const wirePracticeDragDrop = () => {
 
                 if (expected && expected !== actual) {
                     zone.classList.add('practice-dropzone--error');
-                    showFeedback('Ups! ГЋncДѓ nu este potrivirea corectДѓ. ГЋncearcДѓ din nou.');
+                    showFeedback('Ups! Încă nu este potrivirea corectă. Încearcă din nou.');
                     setTimeout(() => zone.classList.remove('practice-dropzone--error'), 700);
                     return;
                 }
@@ -611,7 +628,7 @@ const wireCodeChallenges = () => {
                     }
                 } else {
                     const hints = missing.map((group) => group[0]).join(', ');
-                    showFeedback(`Mai verificДѓ secИ›iunea de cod. Lipsesc expresii precum: ${hints}`);
+                    showFeedback(`Mai verifică secțiunea de cod. Lipsesc expresii precum: ${hints}`);
                     if (successAlert) {
                         successAlert.classList.add('d-none');
                     }
@@ -643,7 +660,7 @@ const wireVoiceButtons = () => {
     if (!supportsSpeech) {
         buttons.forEach((button) => {
             button.addEventListener('click', () => {
-                alert('Redarea audio nu este suportatДѓ de acest browser.');
+                alert('Redarea audio nu este suportată de acest browser.');
             });
         });
         return;
@@ -741,7 +758,7 @@ const wireVoiceButtons = () => {
         const rawText = button.dataset.voiceText || '';
         const textContent = rawText.trim();
         if (!textContent) {
-            alert('Nu existДѓ conИ›inut de redat pentru aceastДѓ explicaИ›ie.');
+            alert('Nu există conținut de redat pentru această explicație.');
             return;
         }
 
@@ -763,7 +780,7 @@ const wireVoiceButtons = () => {
         utterance.onerror = (event) => {
             console.error('Speech synthesis error', event);
             resetState();
-            alert('Nu am putut porni redarea audio. ГЋncearcДѓ din nou sau schimbДѓ browserul.');
+            alert('Nu am putut porni redarea audio. Încearcă din nou sau schimbă browserul.');
         };
 
         activeButton = button;
@@ -815,18 +832,244 @@ const wireLessonExperience = () => {
         const indicatorCurrent = root.querySelector('[data-step-current]');
         const indicatorTotal = root.querySelector('[data-step-total]');
         const indicatorTitle = root.querySelector('[data-step-title]');
+        const lockHint = root.querySelector('[data-step-lock-hint]');
+        const starSlots = Array.from(root.querySelectorAll('[data-star-slot]'));
+        const starsScore = root.querySelector('[data-stars-score]');
+        const teamModeButtons = Array.from(root.querySelectorAll('[data-team-mode-btn]'));
+        const teamProgress = root.querySelector('[data-team-progress]');
+        const teamProgressFill = root.querySelector('[data-team-progress-fill]');
+        const teamProgressLabel = root.querySelector('[data-team-progress-label]');
+        const rewardNode = root.querySelector('[data-step-reward]');
+        const secretBonusNode = root.querySelector('[data-secret-bonus]');
+        const mascotNode = root.querySelector('[data-mascot-feedback]');
+        const mascotMessage = root.querySelector('[data-mascot-message]');
 
         let currentStep = 0;
         const totalSteps = steps.length;
+        const requirementState = new Map();
+        const requirementStats = new Map();
+        const stepScores = new Map();
+        const completedSteps = new Set();
+        const defaultLockMessage = 'Finalizează această etapă înainte să continui.';
+        const interactiveRequirements = new Set([
+            'hardware-map',
+            'hardware-software-match',
+        ]);
+        const defaultStepRewards = [
+            'Sticker nou: Constructor hardware',
+            'Sticker nou: Navigator web',
+            'Sticker nou: Scut digital',
+            'Insignă: Modul finalizat',
+        ];
+        let stepStartedAt = Date.now();
+        let teamMode = 'solo';
+        let interactiveSuccessStreak = 0;
+        let secretBonusAwarded = false;
+        let rewardTimeoutId = null;
+        let mascotTimeoutId = null;
+
+        steps.forEach((step) => {
+            const requirement = (step.dataset.stepRequires || '').trim();
+            if (requirement && !requirementState.has(requirement)) {
+                requirementState.set(requirement, false);
+                requirementStats.set(requirement, {
+                    resets: 0,
+                    failures: 0,
+                    successes: 0,
+                });
+            }
+        });
+
         if (indicatorTotal) {
             indicatorTotal.textContent = totalSteps;
         }
+
+        const setLockHint = (message = '') => {
+            if (!lockHint) {
+                return;
+            }
+            const text = (message || '').trim();
+            if (!text) {
+                lockHint.textContent = '';
+                lockHint.setAttribute('hidden', '');
+                return;
+            }
+            lockHint.textContent = text;
+            lockHint.removeAttribute('hidden');
+        };
+
+        const getStepRequirement = (index = currentStep) => (steps[index]?.dataset.stepRequires || '').trim();
+
+        const isStepComplete = (index = currentStep) => {
+            const requirement = getStepRequirement(index);
+            if (!requirement) {
+                return true;
+            }
+            return Boolean(requirementState.get(requirement));
+        };
+
+        const showStepReward = (message, type = 'default') => {
+            if (!rewardNode || !message) {
+                return;
+            }
+            rewardNode.textContent = message;
+            rewardNode.removeAttribute('hidden');
+            rewardNode.classList.remove('is-success', 'is-bonus');
+            if (type === 'success') {
+                rewardNode.classList.add('is-success');
+            }
+            if (type === 'bonus') {
+                rewardNode.classList.add('is-bonus');
+            }
+            rewardNode.classList.add('is-visible');
+            if (rewardTimeoutId) {
+                window.clearTimeout(rewardTimeoutId);
+            }
+            rewardTimeoutId = window.setTimeout(() => {
+                rewardNode.classList.remove('is-visible', 'is-success', 'is-bonus');
+                rewardNode.setAttribute('hidden', '');
+            }, 2200);
+        };
+
+        const showMascot = (message, tone = 'success') => {
+            if (!mascotNode || !mascotMessage || !message) {
+                return;
+            }
+            mascotMessage.textContent = message;
+            mascotNode.removeAttribute('hidden');
+            mascotNode.classList.remove('is-success', 'is-warning');
+            mascotNode.classList.add(tone === 'warning' ? 'is-warning' : 'is-success');
+            mascotNode.classList.add('is-visible');
+            if (mascotTimeoutId) {
+                window.clearTimeout(mascotTimeoutId);
+            }
+            mascotTimeoutId = window.setTimeout(() => {
+                mascotNode.classList.remove('is-visible');
+                mascotNode.setAttribute('hidden', '');
+            }, 1800);
+        };
+
+        const showSecretBonus = () => {
+            if (!secretBonusNode || secretBonusAwarded) {
+                return;
+            }
+            secretBonusAwarded = true;
+            secretBonusNode.removeAttribute('hidden');
+            secretBonusNode.classList.add('is-visible');
+            showStepReward('Bonus secret de consistență activat!', 'bonus');
+            showMascot('Bonus secret deblocat! Echipa ta merge perfect.', 'success');
+        };
+
+        const updateStarsUI = (score = 0) => {
+            starSlots.forEach((slot, index) => {
+                slot.classList.toggle('is-earned', index < score);
+            });
+            if (starsScore) {
+                starsScore.textContent = `${score}/3`;
+            }
+        };
+
+        const updateStarScoreForStep = (index = currentStep) => {
+            const score = stepScores.get(index)?.total || 0;
+            updateStarsUI(score);
+        };
+
+        const updateTeamModeUI = () => {
+            teamModeButtons.forEach((button) => {
+                const active = button.dataset.teamModeValue === teamMode;
+                button.classList.toggle('is-active', active);
+                button.classList.toggle('btn-primary', active);
+                button.classList.toggle('btn-outline-primary', !active);
+            });
+            if (teamProgress) {
+                if (teamMode === 'pair') {
+                    teamProgress.removeAttribute('hidden');
+                } else {
+                    teamProgress.setAttribute('hidden', '');
+                }
+            }
+        };
+
+        const updateTeamProgress = () => {
+            const completed = completedSteps.size;
+            const percent = totalSteps ? Math.round((completed / totalSteps) * 100) : 0;
+            if (teamProgressFill) {
+                teamProgressFill.style.width = `${percent}%`;
+            }
+            if (teamProgressLabel) {
+                teamProgressLabel.textContent = `Echipă: ${completed}/${totalSteps} pași`;
+            }
+        };
+
+        const evaluateStepScore = (index) => {
+            const stepNode = steps[index];
+            const requirement = (stepNode?.dataset.stepRequires || '').trim();
+            const elapsedMs = Math.max(0, Date.now() - stepStartedAt);
+            const defaultTarget = requirement ? 180 : 110;
+            const speedTarget = Number.parseInt(
+                stepNode?.dataset.stepSpeedTarget || String(defaultTarget),
+                10
+            );
+            const speed = elapsedMs <= (Number.isFinite(speedTarget) ? speedTarget : defaultTarget) * 1000;
+            const accuracy = requirement ? Boolean(requirementState.get(requirement)) : true;
+            const stats = requirement
+                ? requirementStats.get(requirement) || { resets: 0, failures: 0, successes: 0 }
+                : { resets: 0, failures: 0, successes: 0 };
+            const noHints = requirement ? stats.resets === 0 && stats.failures === 0 : true;
+            const total = [accuracy, speed, noHints].filter(Boolean).length;
+            return {
+                accuracy,
+                speed,
+                noHints,
+                total,
+            };
+        };
+
+        const completeStep = (index) => {
+            if (completedSteps.has(index)) {
+                return;
+            }
+            const score = evaluateStepScore(index);
+            stepScores.set(index, score);
+            completedSteps.add(index);
+            updateStarScoreForStep(index);
+            updateTeamProgress();
+
+            const rewardLabel = steps[index]?.dataset.stepReward || defaultStepRewards[index] || 'Sticker nou';
+            showStepReward(`${rewardLabel} • ${score.total}/3 stele`, 'success');
+        };
+
+        const refreshNextButton = () => {
+            if (!nextBtn || !steps.length) {
+                return;
+            }
+            const stepNode = steps[currentStep];
+            const isLast = currentStep === totalSteps - 1;
+            const customLabel = stepNode?.dataset.stepButton;
+            nextBtn.textContent = customLabel || (isLast ? 'Finalizează lecția' : 'Continuă');
+            nextBtn.classList.toggle('btn-success', isLast);
+
+            if (isLast) {
+                nextBtn.disabled = false;
+                setLockHint('');
+                return;
+            }
+
+            const complete = isStepComplete(currentStep);
+            nextBtn.disabled = !complete;
+            if (complete) {
+                setLockHint('');
+                return;
+            }
+            setLockHint(stepNode?.dataset.stepLockedMessage || defaultLockMessage);
+        };
 
         const goToStep = (index) => {
             if (!steps.length) {
                 return;
             }
             currentStep = Math.max(0, Math.min(index, totalSteps - 1));
+            stepStartedAt = Date.now();
             steps.forEach((step, stepIndex) => {
                 if (stepIndex === currentStep) {
                     step.removeAttribute('hidden');
@@ -847,21 +1090,89 @@ const wireLessonExperience = () => {
                 prevBtn.hidden = currentStep === 0;
                 prevBtn.disabled = currentStep === 0;
             }
-            if (nextBtn) {
-                const isLast = currentStep === totalSteps - 1;
-                const customLabel = steps[currentStep]?.dataset.stepButton;
-                nextBtn.textContent = customLabel || (isLast ? 'FinalizeazДѓ lecИ›ia' : 'ContinuДѓ');
-                nextBtn.classList.toggle('btn-success', isLast);
-                nextBtn.disabled = false;
-            }
+            updateStarScoreForStep(currentStep);
+            updateTeamProgress();
+            refreshNextButton();
         };
+
+        teamModeButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const nextMode = button.dataset.teamModeValue === 'pair' ? 'pair' : 'solo';
+                teamMode = nextMode;
+                updateTeamModeUI();
+                updateTeamProgress();
+            });
+        });
+
+        root.addEventListener('lesson:step-requirement', (event) => {
+            const detail = event.detail || {};
+            const requirement =
+                typeof detail.requirement === 'string' ? detail.requirement.trim() : '';
+            if (!requirement || !requirementState.has(requirement)) {
+                return;
+            }
+            const complete = Boolean(detail.complete);
+            const wasComplete = Boolean(requirementState.get(requirement));
+            requirementState.set(requirement, complete);
+
+            const stats = requirementStats.get(requirement) || {
+                resets: 0,
+                failures: 0,
+                successes: 0,
+            };
+            if (detail.result === 'reset') {
+                stats.resets += 1;
+            }
+            if (detail.result === 'failed') {
+                stats.failures += 1;
+            }
+            if (detail.result === 'success') {
+                stats.successes += 1;
+            }
+            requirementStats.set(requirement, stats);
+
+            if (interactiveRequirements.has(requirement)) {
+                if (detail.result === 'success' && !wasComplete) {
+                    interactiveSuccessStreak += 1;
+                    if (interactiveSuccessStreak >= 2) {
+                        showSecretBonus();
+                    }
+                }
+                if (detail.result === 'failed' || detail.result === 'reset') {
+                    interactiveSuccessStreak = 0;
+                }
+            }
+
+            if (getStepRequirement(currentStep) === requirement) {
+                refreshNextButton();
+            }
+        });
+
+        root.addEventListener('lesson:mascot-feedback', (event) => {
+            const detail = event.detail || {};
+            const message = (detail.message || '').toString().trim();
+            const tone = detail.tone === 'warning' ? 'warning' : 'success';
+            if (message) {
+                showMascot(message, tone);
+            }
+        });
 
         if (nextBtn) {
             nextBtn.addEventListener('click', () => {
+                if (!isStepComplete(currentStep) && currentStep !== totalSteps - 1) {
+                    setLockHint(
+                        steps[currentStep]?.dataset.stepLockedMessage || defaultLockMessage
+                    );
+                    showMascot('Mai întâi termină provocarea acestui pas.', 'warning');
+                    return;
+                }
+                completeStep(currentStep);
                 if (currentStep === totalSteps - 1) {
-                    nextBtn.innerHTML = '<i class="fa-solid fa-check me-2"></i>LecИ›ia finalizatДѓ';
+                    nextBtn.innerHTML = '<i class="fa-solid fa-check me-2"></i>Lecția finalizată';
                     nextBtn.disabled = true;
+                    setLockHint('');
                     root.classList.add('lesson-experience--completed');
+                    showMascot('Lecție finalizată. Excelent!', 'success');
                     return;
                 }
                 goToStep(currentStep + 1);
@@ -871,13 +1182,7 @@ const wireLessonExperience = () => {
         if (prevBtn) {
             prevBtn.addEventListener('click', () => {
                 goToStep(currentStep - 1);
-                if (nextBtn && nextBtn.disabled) {
-                    nextBtn.disabled = false;
-                    const isLast = currentStep === totalSteps - 1;
-                    const customLabel = steps[currentStep]?.dataset.stepButton;
-                    nextBtn.textContent = customLabel || (isLast ? 'FinalizeazДѓ lecИ›ia' : 'ContinuДѓ');
-                    nextBtn.classList.toggle('btn-success', isLast);
-                }
+                refreshNextButton();
             });
         }
 
@@ -919,6 +1224,9 @@ const wireLessonExperience = () => {
                 startButton.setAttribute('aria-hidden', 'true');
                 startButton.setAttribute('disabled', 'disabled');
             }
+            updateTeamModeUI();
+            updateTeamProgress();
+            updateStarScoreForStep(0);
             goToStep(0);
             const focusTarget = flow?.querySelector('.lesson-step--active') || panelSteps?.querySelector('.lesson-step--active');
             if (focusTarget && typeof focusTarget.focus === 'function') {
@@ -941,8 +1249,6 @@ const wireLessonExperience = () => {
     });
 };
 
-const wireHardwareMapGame
-
 const wireHardwareMapGame = () => {
     document.querySelectorAll('[data-hardware-map]').forEach((root) => {
         const bank = root.querySelector('[data-bank]');
@@ -952,6 +1258,36 @@ const wireHardwareMapGame = () => {
         const checkBtn = root.querySelector('[data-hardware-check]');
         const resetBtn = root.querySelector('[data-hardware-reset]');
         const dropzones = Array.from(root.querySelectorAll('[data-dropzone]'));
+        const requirement = (root.dataset.stepRequirement || 'hardware-map').trim();
+        const lessonExperience = root.closest('[data-lesson-experience]');
+
+        const notifyRequirement = (complete, extra = {}) => {
+            if (!lessonExperience || !requirement) {
+                return;
+            }
+            lessonExperience.dispatchEvent(
+                new CustomEvent('lesson:step-requirement', {
+                    detail: Object.assign({
+                        requirement,
+                        complete: Boolean(complete),
+                    }, extra),
+                })
+            );
+        };
+
+        const notifyMascot = (message, tone = 'success') => {
+            if (!lessonExperience || !message) {
+                return;
+            }
+            lessonExperience.dispatchEvent(
+                new CustomEvent('lesson:mascot-feedback', {
+                    detail: {
+                        message,
+                        tone,
+                    },
+                })
+            );
+        };
 
         const updateSlotState = () => {
             slots.forEach((slot) => {
@@ -1030,6 +1366,7 @@ const wireHardwareMapGame = () => {
             removeZoneHighlight();
             clearFeedback();
             updateSlotState();
+            notifyRequirement(false, { result: 'reset' });
         };
 
         resetBoard();
@@ -1064,13 +1401,19 @@ const wireHardwareMapGame = () => {
                 feedback.className = 'hardware-feedback';
                 if (placedCount !== slots.length) {
                     feedback.classList.add('hardware-feedback--warning');
-                    feedback.textContent = 'Mai ai componente de plasat. CompleteazДѓ toate zonele И™i verificДѓ din nou.';
+                    feedback.textContent = 'Mai ai componente de plasat. Completează toate zonele și verifică din nou.';
+                    notifyRequirement(false, { result: 'failed' });
+                    notifyMascot('Completează toate zonele înainte de verificare.', 'warning');
                 } else if (correctCount === slots.length) {
                     feedback.classList.add('hardware-feedback--success');
                     feedback.textContent = 'Super! Toate componentele sunt pe locul potrivit.';
+                    notifyRequirement(true, { result: 'success' });
+                    notifyMascot('Bravo! Ai asamblat corect toate componentele.', 'success');
                 } else {
                     feedback.classList.add('hardware-feedback--error');
-                    feedback.textContent = 'Unele componente nu se potrivesc zonei. ComparДѓ denumirile И™i Г®ncearcДѓ din nou.';
+                    feedback.textContent = 'Unele componente nu se potrivesc zonei. Compară denumirile și încearcă din nou.';
+                    notifyRequirement(false, { result: 'failed' });
+                    notifyMascot('Ești aproape. Mai verifică o dată potrivirile.', 'warning');
                 }
             });
         }
@@ -1087,6 +1430,36 @@ const wireHardwareSoftwareMatch = () => {
         const tokens = Array.from(root.querySelectorAll('[data-match-token]'));
         const dropzones = Array.from(root.querySelectorAll('[data-dropzone]'));
         const tasks = Array.from(root.querySelectorAll('[data-scenario]'));
+        const requirement = (root.dataset.stepRequirement || 'hardware-software-match').trim();
+        const lessonExperience = root.closest('[data-lesson-experience]');
+
+        const notifyRequirement = (complete, extra = {}) => {
+            if (!lessonExperience || !requirement) {
+                return;
+            }
+            lessonExperience.dispatchEvent(
+                new CustomEvent('lesson:step-requirement', {
+                    detail: Object.assign({
+                        requirement,
+                        complete: Boolean(complete),
+                    }, extra),
+                })
+            );
+        };
+
+        const notifyMascot = (message, tone = 'success') => {
+            if (!lessonExperience || !message) {
+                return;
+            }
+            lessonExperience.dispatchEvent(
+                new CustomEvent('lesson:mascot-feedback', {
+                    detail: {
+                        message,
+                        tone,
+                    },
+                })
+            );
+        };
 
         const banksByType = {};
         banks.forEach((bank) => {
@@ -1137,7 +1510,7 @@ const wireHardwareSoftwareMatch = () => {
             if (expectedType && token.dataset.tokenType !== expectedType) {
                 if (feedback) {
                     feedback.className = 'module-match__feedback module-match__feedback--warning';
-                    feedback.textContent = 'Acest cartonaИ™ se potriveИ™te Г®n cealaltДѓ coloanДѓ. ГЋncearcДѓ din nou.';
+                    feedback.textContent = 'Acest cartonaș se potrivește în cealaltă coloană. Încearcă din nou.';
                 }
                 target.classList.add('match-slot--error');
                 setTimeout(() => target.classList.remove('match-slot--error'), 600);
@@ -1202,6 +1575,7 @@ const wireHardwareSoftwareMatch = () => {
             });
             updateSlotState();
             clearFeedback();
+            notifyRequirement(false, { result: 'reset' });
         };
 
         if (resetBtn) {
@@ -1245,13 +1619,19 @@ const wireHardwareSoftwareMatch = () => {
                 feedback.className = 'module-match__feedback';
                 if (!allFilled) {
                     feedback.classList.add('module-match__feedback--warning');
-                    feedback.textContent = 'CompleteazДѓ fiecare sarcinДѓ cu cГўte douДѓ cartonaИ™e Г®nainte de verificare.';
+                    feedback.textContent = 'Completează fiecare sarcină cu câte două cartonașe înainte de verificare.';
+                    notifyRequirement(false, { result: 'failed' });
+                    notifyMascot('Mai ai locuri goale. Completează toate perechile.', 'warning');
                 } else if (allCorrect) {
                     feedback.classList.add('module-match__feedback--success');
-                    feedback.textContent = 'Excelent! Ai gДѓsit combinaИ›iile hardware + software potrivite.';
+                    feedback.textContent = 'Excelent! Ai găsit combinațiile hardware + software potrivite.';
+                    notifyRequirement(true, { result: 'success' });
+                    notifyMascot('Perfect! Toate perechile sunt corecte.', 'success');
                 } else {
                     feedback.classList.add('module-match__feedback--error');
-                    feedback.textContent = 'Mai verificДѓ una dintre perechi: unele cartonaИ™e nu se potrivesc Г®ncДѓ.';
+                    feedback.textContent = 'Mai verifică una dintre perechi: unele cartonașe nu se potrivesc încă.';
+                    notifyRequirement(false, { result: 'failed' });
+                    notifyMascot('Bun început. Ajustează perechile marcate cu roșu.', 'warning');
                 }
             });
         }
@@ -1489,8 +1869,67 @@ const initializeWorkspaceMessages = () => {
     });
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    initializeThemeControls();
+const initializeHistoryBackLinks = () => {
+    if (document.documentElement.dataset.historyBackReady === 'true') {
+        return;
+    }
+    document.documentElement.dataset.historyBackReady = 'true';
+
+    const resolveInternalReferrer = () => {
+        if (!document.referrer) {
+            return null;
+        }
+        try {
+            const referrer = new URL(document.referrer, window.location.origin);
+            if (referrer.origin !== window.location.origin) {
+                return null;
+            }
+            return `${referrer.pathname}${referrer.search}${referrer.hash}`;
+        } catch (error) {
+            return null;
+        }
+    };
+
+    document.addEventListener('click', (event) => {
+        const trigger = event.target instanceof Element ? event.target.closest('[data-history-back]') : null;
+        if (!trigger) {
+            return;
+        }
+        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const fallbackUrl = trigger.getAttribute('href') || '/';
+        const referrerUrl = resolveInternalReferrer();
+        const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+        const canUseHistory = window.history.length > 1
+            && Boolean(referrerUrl)
+            && referrerUrl !== currentUrl;
+
+        if (!canUseHistory) {
+            window.location.assign(referrerUrl || fallbackUrl);
+            return;
+        }
+
+        let didNavigate = false;
+        const onPageHide = () => {
+            didNavigate = true;
+        };
+        window.addEventListener('pagehide', onPageHide, { once: true });
+        window.history.back();
+
+        window.setTimeout(() => {
+            if (didNavigate) {
+                return;
+            }
+            window.location.assign(referrerUrl || fallbackUrl);
+        }, 320);
+    });
+};
+
+const initializeEstudyPage = () => {
     initializeLessonsDashboard();
     initializeProgressBars();
     initializeNextButtonState();
@@ -1505,4 +1944,34 @@ document.addEventListener('DOMContentLoaded', () => {
     wireHardwareMapGame();
     wireHardwareSoftwareMatch();
     initializeWorkspaceMessages();
-});
+};
+
+const runEstudyPageForCurrentView = () => {
+    const viewKey = `${window.location.pathname}${window.location.search}::${document.body.className}`;
+    if (document.documentElement.dataset.estudyPageInitKey === viewKey) {
+        return;
+    }
+    document.documentElement.dataset.estudyPageInitKey = viewKey;
+    initializeEstudyPage();
+};
+
+const bootstrapEstudy = () => {
+    initializeThemeControls();
+    initializeHistoryBackLinks();
+    runEstudyPageForCurrentView();
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootstrapEstudy, { once: true });
+} else {
+    bootstrapEstudy();
+}
+
+if (document.documentElement.dataset.estudyPageReadyHook !== 'true') {
+    document.documentElement.dataset.estudyPageReadyHook = 'true';
+    document.addEventListener('unitex:page-ready', () => {
+        runEstudyPageForCurrentView();
+    });
+}
+
+})();

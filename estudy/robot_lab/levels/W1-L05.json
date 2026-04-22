@@ -1,0 +1,40 @@
+{
+  "id": "W1-L05",
+  "title": "Depaneaza labirintul",
+  "description": "Mod Cod: urmareste consola si corecteaza traseul cand robotul loveste un perete.",
+  "goal_text": "Ajungi la terminalul T fara sa atingi zidurile.",
+  "goal": {
+    "type": "reach_goal",
+    "target_tile": "T"
+  },
+  "concepts": ["sequencing", "debugging"],
+  "difficulty": "medium",
+  "max_steps": 36,
+  "time_limit_ms": 1000,
+  "xp_reward": 40,
+  "start_dir": "E",
+  "mode": "code",
+  "ui_stage": "code",
+  "recommended_age": "11-13",
+  "allowed_api": [
+    "up",
+    "down",
+    "left",
+    "right",
+    "at_goal"
+  ],
+  "legend": {
+    "#": "perete",
+    ".": "spatiu",
+    "S": "start",
+    "T": "terminal"
+  },
+  "grid": [
+    "#########",
+    "#S.....##",
+    "###.##..#",
+    "#....T..#",
+    "#########"
+  ],
+  "starter_code": "# Corecteaza ruta dupa fiecare rulare\n"
+}

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container py-4" id="pg-root" data-exercise-id="{{ exercise.id }}">
+  <h2 class="mb-3">Code Playground: {{ exercise.title }}</h2>
+  <p class="text-muted">{{ exercise.description }}</p>
+
+  <div class="row">
+    <div class="col-md-6">
+      <h5>Tests</h5>
+      <ul class="list-group mb-3">
+        {% for t in exercise.test_cases %}
+        <li class="list-group-item">
+          <strong>{{ t.description }}</strong><br>
+          Input: <code>{{ t.input }}</code><br>
+          Expected: <code>{{ t.expected_output }}</code>
+        </li>
+        {% empty %}
+        <li class="list-group-item">No test cases configured.</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <h5>Your Code ({{ exercise.language }})</h5>
+      <textarea id="code" class="form-control" rows="14">{{ exercise.starter_code }}</textarea>
+      <div class="mt-2 d-flex gap-2">
+        <button id="runBtn" class="btn btn-primary">Run</button>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+  <h5>Result</h5>
+  <pre id="result" class="bg-dark text-light p-3" style="min-height:150px"></pre>
+</div>
+
+<script>
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+const runBtn = document.getElementById('runBtn');
+runBtn.addEventListener('click', async () => {
+  const code = document.getElementById('code').value;
+  const resultEl = document.getElementById('result');
+  resultEl.textContent = 'Running...';
+  try {
+  const root = document.getElementById('pg-root');
+  const exId = parseInt(root.dataset.exerciseId, 10);
+  const resp = await fetch("{% url 'estudy:run_code_api' %}", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken')
+      },
+  body: JSON.stringify({ exercise_id: exId, code: code })
+    });
+    const data = await resp.json();
+    if (!resp.ok) {
+      resultEl.textContent = 'Error: ' + (data.error || 'Unknown');
+      return;
+    }
+    let out = [];
+    if (data.error) {
+      out.push('Error: ' + data.error);
+    }
+    out.push(`Passed: ${data.passed}/${data.total}`);
+    out.push(`Execution time: ${data.execution_time_ms} ms`);
+    data.test_results.forEach((tr, idx) => {
+      out.push(`\nTest #${idx+1}: ${tr.description}`);
+      out.push(`  Input: ${tr.input}`);
+      out.push(`  Expected: ${tr.expected}`);
+      out.push(`  Actual: ${tr.actual}`);
+      out.push(`  Passed: ${tr.passed}`);
+    });
+    resultEl.textContent = out.join('\n');
+  } catch (e) {
+    resultEl.textContent = 'Request failed: ' + e;
+  }
+});
+</script>
+{% endblock %}
