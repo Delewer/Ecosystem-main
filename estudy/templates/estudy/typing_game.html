@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Typing Adventure{% endblock %}
+{% block body_class %}lesson-page typing-page{% endblock %}
+{% block workspace_banner %}{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'estudy/lesson.css' %}?v=20260413a">
+<link rel="stylesheet" href="{% static 'estudy/typing_game.css' %}?v=20260413a">
+{% endblock %}
+
+{% block page_content %}
+<div class="tg" data-typing-game>
+
+    {# === Top HUD === #}
+    <div class="tg-hud">
+        <a class="lesson-hud__back" href="{% url 'estudy:lessons_list' %}">&#8592; Inapoi</a>
+        <div class="tg-hud__level">
+            <span class="tg-hud__level-icon">&#127947;</span>
+            <span data-tg-level-name>Nivel 1: Primele litere</span>
+        </div>
+        <div class="tg-hud__stats">
+            <div class="tg-hud__stat">
+                <span class="tg-hud__stat-icon">&#9889;</span>
+                <span data-tg-wpm>0</span> <small>VPM</small>
+            </div>
+            <div class="tg-hud__stat">
+                <span class="tg-hud__stat-icon">&#127919;</span>
+                <span data-tg-accuracy>100</span><small>%</small>
+            </div>
+            <div class="tg-hud__stat tg-hud__stat--score">
+                <span class="tg-hud__stat-icon">&#11088;</span>
+                <span data-tg-score>0</span>
+            </div>
+            <div class="tg-hud__stat tg-hud__stat--combo" data-tg-combo hidden>
+                <span class="tg-hud__stat-icon">&#128293;</span>
+                <span data-tg-combo-val>0</span>x
+            </div>
+        </div>
+        <div class="tg-hud__lives" data-tg-lives>
+            <span class="tg-life is-alive">&#10084;&#65039;</span>
+            <span class="tg-life is-alive">&#10084;&#65039;</span>
+            <span class="tg-life is-alive">&#10084;&#65039;</span>
+            <span class="tg-life is-alive">&#10084;&#65039;</span>
+            <span class="tg-life is-alive">&#10084;&#65039;</span>
+        </div>
+    </div>
+
+    {# === Main game screens === #}
+
+    {# --- Start screen --- #}
+    <div class="tg-screen tg-screen--start is-active" data-tg-screen="start">
+        <div class="tg-start">
+            <div class="tg-start__mascot">&#9997;&#65039;</div>
+            <h1 class="tg-start__title">Aventura Tastaturii</h1>
+            <p class="tg-start__desc">
+                Invata sa scrii rapid si corect la tastatura! Alege un nivel si incepe aventura.
+            </p>
+
+            <div class="tg-levels" data-tg-levels>
+                <button class="tg-level-card" data-tg-start-level="0">
+                    <span class="tg-level-card__icon">&#127912;</span>
+                    <span class="tg-level-card__name">Primele litere</span>
+                    <span class="tg-level-card__desc">Literele A S D F J K L</span>
+                    <span class="tg-level-card__diff">Usor</span>
+                </button>
+                <button class="tg-level-card" data-tg-start-level="1">
+                    <span class="tg-level-card__icon">&#128170;</span>
+                    <span class="tg-level-card__name">Randul de sus</span>
+                    <span class="tg-level-card__desc">Q W E R T Y U I O P</span>
+                    <span class="tg-level-card__diff">Mediu</span>
+                </button>
+                <button class="tg-level-card" data-tg-start-level="2">
+                    <span class="tg-level-card__icon">&#128171;</span>
+                    <span class="tg-level-card__name">Toate literele</span>
+                    <span class="tg-level-card__desc">Z X C V B N M si spatiu</span>
+                    <span class="tg-level-card__diff">Mediu</span>
+                </button>
+                <button class="tg-level-card" data-tg-start-level="3">
+                    <span class="tg-level-card__icon">&#128214;</span>
+                    <span class="tg-level-card__name">Cuvinte</span>
+                    <span class="tg-level-card__desc">Scrie cuvinte simple</span>
+                    <span class="tg-level-card__diff">Greu</span>
+                </button>
+                <button class="tg-level-card" data-tg-start-level="4">
+                    <span class="tg-level-card__icon">&#128640;</span>
+                    <span class="tg-level-card__name">Propozitii</span>
+                    <span class="tg-level-card__desc">Scrie propozitii intregi</span>
+                    <span class="tg-level-card__diff">Expert</span>
+                </button>
+                <button class="tg-level-card" data-tg-start-level="5">
+                    <span class="tg-level-card__icon">&#127775;</span>
+                    <span class="tg-level-card__name">Ploaie de litere</span>
+                    <span class="tg-level-card__desc">Prinde literele care cad!</span>
+                    <span class="tg-level-card__diff">Arcade</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {# --- Play screen (standard typing) --- #}
+    <div class="tg-screen tg-screen--play" data-tg-screen="play">
+        <div class="tg-play">
+            {# Prompt area: shows the text to type #}
+            <div class="tg-prompt" data-tg-prompt>
+                <div class="tg-prompt__text" data-tg-prompt-text></div>
+            </div>
+
+            {# Input feedback: shows what user typed with coloring #}
+            <div class="tg-input-line">
+                <span class="tg-cursor" data-tg-cursor>|</span>
+                <div class="tg-typed" data-tg-typed></div>
+            </div>
+
+            {# Progress bar for current round #}
+            <div class="tg-round-bar">
+                <div class="tg-round-bar__fill" data-tg-round-fill></div>
+                <span class="tg-round-bar__label" data-tg-round-label>0 / 10</span>
+            </div>
+
+            {# Virtual keyboard #}
+            <div class="tg-keyboard" data-tg-keyboard>
+                <div class="tg-kb-row">
+                    <div class="tg-key" data-key="q">Q</div>
+                    <div class="tg-key" data-key="w">W</div>
+                    <div class="tg-key" data-key="e">E</div>
+                    <div class="tg-key" data-key="r">R</div>
+                    <div class="tg-key" data-key="t">T</div>
+                    <div class="tg-key" data-key="y">Y</div>
+                    <div class="tg-key" data-key="u">U</div>
+                    <div class="tg-key" data-key="i">I</div>
+                    <div class="tg-key" data-key="o">O</div>
+                    <div class="tg-key" data-key="p">P</div>
+                </div>
+                <div class="tg-kb-row">
+                    <div class="tg-key" data-key="a">A</div>
+                    <div class="tg-key" data-key="s">S</div>
+                    <div class="tg-key" data-key="d">D</div>
+                    <div class="tg-key" data-key="f">F</div>
+                    <div class="tg-key" data-key="g">G</div>
+                    <div class="tg-key" data-key="h">H</div>
+                    <div class="tg-key" data-key="j">J</div>
+                    <div class="tg-key" data-key="k">K</div>
+                    <div class="tg-key" data-key="l">L</div>
+                </div>
+                <div class="tg-kb-row">
+                    <div class="tg-key" data-key="z">Z</div>
+                    <div class="tg-key" data-key="x">X</div>
+                    <div class="tg-key" data-key="c">C</div>
+                    <div class="tg-key" data-key="v">V</div>
+                    <div class="tg-key" data-key="b">B</div>
+                    <div class="tg-key" data-key="n">N</div>
+                    <div class="tg-key" data-key="m">M</div>
+                </div>
+                <div class="tg-kb-row">
+                    <div class="tg-key tg-key--space" data-key=" ">SPATIU</div>
+                </div>
+            </div>
+
+            {# Finger guide #}
+            <div class="tg-finger-guide" data-tg-finger>
+                <span class="tg-finger-guide__hand">&#9995;</span>
+                <span class="tg-finger-guide__text" data-tg-finger-text>Foloseste degetul aratator stang</span>
+            </div>
+        </div>
+    </div>
+
+    {# --- Falling letters screen (arcade mode) --- #}
+    <div class="tg-screen tg-screen--arcade" data-tg-screen="arcade">
+        <canvas class="tg-arcade-canvas" data-tg-arcade-canvas></canvas>
+        <div class="tg-arcade-overlay">
+            <div class="tg-arcade-score" data-tg-arcade-score>0</div>
+        </div>
+    </div>
+
+    {# --- Results screen --- #}
+    <div class="tg-screen tg-screen--results" data-tg-screen="results">
+        <div class="tg-results">
+            <div class="tg-results__badge" data-tg-result-badge>&#127942;</div>
+            <h2 class="tg-results__title" data-tg-result-title>Bravo!</h2>
+            <p class="tg-results__subtitle" data-tg-result-sub>Ai terminat nivelul!</p>
+
+            <div class="tg-results__stats">
+                <div class="tg-results__stat">
+                    <span class="tg-results__stat-icon">&#9889;</span>
+                    <span class="tg-results__stat-val" data-tg-result-wpm>0</span>
+                    <span class="tg-results__stat-label">Viteza (VPM)</span>
+                </div>
+                <div class="tg-results__stat">
+                    <span class="tg-results__stat-icon">&#127919;</span>
+                    <span class="tg-results__stat-val" data-tg-result-acc>0%</span>
+                    <span class="tg-results__stat-label">Acuratete</span>
+                </div>
+                <div class="tg-results__stat">
+                    <span class="tg-results__stat-icon">&#11088;</span>
+                    <span class="tg-results__stat-val" data-tg-result-score>0</span>
+                    <span class="tg-results__stat-label">Puncte</span>
+                </div>
+                <div class="tg-results__stat">
+                    <span class="tg-results__stat-icon">&#128293;</span>
+                    <span class="tg-results__stat-val" data-tg-result-combo>0</span>
+                    <span class="tg-results__stat-label">Combo maxim</span>
+                </div>
+            </div>
+
+            <div class="tg-results__stars" data-tg-result-stars>
+                <span class="tg-star">&#11088;</span>
+                <span class="tg-star">&#11088;</span>
+                <span class="tg-star">&#11088;</span>
+            </div>
+
+            <div class="tg-results__actions">
+                <button class="ls-btn ls-btn--primary ls-btn--large" data-tg-retry>&#128260; Joaca din nou</button>
+                <button class="ls-btn ls-btn--ghost ls-btn--large" data-tg-menu>&#127968; Meniu</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block workspace_extra_js %}
+<script src="{% static 'estudy/typing_game.js' %}?v=20260413a" defer></script>
+{% endblock %}
