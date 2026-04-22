@@ -1,4 +1,5 @@
 from django.urls import include, path
+from django.views.generic import RedirectView
 from rest_framework.authtoken.views import obtain_auth_token
 
 from . import api_views, views
@@ -53,9 +54,17 @@ urlpatterns = [
         views.mark_onboarding_complete,
         name="mark_onboarding_complete",
     ),
-    path("robot-lab/", views.robot_lab_hub, name="robot_lab_hub"),
     path(
-        "robot-lab/level/<str:level_id>/", views.robot_lab_play, name="robot_lab_play"
+        "robot-lab/",
+        RedirectView.as_view(
+            pattern_name="estudy:robot_lab_world_map", permanent=False
+        ),
+        name="robot_lab_hub",
+    ),
+    path(
+        "robot-lab/level/<str:level_id>/",
+        RedirectView.as_view(pattern_name="estudy:robot_lab_game", permanent=False),
+        name="robot_lab_play",
     ),
     path("robot-lab/teacher/", views.robot_lab_teacher, name="robot_lab_teacher"),
     path("robot-lab/worlds/", views.robot_lab_world_map, name="robot_lab_world_map"),
