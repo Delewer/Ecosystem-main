@@ -263,8 +263,8 @@ def _build_robot_lab_lesson_preview(
         )
 
     if user.is_authenticated and _robot_lab_enabled(user) and selected_is_unlocked:
-        play_url = reverse("estudy:robot_lab_play", args=[selected_level_id])
-        hub_url = reverse("estudy:robot_lab_hub")
+        play_url = reverse("estudy:robot_lab_game", args=[selected_level_id])
+        hub_url = reverse("estudy:robot_lab_world_map")
 
     level_json = _build_robot_lab_level_json(level)
     level_age_recommendation = _build_robot_lab_age_recommendation(
@@ -1422,116 +1422,6 @@ def study_overview(request):
     )
 
 
-@login_required
-def robot_lab_hub(request):
-    if not _robot_lab_enabled(request.user):
-        raise Http404("Robot Lab is not available.")
-    from .services.robot_lab_progress import build_robot_lab_progress_summary
-
-    summary = build_robot_lab_progress_summary(request.user)
-    first_unlocked = next(
-        (
-            item
-            for item in summary.get("levels", [])
-            if item.get("unlocked") and not item.get("completed")
-        ),
-        None,
-    )
-    if not first_unlocked:
-        first_unlocked = next(
-            (item for item in summary.get("levels", []) if item.get("unlocked")),
-            None,
-        )
-    context = {
-        "robot_lab_summary": summary,
-        "first_unlocked_level_id": first_unlocked.get("id") if first_unlocked else None,
-        "robot_lab_age_recommendation": _build_robot_lab_age_recommendation(
-            request.user
-        ),
-    }
-    return render(
-        request,
-        "estudy/robot_lab_hub.html",
-        with_progress(context, request.user),
-    )
-
-
-@login_required
-def robot_lab_play(request, level_id: str):
-    if not _robot_lab_enabled(request.user):
-        raise Http404("Robot Lab is not available.")
-    from .services.robot_lab_levels import (
-        RobotLabLevelNotFoundError,
-        load_level,
-        next_level_id,
-        ordered_level_ids,
-    )
-    from .services.robot_lab_progress import ensure_robot_lab_progress_rows
-
-    try:
-        level = load_level(level_id)
-    except (RobotLabLevelNotFoundError, FileNotFoundError, ValueError):
-        raise Http404("Robot Lab level not found.")
-
-    progress_map = ensure_robot_lab_progress_rows(request.user)
-    row = progress_map.get(level_id)
-    if not row or not row.unlocked:
-        messages.error(
-            request, "Nivelul este blocat. Finalizează nivelurile anterioare."
-        )
-        return redirect("estudy:robot_lab_hub")
-
-    all_ids = ordered_level_ids()
-    try:
-        idx = all_ids.index(level_id)
-    except ValueError:
-        idx = 0
-    prev_level_id = all_ids[idx - 1] if idx > 0 else None
-    next_id = next_level_id(level_id)
-    next_unlocked = bool(
-        next_id and progress_map.get(next_id) and progress_map[next_id].unlocked
-    )
-
-    context = {
-        "level": level,
-        "level_id": level_id,
-        "level_json": json.dumps(
-            {
-                "id": level.get("id"),
-                "title": level.get("title"),
-                "goal": level.get("goal") or {},
-                "goal_text": level.get("goal_text") or "",
-                "grid": level.get("grid") or [],
-                "legend": level.get("legend") or {},
-                "starter_code": level.get("starter_code") or "",
-                "max_steps": int(level.get("max_steps") or 200),
-                "xp_reward": int(level.get("xp_reward") or 0),
-                "allowed_api": level.get("allowed_api") or [],
-                "concepts": level.get("concepts") or [],
-                "mode": level.get("mode") or "code",
-                "mode_label": level.get("mode_label") or "Mod Cod",
-                "ui_stage": level.get("ui_stage") or "code",
-                "ui_stage_label": level.get("ui_stage_label") or "Cod complet",
-                "ui_stage_description": level.get("ui_stage_description") or "",
-                "recommended_age": level.get("recommended_age") or "11+",
-                "start_dir": level.get("start_dir") or "E",
-            }
-        ),
-        "level_progress": row,
-        "prev_level_id": prev_level_id,
-        "next_level_id": next_id,
-        "next_level_unlocked": next_unlocked,
-        "robot_lab_age_recommendation": _build_robot_lab_age_recommendation(
-            request.user, level_mode=str(level.get("mode") or "code")
-        ),
-    }
-    return render(
-        request,
-        "estudy/robot_lab_play.html",
-        with_progress(context, request.user),
-    )
-
-
 @action_required(ACTION_ANALYTICS_VIEW)
 def robot_lab_teacher(request):
     if not _robot_lab_enabled(request.user):
@@ -1563,10 +1453,6 @@ def robot_lab_world_map(request):
     """Robo Rescue v2 world map screen."""
     if not _robot_lab_enabled(request.user):
         raise Http404("Robot Lab is not available.")
-    from .services.feature_flags import is_enabled as feature_enabled
-
-    if not feature_enabled("robot_lab_v2", user=request.user, default=False):
-        return redirect("estudy:robot_lab_hub")
 
     from .services.robot_lab_worlds import get_active_skin, list_worlds_with_status
 
@@ -1589,10 +1475,6 @@ def robot_lab_game(request, level_id: str):
     """Robo Rescue v2 game screen."""
     if not _robot_lab_enabled(request.user):
         raise Http404("Robot Lab is not available.")
-    from .services.feature_flags import is_enabled as feature_enabled
-
-    if not feature_enabled("robot_lab_v2", user=request.user, default=False):
-        return redirect("estudy:robot_lab_play", level_id=level_id)
 
     from .services.robot_lab_levels import (
         RobotLabLevelNotFoundError,

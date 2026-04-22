@@ -51,29 +51,9 @@ class RobotLabVerticalSliceApiTests(TestCase):
         self.assertEqual(detail["mode"], "junior")
         self.assertEqual(detail["ui_stage"], "buttons")
 
-    def test_play_page_uses_romanian_ui_copy(self):
-        response = self.client.get(reverse("estudy:robot_lab_play", args=["W1-L01"]))
+    def test_game_page_renders_for_unlocked_level(self):
+        response = self.client.get(reverse("estudy:robot_lab_game", args=["W1-L01"]))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "robotlab-unified-card")
-        self.assertContains(response, "robotlab-mission-window")
-        self.assertContains(response, "Rucsacul misiunii")
-        self.assertContains(response, "Butoane in joc")
-        self.assertContains(response, "Ruleaza codul")
-        self.assertContains(response, "Stare misiune")
-        self.assertNotContains(response, "robotlab-split")
-        self.assertNotContains(response, "Mission backpack")
-        self.assertNotContains(response, "Run code")
-
-    def test_play_page_shows_profile_track_recommendation(self):
-        Profile.objects.update_or_create(
-            user=self.user,
-            defaults={"email": self.user.email, "age": 12},
-        )
-        response = self.client.get(reverse("estudy:robot_lab_play", args=["W1-L01"]))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Recomandare dupa profil")
-        self.assertContains(response, "Mod Cod")
-        self.assertContains(response, "profil 12 ani")
 
     def test_older_profile_unlocks_first_code_level(self):
         Profile.objects.update_or_create(
