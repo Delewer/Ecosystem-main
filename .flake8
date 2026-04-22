@@ -2,3 +2,5 @@
 max-line-length = 120
 exclude = .git,__pycache__,migrations,myenv,USAGE_EXAMPLES.py,estudy/admin_old.py,estudy/forms_old.py
 ignore = E203, W503
+per-file-ignores =
+    estudy/services/lesson_guides.py:E501
