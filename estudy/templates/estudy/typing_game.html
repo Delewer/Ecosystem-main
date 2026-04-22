@@ -9,7 +9,7 @@
 {{ block.super }}
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'estudy/lesson.css' %}?v=20260413a">
-<link rel="stylesheet" href="{% static 'estudy/typing_game.css' %}?v=20260413a">
+<link rel="stylesheet" href="{% static 'estudy/typing_game.css' %}?v=20260422a">
 {% endblock %}
 
 {% block page_content %}
@@ -121,49 +121,73 @@
                 <span class="tg-round-bar__label" data-tg-round-label>0 / 10</span>
             </div>
 
-            {# Virtual keyboard #}
-            <div class="tg-keyboard" data-tg-keyboard>
-                <div class="tg-kb-row">
-                    <div class="tg-key" data-key="q">Q</div>
-                    <div class="tg-key" data-key="w">W</div>
-                    <div class="tg-key" data-key="e">E</div>
-                    <div class="tg-key" data-key="r">R</div>
-                    <div class="tg-key" data-key="t">T</div>
-                    <div class="tg-key" data-key="y">Y</div>
-                    <div class="tg-key" data-key="u">U</div>
-                    <div class="tg-key" data-key="i">I</div>
-                    <div class="tg-key" data-key="o">O</div>
-                    <div class="tg-key" data-key="p">P</div>
+            <div class="tg-play__dock">
+                {# Virtual keyboard #}
+                <div class="tg-keyboard" data-tg-keyboard>
+                    <div class="tg-kb-row">
+                        <div class="tg-key" data-key="q">Q</div>
+                        <div class="tg-key" data-key="w">W</div>
+                        <div class="tg-key" data-key="e">E</div>
+                        <div class="tg-key" data-key="r">R</div>
+                        <div class="tg-key" data-key="t">T</div>
+                        <div class="tg-key" data-key="y">Y</div>
+                        <div class="tg-key" data-key="u">U</div>
+                        <div class="tg-key" data-key="i">I</div>
+                        <div class="tg-key" data-key="o">O</div>
+                        <div class="tg-key" data-key="p">P</div>
+                    </div>
+                    <div class="tg-kb-row">
+                        <div class="tg-key" data-key="a">A</div>
+                        <div class="tg-key" data-key="s">S</div>
+                        <div class="tg-key" data-key="d">D</div>
+                        <div class="tg-key" data-key="f">F</div>
+                        <div class="tg-key" data-key="g">G</div>
+                        <div class="tg-key" data-key="h">H</div>
+                        <div class="tg-key" data-key="j">J</div>
+                        <div class="tg-key" data-key="k">K</div>
+                        <div class="tg-key" data-key="l">L</div>
+                    </div>
+                    <div class="tg-kb-row">
+                        <div class="tg-key" data-key="z">Z</div>
+                        <div class="tg-key" data-key="x">X</div>
+                        <div class="tg-key" data-key="c">C</div>
+                        <div class="tg-key" data-key="v">V</div>
+                        <div class="tg-key" data-key="b">B</div>
+                        <div class="tg-key" data-key="n">N</div>
+                        <div class="tg-key" data-key="m">M</div>
+                    </div>
+                    <div class="tg-kb-row">
+                        <div class="tg-key tg-key--space" data-key=" ">SPATIU</div>
+                    </div>
                 </div>
-                <div class="tg-kb-row">
-                    <div class="tg-key" data-key="a">A</div>
-                    <div class="tg-key" data-key="s">S</div>
-                    <div class="tg-key" data-key="d">D</div>
-                    <div class="tg-key" data-key="f">F</div>
-                    <div class="tg-key" data-key="g">G</div>
-                    <div class="tg-key" data-key="h">H</div>
-                    <div class="tg-key" data-key="j">J</div>
-                    <div class="tg-key" data-key="k">K</div>
-                    <div class="tg-key" data-key="l">L</div>
-                </div>
-                <div class="tg-kb-row">
-                    <div class="tg-key" data-key="z">Z</div>
-                    <div class="tg-key" data-key="x">X</div>
-                    <div class="tg-key" data-key="c">C</div>
-                    <div class="tg-key" data-key="v">V</div>
-                    <div class="tg-key" data-key="b">B</div>
-                    <div class="tg-key" data-key="n">N</div>
-                    <div class="tg-key" data-key="m">M</div>
-                </div>
-                <div class="tg-kb-row">
-                    <div class="tg-key tg-key--space" data-key=" ">SPATIU</div>
-                </div>
-            </div>
 
-            {# Finger guide #}
-            <div class="tg-finger-guide" data-tg-finger>
-                <span class="tg-finger-guide__hand">&#9995;</span>
-                <span class="tg-finger-guide__text" data-tg-finger-text>Foloseste degetul aratator stang</span>
+                {# Finger guide #}
+                <div class="tg-finger-guide" data-tg-finger aria-live="polite">
+                    <div class="tg-hands" aria-hidden="true">
+                        <div class="tg-hand tg-hand--left" data-tg-hand="left">
+                            <span class="tg-hand__finger tg-hand__finger--pinky" data-tg-finger-part="left-pinky"></span>
+                            <span class="tg-hand__finger tg-hand__finger--ring" data-tg-finger-part="left-ring"></span>
+                            <span class="tg-hand__finger tg-hand__finger--middle" data-tg-finger-part="left-middle"></span>
+                            <span class="tg-hand__finger tg-hand__finger--index" data-tg-finger-part="left-index"></span>
+                            <span class="tg-hand__thumb tg-hand__thumb--left" data-tg-finger-part="left-thumb"></span>
+                            <span class="tg-hand__palm"></span>
+                            <span class="tg-hand__label">Stanga</span>
+                        </div>
+                        <div class="tg-hand tg-hand--right" data-tg-hand="right">
+                            <span class="tg-hand__finger tg-hand__finger--index" data-tg-finger-part="right-index"></span>
+                            <span class="tg-hand__finger tg-hand__finger--middle" data-tg-finger-part="right-middle"></span>
+                            <span class="tg-hand__finger tg-hand__finger--ring" data-tg-finger-part="right-ring"></span>
+                            <span class="tg-hand__finger tg-hand__finger--pinky" data-tg-finger-part="right-pinky"></span>
+                            <span class="tg-hand__thumb tg-hand__thumb--right" data-tg-finger-part="right-thumb"></span>
+                            <span class="tg-hand__palm"></span>
+                            <span class="tg-hand__label">Dreapta</span>
+                        </div>
+                    </div>
+                    <div class="tg-finger-guide__meta">
+                        <span class="tg-finger-guide__key" data-tg-finger-key>F</span>
+                        <span class="tg-finger-guide__text" data-tg-finger-text>Aratator stang</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -223,5 +247,5 @@
 {% endblock %}
 
 {% block workspace_extra_js %}
-<script src="{% static 'estudy/typing_game.js' %}?v=20260413a" defer></script>
+<script src="{% static 'estudy/typing_game.js' %}?v=20260422a" defer></script>
 {% endblock %}
