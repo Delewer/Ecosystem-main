@@ -10,6 +10,9 @@ from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 
 from .engine import run_student_code
+from .mock_turtle import install as install_mock_turtle
+
+install_mock_turtle()
 
 app = FastAPI(title="Robot Lab Runner", version="1.0.0")
 

@@ -36,7 +36,7 @@ class RobotLabVerticalSliceApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         payload = response.json()
         self.assertIn("levels", payload)
-        self.assertEqual(len(payload["levels"]), 6)
+        self.assertEqual(len(payload["levels"]), 30)
         self.assertEqual(payload["levels"][0]["id"], "W1-L01")
         self.assertTrue(payload["levels"][0]["unlocked"])
         self.assertFalse(payload["levels"][1]["unlocked"])
@@ -54,9 +54,13 @@ class RobotLabVerticalSliceApiTests(TestCase):
     def test_play_page_uses_romanian_ui_copy(self):
         response = self.client.get(reverse("estudy:robot_lab_play", args=["W1-L01"]))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "robotlab-unified-card")
+        self.assertContains(response, "robotlab-mission-window")
         self.assertContains(response, "Rucsacul misiunii")
+        self.assertContains(response, "Butoane in joc")
         self.assertContains(response, "Ruleaza codul")
         self.assertContains(response, "Stare misiune")
+        self.assertNotContains(response, "robotlab-split")
         self.assertNotContains(response, "Mission backpack")
         self.assertNotContains(response, "Run code")
 
@@ -70,6 +74,19 @@ class RobotLabVerticalSliceApiTests(TestCase):
         self.assertContains(response, "Recomandare dupa profil")
         self.assertContains(response, "Mod Cod")
         self.assertContains(response, "profil 12 ani")
+
+    def test_older_profile_unlocks_first_code_level(self):
+        Profile.objects.update_or_create(
+            user=self.user,
+            defaults={"email": self.user.email, "age": 12},
+        )
+
+        response = self.client.get(self.progress_url)
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        levels = {item["id"]: item for item in payload["levels"]}
+        self.assertTrue(levels["W1-L03"]["unlocked"])
 
     def test_locked_level_cannot_run(self):
         response = self.client.post(
@@ -139,7 +156,7 @@ class RobotLabVerticalSliceApiTests(TestCase):
             data=json.dumps(
                 {
                     "level_id": "W1-L01",
-                    "student_code": "right()\nright()\ndown()\nright()",
+                    "student_code": "right()\nright()\nright()\nright()\nright()\ndown()\nright()",
                 }
             ),
             content_type="application/json",
@@ -152,6 +169,18 @@ class RobotLabVerticalSliceApiTests(TestCase):
         self.assertGreaterEqual(payload["duration_ms"], 0)
         self.assertIn("console_output", payload)
         self.assertIn("status_message", payload)
+
+    @override_settings(ROBOT_RUNNER_URL="", ROBOT_RUNNER_LOCAL_FALLBACK=True)
+    def test_run_returns_localized_unknown_command_feedback(self):
+        response = self.client.post(
+            self.run_url,
+            data=json.dumps({"level_id": "W1-L01", "student_code": "move()"}),
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["error_type"], "syntax")
+        self.assertIn("Comanda move()", payload["console_output"][-1])
 
     @patch("estudy.services.robot_lab_runs.execute_robot_lab_code")
     def test_run_returns_controlled_error_when_runner_unavailable(self, mock_execute):
@@ -197,6 +226,14 @@ class RobotLabTeacherViewTests(TestCase):
         self.assertEqual(teacher_response.status_code, 200)
 
 
+@override_settings(
+    ESTUDY_FEATURE_FLAGS={
+        "robot_lab_enabled": {
+            "enabled": False,
+            "rollout_percentage": 0,
+        }
+    }
+)
 class RobotLabFeatureFlagOffTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(

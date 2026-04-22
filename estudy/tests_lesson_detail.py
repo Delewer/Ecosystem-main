@@ -6,6 +6,7 @@ from inregistrare.models import Profile
 
 from .models import Lesson, LessonProgress, Subject
 from .services.lesson_detail import BlockingLessonRequired, prepare_lesson_detail
+from .services.lesson_guides import LESSON_GUIDES
 
 
 class LessonDetailServiceTests(TestCase):
@@ -156,3 +157,104 @@ class LessonDetailServiceTests(TestCase):
         self.assertTrue(payload["show_full_code_lab"])
         self.assertEqual(payload["age_mode_source"], "profile")
         self.assertEqual(payload["learner_age"], 12)
+
+    def test_mixed_age_track_lesson_uses_matching_sequence_only(self):
+        self.subject.name = "Coding Quest"
+        self.subject.save(update_fields=["name"])
+        self.l1.age_bracket = Lesson.AGE_11_13
+        self.l1.save(update_fields=["age_bracket"])
+        self.l2.age_bracket = Lesson.AGE_8_10
+        self.l2.save(update_fields=["age_bracket"])
+        self.l3.age_bracket = Lesson.AGE_8_10
+        self.l3.save(update_fields=["age_bracket"])
+        Profile.objects.update_or_create(
+            user=self.user,
+            defaults={"email": "ld@example.com", "age": 9},
+        )
+
+        payload = prepare_lesson_detail(self.user, self.l2.slug)
+
+        self.assertEqual(payload["lesson_position"], 1)
+        self.assertEqual(payload["subject_total"], 2)
+        self.assertEqual(
+            [item["lesson"].id for item in payload["subject_sequence"]],
+            [self.l2.id, self.l3.id],
+        )
+
+    def test_older_python_lesson_uses_specific_learning_guide_content(self):
+        self.subject.name = "Coding Quest"
+        self.subject.save(update_fields=["name"])
+        self.l1.slug = "test-guide-older-content"
+        self.l1.age_bracket = Lesson.AGE_11_13
+        self.l1.save(update_fields=["slug", "age_bracket"])
+        LESSON_GUIDES[self.l1.slug] = {
+            "examples_text": "Programul trebuie sa aleaga intre doua drumuri clare.",
+            "example_cards": [
+                {
+                    "title": "Verificam bateria",
+                    "code": "if energie > 20:\n    porneste()",
+                    "note": "Programul porneste doar cand are energie suficienta.",
+                }
+            ],
+            "vocabulary": ["conditie: regula pe care o verifici"],
+            "mini_project": {
+                "title": "Mini-proiect: Poarta inteligenta",
+                "prompt": "Scrie regula pentru o usa care se deschide doar cand ai acces.",
+                "steps": ["verifica regula", "alege raspunsul"],
+                "outcome": "Ai un exemplu clar de decizie in cod.",
+            },
+            "guided_code": "energie = 18\nif energie > 20:\n    print('Pornim')\nelse:\n    print('Asteptam')",
+            "recap_questions": ["Ce regula simpla ai scrie pentru o usa automata?"],
+        }
+        self.addCleanup(lambda: LESSON_GUIDES.pop(self.l1.slug, None))
+
+        payload = prepare_lesson_detail(self.user, self.l1.slug)
+
+        self.assertIn(
+            "programul trebuie sa aleaga",
+            payload["lesson_examples_text"].lower(),
+        )
+        self.assertEqual(
+            payload["lesson_example_cards"][0]["title"], "Verificam bateria"
+        )
+        self.assertEqual(
+            payload["lesson_mini_project"]["title"], "Mini-proiect: Poarta inteligenta"
+        )
+        self.assertIn("conditie:", payload["lesson_vocabulary"][0])
+        self.assertIn("energie = 18", payload["guided_code_snippet"])
+        self.assertIn("Ce regula simpla ai scrie", payload["lesson_recap_questions"][0])
+
+    def test_junior_python_lesson_uses_specific_learning_guide_content(self):
+        self.subject.name = "Coding Quest"
+        self.subject.save(update_fields=["name"])
+        self.l1.slug = "test-guide-junior-content"
+        self.l1.age_bracket = Lesson.AGE_8_10
+        self.l1.save(update_fields=["slug", "age_bracket"])
+        LESSON_GUIDES[self.l1.slug] = {
+            "examples_text": "Alegerile apar atunci cand Robo trebuie sa raspunda la o regula simpla.",
+            "example_cards": [
+                {
+                    "title": "Drum liber",
+                    "code": "Daca drumul e liber -> mergi inainte",
+                    "note": "Robo vede regula si stie ce face mai departe.",
+                }
+            ],
+            "mini_project": {
+                "title": "Mini-proiect: Semafor pentru Robo",
+                "prompt": "Alege doua culori si spune ce face Robo pentru fiecare.",
+                "steps": ["alege mers", "alege asteptare"],
+                "outcome": "Copilul vede clar regula si raspunsul.",
+            },
+            "practice_context": "Imagineaza-ti scena reala: ce vede Robo si ce face imediat dupa aceea.",
+            "recap_questions": ["Cum functioneaza un semafor pentru Robo?"],
+        }
+        self.addCleanup(lambda: LESSON_GUIDES.pop(self.l1.slug, None))
+
+        payload = prepare_lesson_detail(self.user, self.l1.slug)
+
+        self.assertEqual(payload["lesson_example_cards"][0]["title"], "Drum liber")
+        self.assertEqual(
+            payload["lesson_mini_project"]["title"], "Mini-proiect: Semafor pentru Robo"
+        )
+        self.assertIn("semafor", " ".join(payload["lesson_recap_questions"]).lower())
+        self.assertIn("scena reala", payload["practice_context"])

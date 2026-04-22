@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import ast
 import difflib
+import io
 import re
+import sys
 from collections import deque
 from dataclasses import dataclass
 from typing import Any
@@ -99,7 +101,9 @@ def _goal_tiles(level_spec: dict[str, Any]) -> tuple[str, ...]:
     goal = level_spec.get("goal") or {}
     explicit_tiles = goal.get("target_tiles")
     if isinstance(explicit_tiles, list):
-        normalized = [str(item).strip().upper() for item in explicit_tiles if str(item).strip()]
+        normalized = [
+            str(item).strip().upper() for item in explicit_tiles if str(item).strip()
+        ]
         if normalized:
             return tuple(normalized)
     explicit_tile = str(goal.get("target_tile") or "").strip().upper()
@@ -108,7 +112,9 @@ def _goal_tiles(level_spec: dict[str, Any]) -> tuple[str, ...]:
     return ("G",)
 
 
-def _find_tiles(grid: list[list[str]], targets: tuple[str, ...]) -> set[tuple[int, int]]:
+def _find_tiles(
+    grid: list[list[str]], targets: tuple[str, ...]
+) -> set[tuple[int, int]]:
     found: set[tuple[int, int]] = set()
     target_set = set(targets)
     for row_index, row in enumerate(grid):
@@ -158,7 +164,9 @@ def _is_walkable(tile: str, inventory: tuple[str, ...]) -> bool:
     return True
 
 
-def _near_terminal(row: int, col: int, terminal_positions: set[tuple[int, int]]) -> bool:
+def _near_terminal(
+    row: int, col: int, terminal_positions: set[tuple[int, int]]
+) -> bool:
     for terminal_row, terminal_col in terminal_positions:
         if abs(terminal_row - row) + abs(terminal_col - col) <= 1:
             return True
@@ -284,7 +292,9 @@ def _apply_search_action(
     return None
 
 
-def _compute_optimal_steps(level_spec: dict[str, Any], allowed_api: set[str]) -> int | None:
+def _compute_optimal_steps(
+    level_spec: dict[str, Any], allowed_api: set[str]
+) -> int | None:
     grid = _grid_rows(level_spec)
     if not grid:
         return None
@@ -512,6 +522,32 @@ def validate_code_ast(code: str, allowed_api: set[str]) -> None:
                 raise SyntaxError(f"unknown_command:{function_name}")
 
 
+def _check_turtle_goal(
+    turtle_lines: list[str], level_spec: dict[str, Any]
+) -> tuple[bool, str]:
+    """Check if turtle output satisfies the level's turtle_draw goal."""
+    goal = level_spec.get("goal") or {}
+    if str(goal.get("type") or "") != "turtle_draw":
+        return False, "not_turtle_goal"
+    if not turtle_lines:
+        return False, "no_turtle_output"
+    target = str(goal.get("target_shape") or "").lower()
+    if target == "square":
+        fwd_count = sum(
+            1 for line in turtle_lines if line.startswith("TURTLE:forward:")
+        )
+        turn_count = sum(
+            1
+            for line in turtle_lines
+            if line.startswith("TURTLE:right:90") or line.startswith("TURTLE:left:90")
+        )
+        if fwd_count >= 4 and turn_count >= 4:
+            return True, ""
+        return False, "incomplete_shape"
+    # Generic turtle goal: any output counts as success
+    return True, ""
+
+
 def run_student_code(
     *,
     level_id: str,
@@ -522,6 +558,7 @@ def run_student_code(
 ) -> dict[str, Any]:
     allowed = {str(item).strip() for item in (allowed_api or []) if str(item).strip()}
     optimal_steps = _compute_optimal_steps(level_spec, allowed)
+    turtle_enabled = bool(level_spec.get("turtle_enabled"))
 
     try:
         validate_code_ast(student_code, allowed)
@@ -555,67 +592,112 @@ def run_student_code(
         "has_item": world.has_item,
     }
 
-    try:
-        compiled = compile(student_code, f"<robot-lab:{level_id}>", "exec")
-        exec(compiled, globals_scope, {})
-    except StepLimitExceeded as exc:
-        return {
-            "status": "error",
-            "error_type": "timeout",
-            "primary_error": exc.code,
-            "execution_trace": world.trace,
-            "final_state": world.final_state(),
-            "steps_used": world.steps,
-            "optimal_steps": optimal_steps,
-        }
-    except RobotRuntimeError as exc:
-        return {
-            "status": "error",
-            "error_type": "runtime",
-            "primary_error": exc.code,
-            "execution_trace": world.trace,
-            "final_state": world.final_state(),
-            "steps_used": world.steps,
-            "optimal_steps": optimal_steps,
-        }
-    except NameError as exc:
-        match = NAME_ERROR_PATTERN.search(str(exc))
-        missing_name = match.group(1) if match else "unknown"
-        suggestion = _suggest_command(missing_name, allowed)
-        primary_error = f"unknown_command:{missing_name}"
-        if suggestion:
-            primary_error = f"{primary_error}:{suggestion}"
-        return {
-            "status": "error",
-            "error_type": "syntax",
-            "primary_error": primary_error,
-            "execution_trace": world.trace,
-            "final_state": world.final_state(),
-            "steps_used": world.steps,
-            "optimal_steps": optimal_steps,
-        }
-    except SyntaxError as exc:
-        return {
-            "status": "error",
-            "error_type": "syntax",
-            "primary_error": _normalize_python_syntax_error(exc),
-            "execution_trace": world.trace,
-            "final_state": world.final_state(),
-            "steps_used": world.steps,
-            "optimal_steps": optimal_steps,
-        }
-    except Exception as exc:  # pragma: no cover
-        return {
-            "status": "error",
-            "error_type": "runtime",
-            "primary_error": f"invalid_action:{exc.__class__.__name__}",
-            "execution_trace": world.trace,
-            "final_state": world.final_state(),
-            "steps_used": world.steps,
-            "optimal_steps": optimal_steps,
-        }
+    if turtle_enabled:
+        from .mock_turtle import _MockTurtle
 
-    solved, primary_error = world.goal_result()
+        _t = _MockTurtle()
+        globals_scope.update(
+            {
+                "forward": _t.forward,
+                "fd": _t.fd,
+                "backward": _t.backward,
+                "right": _t.right,
+                "left": _t.left,
+                "penup": _t.penup,
+                "pendown": _t.pendown,
+                "color": _t.color,
+                "goto": _t.goto,
+            }
+        )
+
+    stdout_capture = io.StringIO()
+    result = None
+
+    _real_stdout = sys.stdout
+    sys.stdout = stdout_capture
+    try:
+        try:
+            compiled = compile(student_code, f"<robot-lab:{level_id}>", "exec")
+            exec(compiled, globals_scope, {})
+        except StepLimitExceeded as exc:
+            result = {
+                "status": "error",
+                "error_type": "timeout",
+                "primary_error": exc.code,
+                "execution_trace": world.trace,
+                "final_state": world.final_state(),
+                "steps_used": world.steps,
+                "optimal_steps": optimal_steps,
+            }
+        except RobotRuntimeError as exc:
+            result = {
+                "status": "error",
+                "error_type": "runtime",
+                "primary_error": exc.code,
+                "execution_trace": world.trace,
+                "final_state": world.final_state(),
+                "steps_used": world.steps,
+                "optimal_steps": optimal_steps,
+            }
+        except NameError as exc:
+            match = NAME_ERROR_PATTERN.search(str(exc))
+            missing_name = match.group(1) if match else "unknown"
+            suggestion = _suggest_command(missing_name, allowed)
+            primary_error = f"unknown_command:{missing_name}"
+            if suggestion:
+                primary_error = f"{primary_error}:{suggestion}"
+            result = {
+                "status": "error",
+                "error_type": "syntax",
+                "primary_error": primary_error,
+                "execution_trace": world.trace,
+                "final_state": world.final_state(),
+                "steps_used": world.steps,
+                "optimal_steps": optimal_steps,
+            }
+        except SyntaxError as exc:
+            result = {
+                "status": "error",
+                "error_type": "syntax",
+                "primary_error": _normalize_python_syntax_error(exc),
+                "execution_trace": world.trace,
+                "final_state": world.final_state(),
+                "steps_used": world.steps,
+                "optimal_steps": optimal_steps,
+            }
+        except Exception as exc:  # pragma: no cover
+            result = {
+                "status": "error",
+                "error_type": "runtime",
+                "primary_error": f"invalid_action:{exc.__class__.__name__}",
+                "execution_trace": world.trace,
+                "final_state": world.final_state(),
+                "steps_used": world.steps,
+                "optimal_steps": optimal_steps,
+            }
+    finally:
+        sys.stdout = _real_stdout
+
+    captured = stdout_capture.getvalue()
+    all_lines = (
+        [line for line in captured.split("\n") if line.strip()]
+        if captured.strip()
+        else []
+    )
+    turtle_lines = [line for line in all_lines if line.startswith("TURTLE:")]
+    stdout_lines = [line for line in all_lines if not line.startswith("TURTLE:")]
+
+    if result is not None:
+        result["turtle_output"] = turtle_lines
+        result["stdout_lines"] = stdout_lines
+        return result
+
+    # Normal completion — check goal
+    if turtle_enabled:
+        solved, primary_error = _check_turtle_goal(turtle_lines, level_spec)
+    else:
+        solved, primary_error = world.goal_result()
+
     if solved:
         return {
             "status": "ok",
@@ -625,6 +707,8 @@ def run_student_code(
             "final_state": world.final_state(),
             "steps_used": world.steps,
             "optimal_steps": optimal_steps,
+            "turtle_output": turtle_lines,
+            "stdout_lines": stdout_lines,
         }
     return {
         "status": "error",
@@ -634,4 +718,6 @@ def run_student_code(
         "final_state": world.final_state(),
         "steps_used": world.steps,
         "optimal_steps": optimal_steps,
+        "turtle_output": turtle_lines,
+        "stdout_lines": stdout_lines,
     }

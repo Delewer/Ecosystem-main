@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard admin · UnITex{% endblock %}
+
+{% block page_content %}
+<section class="hub-section">
+    <div class="hub-card" style="margin-bottom:1rem;">
+        <div style="display:flex;align-items:center;gap:16px;">
+            <div style="font-size:48px;">&#128736;</div>
+            <div>
+                <h1 style="font-size:22px;font-weight:900;margin:0 0 4px;">Panou administrator</h1>
+                <p style="font-size:14px;color:var(--color-text-muted,#64748B);font-weight:500;margin:0;">
+                    Monitorizeaza platforma si gestioneaza utilizatorii.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="hub-stats-grid" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="hub-stat">
+            <div style="font-size:32px;margin-bottom:4px;">&#129489;</div>
+            <div class="hub-stat__value hub-stat__value--purple">{{ total_students }}</div>
+            <div class="hub-stat__label">Elevi</div>
+        </div>
+        <div class="hub-stat">
+            <div style="font-size:32px;margin-bottom:4px;">&#128105;&#8205;&#127979;</div>
+            <div class="hub-stat__value hub-stat__value--green">{{ total_teachers }}</div>
+            <div class="hub-stat__label">Profesori</div>
+        </div>
+        <div class="hub-stat">
+            <div style="font-size:32px;margin-bottom:4px;">&#128106;</div>
+            <div class="hub-stat__value hub-stat__value--blue">{{ total_parents }}</div>
+            <div class="hub-stat__label">Parinti</div>
+        </div>
+        <div class="hub-stat">
+            <div style="font-size:32px;margin-bottom:4px;">&#127979;</div>
+            <div class="hub-stat__value hub-stat__value--amber">{{ total_classrooms }}</div>
+            <div class="hub-stat__label">Clase</div>
+        </div>
+    </div>
+</section>
+
+<section class="hub-section">
+    <div class="hub-row" style="grid-template-columns: 1fr 1fr;">
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#128202; Top materii</h2>
+            </div>
+            {% if top_subjects %}
+            <div class="hub-member-list">
+                {% for subject in top_subjects %}
+                <div class="hub-member-row">
+                    <div class="hub-member-row__info">
+                        <span class="hub-member-row__name">{{ subject.name }}</span>
+                    </div>
+                    <span class="hub-zone__badge">{{ subject.total }} lectii</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="hub-card__empty">Nu exista materii inca.</p>
+            {% endif %}
+        </div>
+
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#128218; Lectii</h2>
+            </div>
+            {% if lessons %}
+            <div class="hub-lesson-list">
+                {% for lesson in lessons|slice:':10' %}
+                <div class="hub-lesson-item">
+                    <div class="hub-lesson-item__info">
+                        <div class="hub-lesson-item__title">{{ lesson.title }}</div>
+                        <div class="hub-lesson-item__meta">{{ lesson.subject.title|default:"—" }}</div>
+                    </div>
+                    <div class="hub-lesson-item__stat">
+                        <div class="hub-lesson-item__stat-value" style="color:#10B981;">{{ lesson.student_count }}</div>
+                        <div class="hub-lesson-item__stat-label">elevi</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="hub-card__empty">Nu exista lectii inca.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
