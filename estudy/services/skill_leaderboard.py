@@ -3,7 +3,8 @@ from __future__ import annotations
 from django.db.models import Count, Sum, Value
 from django.db.models.functions import Coalesce
 
-from ..models import LessonProgress, Skill
+from ..models import LessonProgress, LessonStreak, Skill, Subject
+from .feature_flags import is_enabled as feature_enabled
 from .service_result import BaseServiceResult
 
 DEFAULT_LIMIT = 10
@@ -100,4 +101,47 @@ def build_skill_leaderboard(
             "limit": limit_value,
         },
         warnings=warnings,
+    )
+
+
+STREAK_LB_FEATURE_KEY = "streak_leaderboard_enabled"
+
+
+def get_streak_leaderboard(
+    subject: Subject,
+    *,
+    limit: int = 10,
+    user=None,
+) -> BaseServiceResult:
+    """Return the top streak holders for a given subject.
+
+    Gated behind the 'streak_leaderboard_enabled' feature flag.
+    """
+    if not feature_enabled(STREAK_LB_FEATURE_KEY, user=user):
+        return BaseServiceResult.fail("Streak leaderboard is not enabled.")
+
+    entries = (
+        LessonStreak.objects.filter(subject=subject, current_streak__gt=0)
+        .select_related("user")
+        .order_by("-current_streak", "-longest_streak")[:limit]
+    )
+
+    result = [
+        {
+            "username": entry.user.username,
+            "current_streak": entry.current_streak,
+            "longest_streak": entry.longest_streak,
+            "avatar_initial": entry.user.username[0].upper()
+            if entry.user.username
+            else "?",
+        }
+        for entry in entries
+    ]
+
+    return BaseServiceResult.ok(
+        data={
+            "entries": result,
+            "subject_name": subject.name,
+            "subject_slug": subject.slug,
+        }
     )

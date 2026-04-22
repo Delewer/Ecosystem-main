@@ -17,11 +17,17 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.templatetags.static import static as static_url
 from django.urls import include, path
+from django.views.generic import RedirectView
 
 from inregistrare import views as account_views
 
 urlpatterns = [
+    path(
+        "favicon.ico",
+        RedirectView.as_view(url=static_url("images/logo.gif"), permanent=False),
+    ),
     path("login/", account_views.login_view, name="login"),
     path("logout/", account_views.logout, name="logout"),
     path("register/", account_views.register, name="register"),

@@ -8,9 +8,15 @@ from django.conf import settings
 
 from ..models import Lesson, LessonMedia, LessonProgress
 from ..views import _is_competitor_link
+from .feature_flags import is_enabled as feature_enabled
 from .gamification import get_badge_summary
-from .learner_age import get_registration_profile_age, resolve_learning_age_bracket
+from .learner_age import (
+    filter_lessons_for_track,
+    get_registration_profile_age,
+    resolve_learning_age_bracket,
+)
 from .lesson_access import compute_accessibility
+from .lesson_guides import get_lesson_learning_guide
 from .recommendations import refresh_recommendations
 
 INTRO_LESSON_COUNT = 2
@@ -52,6 +58,48 @@ def _sanitize_display_list(
     return list(fallback or [])
 
 
+def _sanitize_example_cards(
+    values: list[dict[str, object]] | tuple[dict[str, object], ...] | None,
+    fallback: list[dict[str, str]] | None = None,
+) -> list[dict[str, str]]:
+    cards: list[dict[str, str]] = []
+    for value in values or []:
+        if not isinstance(value, dict):
+            continue
+        title = _sanitize_display_text(str(value.get("title", "")), "")
+        code = _sanitize_display_text(str(value.get("code", "")), "")
+        note = _sanitize_display_text(str(value.get("note", "")), "")
+        if not title and not code and not note:
+            continue
+        cards.append(
+            {
+                "title": title or "Exemplu ghidat",
+                "code": code or "-",
+                "note": note or "Observa rolul fiecarui pas din exemplu.",
+            }
+        )
+    if cards:
+        return cards
+    return [dict(item) for item in (fallback or []) if isinstance(item, dict)]
+
+
+def _sanitize_mini_project(value: dict[str, object] | None) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        return {}
+    project = {
+        "title": _sanitize_display_text(str(value.get("title", "")), ""),
+        "prompt": _sanitize_display_text(str(value.get("prompt", "")), ""),
+        "steps": _sanitize_display_list(
+            [str(step) for step in value.get("steps", []) if step is not None],
+            [],
+        ),
+        "outcome": _sanitize_display_text(str(value.get("outcome", "")), ""),
+    }
+    if any(project.values()):
+        return project
+    return {}
+
+
 class BlockingLessonRequired(Exception):
     def __init__(self, blocking_slug: str, blocking_title: str | None = None):
         super().__init__(f"Blocking lesson required: {blocking_slug}")
@@ -82,7 +130,9 @@ def _build_junior_activity_cards(
     lesson: Lesson, practice, lesson_intro_text: str
 ) -> list[dict[str, str]]:
     practice_hint = _sanitize_display_text(getattr(practice, "instructions", ""), "")
-    intro_note = lesson_intro_text or "Priveste modelul, apoi continua cu jocul de mai jos."
+    intro_note = (
+        lesson_intro_text or "Priveste modelul, apoi continua cu jocul de mai jos."
+    )
     return [
         {
             "title": "Puzzle de ordine",
@@ -301,6 +351,8 @@ def prepare_lesson_detail(user, slug: str) -> dict:
             "reflection_prompts",
             "skills",
             "media__segments",
+            "hints",
+            "easter_eggs",
         )
         .filter(slug=slug)
         .first()
@@ -308,7 +360,11 @@ def prepare_lesson_detail(user, slug: str) -> dict:
     if not lesson:
         raise ValueError("Lesson not found")
 
-    subject_lessons = list(lesson.subject.lessons.order_by("date", "id"))
+    subject_lessons = filter_lessons_for_track(
+        lesson.subject.lessons.order_by("date", "id"),
+        user=user,
+        anchor_lesson=lesson,
+    )
     current_index = next(
         (index for index, item in enumerate(subject_lessons) if item.id == lesson.id), 0
     )
@@ -389,6 +445,7 @@ def build_lesson_detail_payload(
     recommendations = []
 
     enrichment = _get_lesson_enrichment(lesson.slug)
+    learning_guide = get_lesson_learning_guide(lesson.slug)
 
     practice = getattr(lesson, "practice", None)
     code_exercises = list(lesson.code_exercises.order_by("order", "id"))
@@ -411,7 +468,32 @@ def build_lesson_detail_payload(
         lesson_intro_text = (
             "Descopera cum poti folosi variabilele pentru programe clare si utile."
         )
-    lesson_examples_text = _sanitize_display_text(getattr(lesson, "explainer", ""), "")
+    default_example_cards = [
+        {
+            "title": "Definim o variabila",
+            "code": 'nume = "Ana"',
+            "note": "Atribui un nume unei valori ca sa o poti refolosi.",
+        },
+        {
+            "title": "Afisam rezultatul",
+            "code": 'print(f"Salut, {nume}!")',
+            "note": "Folosesti valoarea stocata exact unde ai nevoie.",
+        },
+        {
+            "title": "Actualizam rapid",
+            "code": "scor = scor + 1",
+            "note": "Schimbi valoarea fara sa rescrii tot programul.",
+        },
+    ]
+    lesson_examples_text = _sanitize_display_text(
+        str(learning_guide.get("examples_text", "")),
+        "",
+    )
+    if not lesson_examples_text:
+        lesson_examples_text = _sanitize_display_text(
+            getattr(lesson, "explainer", ""),
+            "",
+        )
     if not lesson_examples_text:
         lesson_examples_text = (
             "Recapitulare rapida in trei idei: definesti o variabila, o afisezi, "
@@ -437,23 +519,50 @@ def build_lesson_detail_payload(
             "o poate folosi si modifica."
         ),
     )
-    lesson_example_cards = [
-        {
-            "title": "Definim o variabila",
-            "code": 'nume = "Ana"',
-            "note": "Atribui un nume unei valori ca sa o poti refolosi.",
-        },
-        {
-            "title": "Afisam rezultatul",
-            "code": 'print(f"Salut, {nume}!")',
-            "note": "Folosesti valoarea stocata exact unde ai nevoie.",
-        },
-        {
-            "title": "Actualizam rapid",
-            "code": "scor = scor + 1",
-            "note": "Schimbi valoarea fara sa rescrii tot programul.",
-        },
-    ]
+    lesson_example_cards = _sanitize_example_cards(
+        learning_guide.get("example_cards"),
+        default_example_cards,
+    )
+    lesson_use_cases = _sanitize_display_list(
+        learning_guide.get("use_cases"),
+        [],
+    )
+    lesson_vocabulary = _sanitize_display_list(
+        learning_guide.get("vocabulary"),
+        [],
+    )
+    lesson_common_mistakes = _sanitize_display_list(
+        learning_guide.get("common_mistakes"),
+        [],
+    )
+    lesson_mini_project = _sanitize_mini_project(
+        learning_guide.get("mini_project"),
+    )
+    lesson_fun_fact = _sanitize_display_text(lesson.fun_fact, "")
+    guided_code_snippet = _sanitize_display_text(
+        str(learning_guide.get("guided_code", "")),
+        "",
+    )
+    if not guided_code_snippet:
+        code_challenges = enrichment.get("code_challenges") or []
+        if isinstance(code_challenges, list) and code_challenges:
+            first_challenge = code_challenges[0]
+            if isinstance(first_challenge, dict):
+                guided_code_snippet = _sanitize_display_text(
+                    str(first_challenge.get("solution", "")),
+                    "",
+                )
+    if not guided_code_snippet:
+        guided_code_snippet = (
+            'nume = "Alex"\n'
+            "varsta = 12\n"
+            'mesaj = f"Salut, {nume}! Ai {varsta} ani."\n'
+            "print(mesaj)"
+        )
+    practice_context = _sanitize_display_text(
+        str(learning_guide.get("practice_context", "")),
+        "",
+    )
     junior_games = {}
 
     if is_junior_track:
@@ -462,17 +571,17 @@ def build_lesson_detail_payload(
         if lesson_track_items:
             lesson_track_items = lesson_track_items[:1]
         lesson_content_text = lesson_intro_text or lesson_content_text
-        lesson_examples_text = (
-            "Priveste modelul, observa ordinea si continua cu jocul de potrivire."
-        )
-        lesson_example_cards = _build_junior_activity_cards(
-            lesson, practice, lesson_intro_text
-        )
+        if not learning_guide.get("examples_text"):
+            lesson_examples_text = (
+                "Priveste modelul, observa ordinea si continua cu jocul de potrivire."
+            )
+        if not learning_guide.get("example_cards"):
+            lesson_example_cards = _build_junior_activity_cards(
+                lesson, practice, lesson_intro_text
+            )
         junior_games = _build_junior_games(lesson, practice, lesson_intro_text)
-    elif not is_python_track:
-        lesson_examples_text = (
-            "Recapituleaza ideea principala, apoi raspunde la intrebarile de verificare."
-        )
+    elif not is_python_track and not learning_guide.get("example_cards"):
+        lesson_examples_text = "Recapituleaza ideea principala, apoi raspunde la intrebarile de verificare."
         lesson_example_cards = [
             {
                 "title": "Ideea cheie",
@@ -491,7 +600,15 @@ def build_lesson_detail_payload(
             },
         ]
 
-    show_robot_lab_preview = is_python_track and is_older_track
+    lesson_recap_questions = _sanitize_display_list(
+        learning_guide.get("recap_questions"),
+        _build_theory_question_prompts(lesson, quiz_test, lesson_intro_text),
+    )
+    show_legacy_intro_panels = False
+    show_legacy_concept_tabs = False
+
+    robot_lab_enabled = feature_enabled("robot_lab_enabled", user=user, default=True)
+    show_robot_lab_preview = is_python_track and is_older_track and robot_lab_enabled
     show_full_code_lab = show_robot_lab_preview
     show_robot_lab_cta = show_robot_lab_preview
     show_guided_code_snippet = is_python_track and not is_junior_track
@@ -500,14 +617,14 @@ def build_lesson_detail_payload(
         if show_full_code_lab
         else "Puzzle"
         if is_junior_track
-        else "Exemple"
+        else "Exemplu"
     )
     example_nav_hint = (
         "Editor Python"
         if show_full_code_lab
         else "Potriviri vizuale"
         if is_junior_track
-        else "Recapitulare"
+        else "Model clar"
     )
     practice_nav_label = "Jocuri" if is_junior_track else "Practica"
     practice_nav_hint = "Puzzle" if is_junior_track else "Exercitii"
@@ -517,14 +634,14 @@ def build_lesson_detail_payload(
         if show_full_code_lab
         else "Puzzle si potriviri"
         if is_junior_track
-        else "Exemple ghidate si intrebari"
+        else "Exemplu pas cu pas"
     )
     example_section_description = (
         "Robot Lab apare aici doar pentru 11+ si se controleaza prin cod Python."
         if show_full_code_lab
         else "Pentru 8-10 ani avem activitati vizuale, simple si cu putin text."
         if is_junior_track
-        else "Consolidezi teoria prin exemple clare si intrebari scurte."
+        else "Vezi modelul lectiei, apoi treci la exercitiu."
     )
     practice_section_title = "Puzzle si potriviri" if is_junior_track else "Practica"
     practice_section_description = (
@@ -532,24 +649,21 @@ def build_lesson_detail_payload(
         if is_junior_track
         else "Potrivesti concepte, primesti feedback instant si corectezi rapid."
     )
-    practice_intro_text = (
+    base_practice_intro_text = (
         "Trage piesele, gaseste perechile si apasa Verifica."
         if is_junior_track
         else "Aplica teoria in doi pasi: citeste scenariul, apoi potriveste conceptele. Daca te blochezi, apasa pe Tip."
     )
+    practice_intro_text = base_practice_intro_text
     practice_briefing_title = "1. Joc rapid" if is_junior_track else "1. Briefing"
     practice_available_label = (
         "Piese disponibile" if is_junior_track else "Elemente disponibile"
     )
-    practice_target_label = (
-        "Gaseste perechea:" if is_junior_track else "Potriveste cu:"
-    )
+    practice_target_label = "Gaseste perechea:" if is_junior_track else "Potriveste cu:"
     practice_placeholder_text = (
         "Pune piesa aici" if is_junior_track else "Trage elementul aici"
     )
-    theory_question_prompts = _build_theory_question_prompts(
-        lesson, quiz_test, lesson_intro_text
-    )
+    theory_question_prompts = lesson_recap_questions
 
     prev_lesson = subject_lessons[current_index - 1] if current_index > 0 else None
     next_lesson = (
@@ -599,6 +713,10 @@ def build_lesson_detail_payload(
     if lesson_media:
         media_segments = list(lesson_media.segments.order_by("order", "id"))
 
+    lesson_hints = list(lesson.hints.order_by("section", "hint_level", "order"))
+    lesson_easter_eggs = list(lesson.easter_eggs.all())
+    reflection_prompts = list(lesson.reflection_prompts.order_by("order", "id"))
+
     return {
         "progress": progress,
         "tests": tests,
@@ -637,6 +755,16 @@ def build_lesson_detail_payload(
         "lesson_content_text": lesson_content_text,
         "lesson_examples_text": lesson_examples_text,
         "lesson_example_cards": lesson_example_cards,
+        "lesson_use_cases": lesson_use_cases,
+        "lesson_vocabulary": lesson_vocabulary,
+        "lesson_common_mistakes": lesson_common_mistakes,
+        "lesson_mini_project": lesson_mini_project,
+        "lesson_fun_fact": lesson_fun_fact,
+        "guided_code_snippet": guided_code_snippet,
+        "practice_context": practice_context,
+        "lesson_recap_questions": lesson_recap_questions,
+        "show_legacy_intro_panels": show_legacy_intro_panels,
+        "show_legacy_concept_tabs": show_legacy_concept_tabs,
         "junior_games": junior_games,
         "show_robot_lab_preview": show_robot_lab_preview,
         "show_full_code_lab": show_full_code_lab,
@@ -657,4 +785,7 @@ def build_lesson_detail_payload(
         "practice_target_label": practice_target_label,
         "practice_placeholder_text": practice_placeholder_text,
         "theory_question_prompts": theory_question_prompts,
+        "lesson_hints": lesson_hints,
+        "lesson_easter_eggs": lesson_easter_eggs,
+        "reflection_prompts": reflection_prompts,
     }

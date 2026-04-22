@@ -6,6 +6,7 @@ from typing import Any
 from django.db.models import Prefetch
 
 from ..models import Lesson, LessonProgress, Subject
+from .learner_age import split_lessons_for_accessibility
 
 
 def prefetched_subjects():
@@ -30,17 +31,20 @@ def compute_accessibility(
     locked_reasons: dict[int, Any] = {}
 
     for subject in subject_list:
-        lessons = list(subject.lessons.all())
-        first_incomplete = next(
-            (lesson for lesson in lessons if lesson.id not in completed_ids), None
+        lesson_sequences = split_lessons_for_accessibility(
+            subject.lessons.all(), user=user
         )
-        if not first_incomplete:
-            continue
-
-        accessible_ids.add(first_incomplete.id)
-        for lesson in lessons:
-            if lesson.id in completed_ids or lesson.id == first_incomplete.id:
+        for lessons in lesson_sequences:
+            first_incomplete = next(
+                (lesson for lesson in lessons if lesson.id not in completed_ids), None
+            )
+            if not first_incomplete:
                 continue
-            locked_reasons[lesson.id] = first_incomplete
+
+            accessible_ids.add(first_incomplete.id)
+            for lesson in lessons:
+                if lesson.id in completed_ids or lesson.id == first_incomplete.id:
+                    continue
+                locked_reasons[lesson.id] = first_incomplete
 
     return completed_ids, accessible_ids, locked_reasons

@@ -29,14 +29,17 @@ def build_student_dashboard(user) -> Dict[str, Any]:
         end_date__gte=__import__("django").utils.timezone.localdate(),
     )
 
+    profile = user.userprofile
     return {
         "highlighted_badges": highlighted_badges,
         "primary_recommendation": primary_recommendation,
-        "profile": user.userprofile,
+        "profile": profile,
         "progress": progress,
         "badges": badges,
         "missions": missions,
         "recommendations": recommendations,
         "recent_projects": submissions,
         "challenges": challenges,
+        "current_streak": profile.current_streak,
+        "longest_streak": profile.longest_streak,
     }

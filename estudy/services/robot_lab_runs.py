@@ -48,8 +48,8 @@ def _goal_success_label(level: dict[str, Any]) -> str:
     goal_text = str(level.get("goal_text") or "").lower()
     target_tile = str((level.get("goal") or {}).get("target_tile") or "").upper()
     if target_tile == "T" or "terminal" in goal_text:
-        return "Success! Terminal reached."
-    return "Success! Goal reached."
+        return "Bravo! Robotul a ajuns la terminal."
+    return "Bravo! Robotul a ajuns la tinta."
 
 
 def _format_console_step(entry: dict[str, Any]) -> str:
@@ -60,10 +60,19 @@ def _format_console_step(entry: dict[str, Any]) -> str:
     location = ""
     if isinstance(position, list) and len(position) >= 2:
         location = f" -> [{position[0]}, {position[1]}]"
-    line = f"Step {step}: {action}(){location}" if action else f"Step {step}{location}"
+    line = (
+        f"Pasul {step}: {action}(){location}" if action else f"Pasul {step}{location}"
+    )
     if error:
         line = f"{line} -> {error}"
     return line
+
+
+def _allowed_commands_hint(allowed_api: list[str]) -> str:
+    commands = [f"{str(item).strip()}()" for item in allowed_api if str(item).strip()]
+    if not commands:
+        return ""
+    return " Comenzi permise: " + ", ".join(commands) + "."
 
 
 def _humanize_primary_error(
@@ -78,10 +87,13 @@ def _humanize_primary_error(
         unknown = parts[1] if len(parts) > 1 else "unknown"
         suggestion = parts[2] if len(parts) > 2 else ""
         if suggestion:
-            return f"Unknown command: {unknown}(). Did you mean {suggestion}()?"
-        return f"Unknown command: {unknown}()."
+            return (
+                f"Comanda {unknown}() nu exista aici. Poate ai vrut {suggestion}()."
+                f"{_allowed_commands_hint(allowed_api)}"
+            )
+        return f"Comanda {unknown}() nu este permisa la acest nivel.{_allowed_commands_hint(allowed_api)}"
     if primary_error == "missing_command_placeholder":
-        return "Replace ___ with one allowed command before running the program."
+        return "Inlocuieste ___ cu o comanda permisa inainte sa rulezi programul."
     if primary_error == "hit_wall":
         failing_step = next(
             (
@@ -92,33 +104,33 @@ def _humanize_primary_error(
             0,
         )
         if failing_step:
-            return f"Robot hit a wall on step {failing_step}."
-        return "Robot hit a wall."
+            return f"Robotul a lovit peretele la pasul {failing_step}."
+        return "Robotul a lovit un perete."
     if primary_error == "not_reached_goal":
-        return "Program finished, but the robot did not reach the target tile."
+        return "Programul s-a terminat, dar robotul nu a ajuns la tinta."
     if primary_error == "step_limit_exceeded":
-        return "Program stopped because it used too many steps."
+        return "Programul s-a oprit pentru ca a folosit prea multi pasi."
     if primary_error == "indentation_error":
-        return "Python indentation is incorrect. Check spaces and blocks."
+        return "Indentarea Python nu este corecta. Verifica spatiile si blocurile."
     if primary_error == "syntax_error":
-        return "Python could not parse this code. Check parentheses and line endings."
+        return "Python nu a putut citi acest cod. Verifica parantezele si liniile."
     if primary_error.startswith("forbidden_syntax:"):
-        return "This Python structure is not allowed in the current mission."
+        return "Structura Python folosita nu este permisa in aceasta misiune."
     if primary_error == "forbidden_attribute_access":
-        return "Only direct Robot Lab commands are allowed here."
+        return "Aici poti folosi doar comenzi directe din Robot Lab."
     if primary_error == "code_too_long":
-        return "Program is too long for this mission. Keep only the needed steps."
+        return "Programul este prea lung pentru aceasta misiune. Pastreaza doar pasii necesari."
     if primary_error.startswith("invalid_action:"):
-        return "Program stopped because of an unsupported Python action."
+        return "Programul s-a oprit pentru ca a folosit o actiune Python care nu este acceptata aici."
     if error_type == "syntax":
-        return "Python could not start the simulation because of a syntax issue."
+        return "Simularea nu a pornit fiindca exista o problema de sintaxa."
     if error_type == "timeout":
-        return "The program ran too long and the mission was stopped."
+        return "Programul a rulat prea mult si misiunea a fost oprita."
     if error_type == "runtime":
-        return "The mission stopped because of a runtime problem."
+        return "Misiunea s-a oprit din cauza unei probleme aparute in timpul rularii."
     if error_type == "logic" and {"up", "down", "left", "right"} & set(allowed_api):
-        return "The command order does not match the map yet."
-    return "The robot behavior does not match the mission goal yet."
+        return "Ordinea comenzilor nu se potriveste inca cu harta."
+    return "Robotul nu urmeaza inca traseul corect pentru aceasta misiune."
 
 
 def _build_console_output(
@@ -132,17 +144,19 @@ def _build_console_output(
     steps_used: int,
     optimal_steps: int | None,
 ) -> list[str]:
-    lines = ["Program started..."]
-    lines.extend(_format_console_step(entry) for entry in trace if isinstance(entry, dict))
+    lines = ["Program pornit..."]
+    lines.extend(
+        _format_console_step(entry) for entry in trace if isinstance(entry, dict)
+    )
 
     if solved:
         lines.append(_goal_success_label(level))
         if optimal_steps and steps_used > optimal_steps:
             lines.append(
-                f"You reached the target in {steps_used} steps, but optimal is {optimal_steps}."
+                f"Ai ajuns la tinta in {steps_used} pasi, iar traseul optim are {optimal_steps}."
             )
         else:
-            lines.append(f"Mission solved in {steps_used} steps.")
+            lines.append(f"Ai rezolvat misiunea in {steps_used} pasi.")
         return lines
 
     lines.append(
@@ -257,6 +271,8 @@ def run_robot_lab_attempt(
         solved=solved,
         steps_used=max(0, steps_used),
         xp_reward=int(level.get("xp_reward") or 0),
+        level_spec=level,
+        optimal_steps=optimal_steps,
     )
 
     xp_granted = int(progress_result.get("xp_granted") or 0)
@@ -275,7 +291,7 @@ def run_robot_lab_attempt(
         steps_used=max(0, steps_used),
         optimal_steps=optimal_steps,
     )
-    status_message = console_output[-1] if console_output else "Program finished."
+    status_message = console_output[-1] if console_output else "Programul s-a terminat."
     status_kind = (
         "success"
         if solved
@@ -313,6 +329,7 @@ def run_robot_lab_attempt(
         "duration_ms": max(0, duration_ms),
         "optimal_steps": optimal_steps,
         "solved": solved,
+        "stars_earned": progress_result.get("stars_earned", 0),
         "status_kind": status_kind,
         "status_message": status_message,
         "console_output": console_output,

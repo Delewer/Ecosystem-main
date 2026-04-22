@@ -7,6 +7,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from ..models import RobotLabLevelProgress
+from .learner_age import get_registration_profile_age
 from .robot_lab_levels import next_level_id, ordered_level_ids
 
 
@@ -33,11 +34,17 @@ def ensure_robot_lab_progress_rows(user: User) -> dict[str, RobotLabLevelProgres
         )
         changed = True
 
-    first_id = level_ids[0]
-    first_row = existing[first_id]
-    if not first_row.unlocked:
-        first_row.unlocked = True
-        first_row.save(update_fields=["unlocked", "updated_at"])
+    unlock_seed_ids = {level_ids[0]}
+    learner_age = get_registration_profile_age(user)
+    if learner_age is not None and learner_age >= 11 and "W1-L03" in existing:
+        unlock_seed_ids.add("W1-L03")
+
+    for seed_id in unlock_seed_ids:
+        seed_row = existing[seed_id]
+        if seed_row.unlocked:
+            continue
+        seed_row.unlocked = True
+        seed_row.save(update_fields=["unlocked", "updated_at"])
         changed = True
 
     # Linear unlock: completing level N unlocks N+1.
@@ -85,7 +92,9 @@ def serialize_robot_lab_levels_with_progress(user: User) -> list[dict[str, Any]]
                 "recommended_age": entry.get("recommended_age") or "11+",
                 "unlocked": bool(progress.unlocked) if progress else False,
                 "completed": bool(progress.completed) if progress else False,
-                "concept_labels": entry.get("concept_labels") or entry.get("concepts") or [],
+                "concept_labels": entry.get("concept_labels")
+                or entry.get("concepts")
+                or [],
                 "best_steps": int(progress.best_steps)
                 if progress and progress.best_steps
                 else None,
@@ -110,6 +119,38 @@ def build_robot_lab_progress_summary(user: User) -> dict[str, Any]:
     }
 
 
+def _compute_stars(
+    *,
+    level_spec: dict[str, Any],
+    solved: bool,
+    steps_used: int,
+    optimal_steps: int | None,
+) -> int:
+    """Compute 0-3 stars based on the level's star_conditions."""
+    if not solved:
+        return 0
+    conditions = level_spec.get("star_conditions") or {}
+    stars = 0
+    # Star 1: just solve
+    one = conditions.get("one", "reach_goal")
+    if one == "reach_goal" and solved:
+        stars = 1
+    # Star 2: steps within threshold
+    two = conditions.get("two", "")
+    if two.startswith("steps_lte_"):
+        try:
+            threshold = int(two.split("_")[-1])
+            if steps_used <= threshold:
+                stars = 2
+        except (ValueError, IndexError):
+            pass
+    # Star 3: optimal
+    three = conditions.get("three", "")
+    if three == "steps_lte_optimal" and optimal_steps and steps_used <= optimal_steps:
+        stars = 3
+    return stars
+
+
 @transaction.atomic
 def apply_robot_lab_run_progress(
     *,
@@ -118,11 +159,20 @@ def apply_robot_lab_run_progress(
     solved: bool,
     steps_used: int,
     xp_reward: int,
+    level_spec: dict[str, Any] | None = None,
+    optimal_steps: int | None = None,
 ) -> dict[str, Any]:
     progress_map = ensure_robot_lab_progress_rows(user)
     row = progress_map[str(level_id)]
     row.attempts_count += 1
     xp_granted = 0
+
+    stars_earned = _compute_stars(
+        level_spec=level_spec or {},
+        solved=solved,
+        steps_used=steps_used,
+        optimal_steps=optimal_steps,
+    )
 
     if solved:
         if not row.completed:
@@ -132,6 +182,8 @@ def apply_robot_lab_run_progress(
             xp_granted = max(0, int(xp_reward))
         if steps_used > 0 and (row.best_steps is None or steps_used < row.best_steps):
             row.best_steps = steps_used
+        if stars_earned > row.stars_earned:
+            row.stars_earned = stars_earned
 
     row.save(
         update_fields=[
@@ -139,6 +191,7 @@ def apply_robot_lab_run_progress(
             "completed",
             "completed_at",
             "best_steps",
+            "stars_earned",
             "xp_awarded_total",
             "updated_at",
         ]
@@ -149,11 +202,13 @@ def apply_robot_lab_run_progress(
 
     return {
         "xp_granted": xp_granted,
+        "stars_earned": stars_earned,
         "level_progress": {
             "level_id": row.level_id,
             "unlocked": row.unlocked,
             "completed": row.completed,
             "best_steps": row.best_steps,
+            "stars_earned": row.stars_earned,
             "attempts_count": row.attempts_count,
             "xp_awarded_total": row.xp_awarded_total,
         },

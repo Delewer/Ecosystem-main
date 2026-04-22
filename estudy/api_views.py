@@ -30,6 +30,12 @@ from .services.robot_lab_runner_client import (
     RobotLabRunnerUnavailableError,
 )
 from .services.robot_lab_runs import RobotLabRunBlockedError, run_robot_lab_attempt
+from .services.robot_lab_worlds import (
+    check_skin_unlocks,
+    list_skins_with_status,
+    list_worlds_with_status,
+    select_skin,
+)
 
 
 class LessonCommentsListCreateView(generics.ListCreateAPIView):
@@ -246,7 +252,7 @@ def robot_lab_mentor_feedback(request):
 
 
 def _robot_lab_enabled_for_user(user) -> bool:
-    return feature_enabled("robot_lab_enabled", user=user, default=False)
+    return feature_enabled("robot_lab_enabled", user=user, default=True)
 
 
 @api_view(["GET"])
@@ -357,4 +363,46 @@ def robot_lab_run(request):
         )
     except (RobotLabLevelNotFoundError, FileNotFoundError, ValueError):
         return Response({"error": "Level not found."}, status=status.HTTP_404_NOT_FOUND)
+    return Response(result)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def robot_lab_worlds(request):
+    """List all worlds with unlock status and star counts."""
+    if not _robot_lab_enabled_for_user(request.user):
+        return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+    worlds = list_worlds_with_status(request.user)
+    return Response({"worlds": worlds})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def robot_lab_skins(request):
+    """List all skins with unlock status for the authenticated user."""
+    if not _robot_lab_enabled_for_user(request.user):
+        return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+    # Check if any new skins were earned
+    check_skin_unlocks(request.user)
+    skins = list_skins_with_status(request.user)
+    return Response({"skins": skins})
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def robot_lab_skin_select(request):
+    """Set a skin as the user's active skin."""
+    if not _robot_lab_enabled_for_user(request.user):
+        return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+    payload = request.data if isinstance(request.data, dict) else dict(request.data)
+    skin_key = str(payload.get("skin_key") or "").strip()
+    if not skin_key:
+        return Response(
+            {"error": "skin_key is required"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    try:
+        result = select_skin(request.user, skin_key)
+    except ValueError as exc:
+        return Response({"error": str(exc)}, status=status.HTTP_400_BAD_REQUEST)
     return Response(result)

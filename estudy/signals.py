@@ -2,7 +2,7 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.urls import reverse
 
-from .models import LessonComment, LessonRating
+from .models import LessonComment, LessonProgress, LessonRating
 from .services.notifications import (
     notify_comment_reply,
     notify_new_comment,
@@ -56,6 +56,15 @@ def update_comment_reputation(sender, instance, created, **kwargs):
         comment=instance,
         previous_state=previous_state,
     )
+
+
+@receiver(post_save, sender=LessonProgress)
+def update_streak_on_lesson_progress(sender, instance, **kwargs):
+    """Recalculate user streak whenever a LessonProgress is saved as completed."""
+    if instance.completed:
+        from .services.streaks import update_streak_on_completion
+
+        update_streak_on_completion(instance.user)
 
 
 @receiver(post_save, sender=LessonRating)

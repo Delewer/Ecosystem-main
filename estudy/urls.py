@@ -13,12 +13,19 @@ urlpatterns = [
     path("dashboard/admin/", views.admin_dashboard, name="admin_dashboard"),
     path("dashboard/parent/", views.parent_dashboard, name="parent_dashboard"),
     path("lessons/", views.lessons_list, name="lessons_list"),
+    path("typing-game/", views.typing_game, name="typing_game"),
+    path("world-map/", views.world_map_view, name="world_map"),
     path(
         "lessons/modul-1-alfabetizare-digitala/",
         views.lesson_module_digital_literacy,
         name="lesson_module_digital_literacy",
     ),
     path("lessons/<slug:slug>/", views.lesson_detail, name="lesson_detail"),
+    path(
+        "lessons/<slug:slug>/share-card/",
+        views.share_card_view,
+        name="share_card",
+    ),
     path(
         "lessons/<slug:slug>/toggle/",
         views.toggle_lesson_completion,
@@ -41,13 +48,33 @@ urlpatterns = [
     path("community/<int:pk>/", views.community_thread, name="community_thread"),
     path("overview/", views.study_overview, name="overview"),
     path("progress/", views.user_progress, name="user_progress"),
+    path(
+        "onboarding/complete/",
+        views.mark_onboarding_complete,
+        name="mark_onboarding_complete",
+    ),
     path("robot-lab/", views.robot_lab_hub, name="robot_lab_hub"),
     path(
         "robot-lab/level/<str:level_id>/", views.robot_lab_play, name="robot_lab_play"
     ),
     path("robot-lab/teacher/", views.robot_lab_teacher, name="robot_lab_teacher"),
+    path("robot-lab/worlds/", views.robot_lab_world_map, name="robot_lab_world_map"),
+    path(
+        "robot-lab/game/<str:level_id>/",
+        views.robot_lab_game,
+        name="robot_lab_game",
+    ),
     path("api/run-code/", views.run_code_api, name="run_code_api"),
     path("code-exercise/<int:pk>/", views.code_exercise_view, name="code_exercise"),
+    # Cooperative sessions
+    path("coop/create/", views.coop_create, name="coop_create"),
+    path("coop/join/", views.coop_join, name="coop_join"),
+    # Streak leaderboard per subject
+    path(
+        "leaderboard/streaks/<slug:subject_slug>/",
+        views.streak_leaderboard_view,
+        name="streak_leaderboard",
+    ),
     # Moderation
     path("moderate/comments/", views.moderate_comments, name="moderate_comments"),
     # API endpoints for new features
@@ -129,6 +156,21 @@ api_patterns = [
         "robot-lab/progress/",
         api_views.robot_lab_progress,
         name="robot_lab_progress_api",
+    ),
+    path(
+        "robot-lab/worlds/",
+        api_views.robot_lab_worlds,
+        name="robot_lab_worlds_api",
+    ),
+    path(
+        "robot-lab/skins/",
+        api_views.robot_lab_skins,
+        name="robot_lab_skins_api",
+    ),
+    path(
+        "robot-lab/skins/select/",
+        api_views.robot_lab_skin_select,
+        name="robot_lab_skin_select_api",
     ),
 ]
 

@@ -10,6 +10,7 @@ from django.utils import timezone
 
 from ..models import LearningPath, LearningPathLesson, Lesson, Subject
 from .gamification import build_overall_progress, get_badge_summary
+from .learner_age import get_registration_profile_age
 from .lesson_access import compute_accessibility
 from .recommendations import refresh_recommendations
 
@@ -181,13 +182,16 @@ def prepare_lessons_list(user, params: Dict[str, Any] | None = None) -> Dict[str
     if use_cache:
         # build a deterministic key from user id and params (excluding the cache control key)
         params_for_key = {k: v for k, v in params.items() if k != "_cache_timeout"}
+        learner_age = get_registration_profile_age(user)
         lesson_signature = Lesson.objects.aggregate(
             total=Count("id"),
             max_updated=Max("updated_at"),
             max_created=Max("created_at"),
         )
         key_payload = json.dumps(
-            [user.id, params_for_key, lesson_signature], sort_keys=True, default=str
+            [user.id, learner_age, params_for_key, lesson_signature],
+            sort_keys=True,
+            default=str,
         ).encode("utf-8")
         cache_key = "estudy:lessons_list:" + hashlib.md5(key_payload).hexdigest()
         cached = cache.get(cache_key)

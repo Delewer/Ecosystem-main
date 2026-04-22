@@ -25,7 +25,19 @@ def default_empty_dict():
 
 class Subject(models.Model):
     name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=120, unique=True, blank=True, default="")
     description = models.TextField(blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(self.name) or f"subject-{self.pk or 'new'}"
+            slug = base
+            counter = 1
+            while Subject.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base}-{counter}"
+                counter += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         return self.name
@@ -692,6 +704,8 @@ class UserProfile(models.Model):
     xp = models.PositiveIntegerField(default=0)
     level = models.PositiveIntegerField(default=1)
     streak = models.PositiveIntegerField(default=0)
+    current_streak = models.PositiveIntegerField(default=0)
+    longest_streak = models.PositiveIntegerField(default=0)
     reputation_score = models.IntegerField(default=REPUTATION_SCORE_DEFAULT)
     is_trusted_contributor = models.BooleanField(default=TRUSTED_CONTRIBUTOR_DEFAULT)
     last_activity_at = models.DateTimeField(blank=True, null=True)
@@ -2593,10 +2607,32 @@ class ProjectEvaluation(models.Model):
 
 
 class DailyChallenge(models.Model):
-    """Placeholder for DailyChallenge model"""
+    """Daily challenge tied to a lesson."""
+
+    TYPE_COMPLETE = "complete"
+    TYPE_SPEED = "speed"
+    TYPE_QUIZ = "quiz"
+    CHALLENGE_TYPE_CHOICES = [
+        (TYPE_COMPLETE, "Complete lesson"),
+        (TYPE_SPEED, "Speed run"),
+        (TYPE_QUIZ, "Quiz perfect score"),
+    ]
 
     title = models.CharField(max_length=200)
     description = models.TextField()
+    lesson = models.ForeignKey(
+        "Lesson",
+        on_delete=models.CASCADE,
+        related_name="daily_challenges",
+        null=True,
+        blank=True,
+    )
+    challenge_type = models.CharField(
+        max_length=20,
+        choices=CHALLENGE_TYPE_CHOICES,
+        default=TYPE_COMPLETE,
+    )
+    xp_bonus = models.PositiveIntegerField(default=50)
     start_date = models.DateField()
     end_date = models.DateField()
 
@@ -2745,6 +2781,9 @@ class RobotLabLevelProgress(models.Model):
     completed = models.BooleanField(default=False)
     completed_at = models.DateTimeField(null=True, blank=True)
     best_steps = models.PositiveIntegerField(null=True, blank=True)
+    stars_earned = models.PositiveIntegerField(
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(3)]
+    )
     attempts_count = models.PositiveIntegerField(default=0)
     xp_awarded_total = models.PositiveIntegerField(default=0)
     updated_at = models.DateTimeField(auto_now=True)
@@ -2896,3 +2935,90 @@ class OfflineProgressQueue(models.Model):
 
     def __str__(self):
         return f"{self.user} offline progress for {self.lesson}"
+
+
+def _generate_session_code():
+    import string
+
+    chars = string.ascii_uppercase + string.digits
+    return "".join(random.choices(chars, k=6))
+
+
+class CoopSession(models.Model):
+    STATUS_WAITING = "waiting"
+    STATUS_ACTIVE = "active"
+    STATUS_COMPLETED = "completed"
+    STATUS_CHOICES = [
+        (STATUS_WAITING, "Waiting"),
+        (STATUS_ACTIVE, "Active"),
+        (STATUS_COMPLETED, "Completed"),
+    ]
+
+    host = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="hosted_coop_sessions"
+    )
+    guest = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="joined_coop_sessions",
+    )
+    lesson = models.ForeignKey(
+        Lesson, on_delete=models.CASCADE, related_name="coop_sessions"
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_WAITING,
+    )
+    session_code = models.CharField(
+        max_length=6, unique=True, default=_generate_session_code
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ("-created_at",)
+
+    def __str__(self):
+        return f"Coop {self.session_code}: {self.host.username} + {self.guest.username if self.guest else '?'}"
+
+
+class RobotLabSkin(models.Model):
+    """Cosmetic robot skin unlocked by world completion."""
+
+    key = models.SlugField(unique=True)  # 'zipp', 'blaze', etc.
+    name = models.CharField(max_length=50)
+    unlock_condition = models.CharField(
+        max_length=100, blank=True, default=""
+    )  # e.g. 'complete_world_2', '' for default
+    svg_file = models.CharField(max_length=100, blank=True, default="")
+    ordering = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ("ordering", "key")
+
+    def __str__(self) -> str:
+        return self.name
+
+
+class UserRobotLabSkin(models.Model):
+    """Tracks which skins a user has unlocked and which is active."""
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="robot_lab_skins"
+    )
+    skin = models.ForeignKey(
+        RobotLabSkin, on_delete=models.CASCADE, related_name="user_skins"
+    )
+    unlocked_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ("skin__ordering",)
+        unique_together = ("user", "skin")
+
+    def __str__(self) -> str:
+        active = " [active]" if self.is_active else ""
+        return f"{self.user.username} · {self.skin.key}{active}"

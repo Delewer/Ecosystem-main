@@ -12,6 +12,7 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 
 from .forms import NotificationPreferenceForm, ProfileForm
@@ -39,6 +40,11 @@ from .services.gamification import (
     get_mission_context,
     record_lesson_completion,
 )
+from .services.learner_age import (
+    filter_lessons_for_user_age,
+    get_registration_profile_age,
+    lesson_track_key,
+)
 from .services.notifications import notify_feedback, send_notification
 from .services.permissions import (
     ACTION_ANALYTICS_VIEW,
@@ -49,7 +55,6 @@ from .services.permissions import (
     ACTION_MODERATE_COMMENTS,
     action_required,
 )
-from .services.learner_age import filter_lessons_for_user_age, get_registration_profile_age
 
 try:
     from .forms import (
@@ -105,7 +110,7 @@ LEADERBOARD_LIMIT = 20
 def _robot_lab_enabled(user) -> bool:
     from .services.feature_flags import is_enabled as feature_enabled
 
-    return feature_enabled("robot_lab_enabled", user=user, default=False)
+    return feature_enabled("robot_lab_enabled", user=user, default=True)
 
 
 def _robot_lab_tile_kind(symbol: str) -> str:
@@ -123,7 +128,59 @@ def _robot_lab_tile_kind(symbol: str) -> str:
     return mapping.get(symbol, "floor")
 
 
-def _build_robot_lab_lesson_preview(user) -> dict | None:
+def _pick_robot_lab_summary_level(
+    levels: list[dict], preferred_track: str | None = None
+) -> dict | None:
+    entries = [item for item in levels or [] if isinstance(item, dict)]
+    if not entries:
+        return None
+
+    def _select(*, track: str | None = None, require_incomplete: bool = False):
+        for item in entries:
+            if not item.get("unlocked"):
+                continue
+            if require_incomplete and item.get("completed"):
+                continue
+            if track and str(item.get("mode") or "").strip().lower() != track:
+                continue
+            return item
+        return None
+
+    if preferred_track:
+        return _select(track=preferred_track, require_incomplete=True) or _select(
+            track=preferred_track
+        )
+    return _select(require_incomplete=True) or _select()
+
+
+def _build_robot_lab_level_json(level: dict) -> str:
+    return json.dumps(
+        {
+            "id": level.get("id"),
+            "title": level.get("title"),
+            "goal": level.get("goal") or {},
+            "goal_text": level.get("goal_text") or "",
+            "grid": level.get("grid") or [],
+            "legend": level.get("legend") or {},
+            "starter_code": level.get("starter_code") or "",
+            "max_steps": int(level.get("max_steps") or 200),
+            "xp_reward": int(level.get("xp_reward") or 0),
+            "allowed_api": level.get("allowed_api") or [],
+            "concepts": level.get("concepts") or [],
+            "mode": level.get("mode") or "code",
+            "mode_label": level.get("mode_label") or "Mod Cod",
+            "ui_stage": level.get("ui_stage") or "code",
+            "ui_stage_label": level.get("ui_stage_label") or "Cod complet",
+            "ui_stage_description": level.get("ui_stage_description") or "",
+            "recommended_age": level.get("recommended_age") or "11+",
+            "start_dir": level.get("start_dir") or "E",
+        }
+    )
+
+
+def _build_robot_lab_lesson_preview(
+    user, *, prefer_code_mode: bool = False
+) -> dict | None:
     try:
         from .services.robot_lab_levels import load_level, ordered_level_ids
     except Exception:
@@ -133,9 +190,12 @@ def _build_robot_lab_lesson_preview(user) -> dict | None:
     if not level_ids:
         return None
 
+    age_recommendation = _build_robot_lab_age_recommendation(user)
+    preferred_track = "code" if prefer_code_mode else age_recommendation.get("track")
     selected_level_id = "W1-L03" if "W1-L03" in level_ids else level_ids[0]
     play_url = None
     hub_url = None
+    selected_is_unlocked = False
     summary_data = {
         "completed_levels": 0,
         "unlocked_levels": 1,
@@ -148,21 +208,13 @@ def _build_robot_lab_lesson_preview(user) -> dict | None:
             from .services.robot_lab_progress import build_robot_lab_progress_summary
 
             summary = build_robot_lab_progress_summary(user)
-            suggested = next(
-                (
-                    item
-                    for item in summary.get("levels", [])
-                    if item.get("unlocked") and not item.get("completed")
-                ),
-                None,
-            ) or next(
-                (item for item in summary.get("levels", []) if item.get("unlocked")),
-                None,
+            suggested = _pick_robot_lab_summary_level(
+                summary.get("levels", []),
+                preferred_track=preferred_track,
             )
             if suggested and suggested.get("id"):
                 selected_level_id = str(suggested["id"])
-                play_url = reverse("estudy:robot_lab_play", args=[selected_level_id])
-                hub_url = reverse("estudy:robot_lab_hub")
+                selected_is_unlocked = bool(suggested.get("unlocked"))
             summary_data = {
                 "completed_levels": int(summary.get("completed_levels") or 0),
                 "unlocked_levels": int(summary.get("unlocked_levels") or 0),
@@ -210,6 +262,15 @@ def _build_robot_lab_lesson_preview(user) -> dict | None:
             }
         )
 
+    if user.is_authenticated and _robot_lab_enabled(user) and selected_is_unlocked:
+        play_url = reverse("estudy:robot_lab_play", args=[selected_level_id])
+        hub_url = reverse("estudy:robot_lab_hub")
+
+    level_json = _build_robot_lab_level_json(level)
+    level_age_recommendation = _build_robot_lab_age_recommendation(
+        user, level_mode=str(level.get("mode") or "code")
+    )
+
     return {
         "id": str(level.get("id") or selected_level_id),
         "title": level.get("title") or "Robot Lab",
@@ -218,21 +279,39 @@ def _build_robot_lab_lesson_preview(user) -> dict | None:
         "goal_text": level.get("goal_text") or "Completeaza misiunea robotului.",
         "starter_code": level.get("starter_code") or "move()",
         "concepts": list(level.get("concepts") or []),
+        "concept_labels": list(
+            level.get("concept_labels") or level.get("concepts") or []
+        ),
         "allowed_api": list(level.get("allowed_api") or []),
         "xp_reward": int(level.get("xp_reward") or 0),
         "max_steps": int(level.get("max_steps") or 0),
+        "mode": level.get("mode") or "code",
+        "mode_label": level.get("mode_label") or "Mod Cod",
+        "ui_stage": level.get("ui_stage") or "code",
+        "ui_stage_label": level.get("ui_stage_label") or "Cod complet",
+        "ui_stage_description": level.get("ui_stage_description")
+        or "Scrie singur programul si ruleaza-l.",
+        "recommended_age": level.get("recommended_age") or "11+",
+        "start_dir": level.get("start_dir") or "E",
+        "goal": level.get("goal") or {},
+        "legend": level.get("legend") or {},
+        "grid": raw_grid,
         "grid_rows": grid_rows,
         "grid_cols": cols,
         "legend_items": legend_items,
         "play_url": play_url,
         "hub_url": hub_url,
         "is_enabled": bool(play_url),
+        "level_json": level_json,
+        "age_recommendation": level_age_recommendation,
         "summary": summary_data,
         "flow_steps": ["Scrie", "Ruleaza", "Observa", "Reflecta", "Imbunatateste"],
     }
 
 
-def _build_robot_lab_age_recommendation(user, *, level_mode: str | None = None) -> dict[str, object]:
+def _build_robot_lab_age_recommendation(
+    user, *, level_mode: str | None = None
+) -> dict[str, object]:
     learner_age = get_registration_profile_age(user)
     mode_labels = {
         "junior": "Mod Junior",
@@ -253,15 +332,15 @@ def _build_robot_lab_age_recommendation(user, *, level_mode: str | None = None) 
     if learner_age <= 10:
         recommendation["track"] = "junior"
         recommendation["track_label"] = "Mod Junior"
-        recommendation["description"] = (
-            "Pentru 8-10 ani recomandam butoane mari, trasee vizuale si foarte putin text."
-        )
+        recommendation[
+            "description"
+        ] = "Pentru 8-10 ani recomandam butoane mari, trasee vizuale si foarte putin text."
     else:
         recommendation["track"] = "code"
         recommendation["track_label"] = "Mod Cod"
-        recommendation["description"] = (
-            "Pentru 11+ recomandam editor Python, consola si feedback de depanare."
-        )
+        recommendation[
+            "description"
+        ] = "Pentru 11+ recomandam editor Python, consola si feedback de depanare."
 
     current_mode = str(level_mode or "").strip().lower()
     if current_mode and current_mode != recommendation["track"]:
@@ -339,7 +418,9 @@ def _resolve_module_entry_slug(module_slug: str, user=None) -> str | None:
     alias_slug = MODULE_LESSON_ALIASES.get(module_slug)
     if alias_slug and Lesson.objects.filter(slug=alias_slug).exists():
         return alias_slug
-    module_lessons = list(Lesson.objects.filter(module__slug=module_slug).order_by("date", "id"))
+    module_lessons = list(
+        Lesson.objects.filter(module__slug=module_slug).order_by("date", "id")
+    )
     if user is not None:
         module_lessons = filter_lessons_for_user_age(module_lessons, user)
     module_lessons = [lesson for lesson in module_lessons if lesson.slug]
@@ -347,11 +428,15 @@ def _resolve_module_entry_slug(module_slug: str, user=None) -> str | None:
     return first_lesson.slug if first_lesson else None
 
 
-def _resolve_subject_entry_slug(subject_names: tuple[str, ...], user=None) -> str | None:
+def _resolve_subject_entry_slug(
+    subject_names: tuple[str, ...], user=None
+) -> str | None:
     subject_lessons: list[Lesson] = []
     for subject_name in subject_names:
         subject_lessons = list(
-            Lesson.objects.filter(subject__name__iexact=subject_name).order_by("date", "id")
+            Lesson.objects.filter(subject__name__iexact=subject_name).order_by(
+                "date", "id"
+            )
         )
         if subject_lessons:
             break
@@ -362,13 +447,23 @@ def _resolve_subject_entry_slug(subject_names: tuple[str, ...], user=None) -> st
     )
     if not subject_lessons:
         for lookup in fallback_filters:
-            subject_lessons = list(Lesson.objects.filter(**lookup).order_by("date", "id"))
+            subject_lessons = list(
+                Lesson.objects.filter(**lookup).order_by("date", "id")
+            )
             if subject_lessons:
                 break
     if not subject_lessons:
         return None
     if user is not None:
         subject_lessons = filter_lessons_for_user_age(subject_lessons, user)
+        if get_registration_profile_age(user) is None:
+            junior_lessons = [
+                lesson
+                for lesson in subject_lessons
+                if lesson_track_key(lesson) == "junior"
+            ]
+            if junior_lessons and len(junior_lessons) != len(subject_lessons):
+                subject_lessons = junior_lessons
     subject_lessons = [lesson for lesson in subject_lessons if lesson.slug]
     return subject_lessons[0].slug if subject_lessons else None
 
@@ -388,6 +483,10 @@ def dashboard_router(request):
 @login_required
 def student_dashboard(request):
     # delegate gathering of dashboard data to service
+    from .services.daily_challenge import (
+        get_challenge_time_remaining,
+        get_todays_challenge,
+    )
     from .services.dashboard import build_student_dashboard
 
     payload = build_student_dashboard(request.user)
@@ -397,9 +496,34 @@ def student_dashboard(request):
     )[:5]
     leaderboard = get_leaderboard_snapshot(limit=5)
     payload.update({"notifications": notifications, "leaderboard": leaderboard})
+
+    # daily challenge countdown widget
+    challenge_result = get_todays_challenge(request.user)
+    if challenge_result.success:
+        payload["daily_challenge"] = challenge_result.data["challenge"]
+        payload["daily_challenge_completed"] = challenge_result.data["completed"]
+        payload["daily_challenge_seconds"] = get_challenge_time_remaining()
+    else:
+        payload["daily_challenge"] = None
+
+    profile = get_profile(request.user)
+    replay = request.GET.get("replay") == "1"
+    payload["show_onboarding"] = replay or profile.onboarding_completed_at is None
+    payload["onboarding_replay"] = replay
+
     return render(
         request, "estudy/dashboard_student.html", with_progress(payload, request.user)
     )
+
+
+@login_required
+@require_POST
+def mark_onboarding_complete(request):
+    profile = get_profile(request.user)
+    if profile.onboarding_completed_at is None:
+        profile.onboarding_completed_at = timezone.now()
+        profile.save(update_fields=["onboarding_completed_at"])
+    return JsonResponse({"ok": True})
 
 
 @action_required(ACTION_DASHBOARD_TEACHER)
@@ -565,10 +689,31 @@ def lessons_list(request):
         if context["learner_age"] is not None and context["learner_age"] <= 10
         else "Code 11+ ani"
         if context["learner_age"] is not None
-        else "Automat după vârstă"
+        else "Junior implicit pana alegi varsta"
     )
+
+    # world map data (learning paths)
+    from .services.world_map import build_world_map
+
+    world_map_result = build_world_map(request.user)
+    if world_map_result.success:
+        context["paths"] = world_map_result.data["paths"]
+    else:
+        context["paths"] = []
+
     return render(
         request, "estudy/lessons_list.html", with_progress(context, request.user)
+    )
+
+
+@login_required
+def world_map_view(request):
+    from .services.world_map import build_world_map
+
+    result = build_world_map(request.user)
+    context = {"paths": result.data.get("paths", []) if result.success else []}
+    return render(
+        request, "estudy/world_map.html", with_progress(context, request.user)
     )
 
 
@@ -639,6 +784,48 @@ def code_exercise_view(request, pk: int):
     return render(
         request, "estudy/code_playground.html", with_progress(context, request.user)
     )
+
+
+# ── Cooperative session views ─────────────────────────────────────────
+@require_POST
+@login_required
+def coop_create(request):
+    from .services.coop import create_coop_session
+
+    lesson_slug = request.POST.get("lesson_slug", "").strip()
+    if not lesson_slug:
+        return JsonResponse({"error": "lesson_slug is required"}, status=400)
+    lesson = get_object_or_404(Lesson, slug=lesson_slug)
+    result = create_coop_session(request.user, lesson)
+    if not result.success:
+        return JsonResponse({"error": result.error}, status=403)
+    return JsonResponse(result.data)
+
+
+@require_POST
+@login_required
+def coop_join(request):
+    from .services.coop import join_coop_session
+
+    session_code = request.POST.get("session_code", "").strip()
+    if not session_code:
+        return JsonResponse({"error": "session_code is required"}, status=400)
+    result = join_coop_session(request.user, session_code)
+    if not result.success:
+        return JsonResponse({"error": result.error}, status=400)
+    return JsonResponse(result.data)
+
+
+# ── Streak leaderboard per subject ─────────────────────────────────────
+@login_required
+def streak_leaderboard_view(request, subject_slug):
+    from .services.skill_leaderboard import get_streak_leaderboard
+
+    subject = get_object_or_404(Subject, slug=subject_slug)
+    result = get_streak_leaderboard(subject, user=request.user)
+    if not result.success:
+        return JsonResponse({"error": result.error}, status=403)
+    return JsonResponse(result.data["entries"], safe=False)
 
 
 @login_required
@@ -992,6 +1179,12 @@ def lesson_module_digital_literacy(request):
 
 
 @login_required
+def typing_game(request):
+    return render(request, "estudy/typing_game.html")
+
+
+@login_required
+@ensure_csrf_cookie
 def lesson_detail(request, slug):
     try:
         from .services.lesson_detail import (
@@ -1001,7 +1194,9 @@ def lesson_detail(request, slug):
 
         payload = prepare_lesson_detail(request.user, slug)
         payload["robot_lab_preview"] = (
-            _build_robot_lab_lesson_preview(request.user)
+            _build_robot_lab_lesson_preview(
+                request.user, prefer_code_mode=bool(payload.get("show_full_code_lab"))
+            )
             if payload.get("show_robot_lab_preview")
             else None
         )
@@ -1013,6 +1208,17 @@ def lesson_detail(request, slug):
         return redirect("estudy:lesson_detail", slug=exc.blocking_slug)
     except ValueError:
         raise Http404()
+
+
+@login_required
+def share_card_view(request, slug):
+    from .services.share_card import build_share_card_context
+
+    lesson = get_object_or_404(Lesson, slug=slug)
+    result = build_share_card_context(request.user, lesson)
+    if not result.success:
+        raise Http404()
+    return render(request, "estudy/share_card.html", result.data)
 
 
 @require_POST
@@ -1347,5 +1553,104 @@ def robot_lab_teacher(request):
     return render(
         request,
         "estudy/robot_lab_teacher.html",
+        with_progress(context, request.user),
+    )
+
+
+@login_required
+@ensure_csrf_cookie
+def robot_lab_world_map(request):
+    """Robo Rescue v2 world map screen."""
+    if not _robot_lab_enabled(request.user):
+        raise Http404("Robot Lab is not available.")
+    from .services.feature_flags import is_enabled as feature_enabled
+
+    if not feature_enabled("robot_lab_v2", user=request.user, default=False):
+        return redirect("estudy:robot_lab_hub")
+
+    from .services.robot_lab_worlds import get_active_skin, list_worlds_with_status
+
+    worlds = list_worlds_with_status(request.user)
+    context = {
+        "worlds": worlds,
+        "worlds_json": json.dumps(worlds),
+        "active_skin": get_active_skin(request.user),
+    }
+    return render(
+        request,
+        "estudy/robot_lab_world_map.html",
+        with_progress(context, request.user),
+    )
+
+
+@login_required
+@ensure_csrf_cookie
+def robot_lab_game(request, level_id: str):
+    """Robo Rescue v2 game screen."""
+    if not _robot_lab_enabled(request.user):
+        raise Http404("Robot Lab is not available.")
+    from .services.feature_flags import is_enabled as feature_enabled
+
+    if not feature_enabled("robot_lab_v2", user=request.user, default=False):
+        return redirect("estudy:robot_lab_play", level_id=level_id)
+
+    from .services.robot_lab_levels import (
+        RobotLabLevelNotFoundError,
+        load_level,
+        next_level_id,
+    )
+    from .services.robot_lab_progress import ensure_robot_lab_progress_rows
+    from .services.robot_lab_worlds import get_active_skin
+
+    try:
+        level = load_level(level_id)
+    except (RobotLabLevelNotFoundError, FileNotFoundError, ValueError):
+        raise Http404("Robot Lab level not found.")
+
+    progress_map = ensure_robot_lab_progress_rows(request.user)
+    row = progress_map.get(level_id)
+    if not row or not row.unlocked:
+        messages.error(
+            request, "Nivelul este blocat. Finalizează nivelurile anterioare."
+        )
+        return redirect("estudy:robot_lab_world_map")
+
+    next_id = next_level_id(level_id)
+    context = {
+        "level": level,
+        "level_id": level_id,
+        "level_json": json.dumps(
+            {
+                "id": level.get("id"),
+                "title": level.get("title"),
+                "goal": level.get("goal") or {},
+                "goal_text": level.get("goal_text") or "",
+                "grid": level.get("grid") or [],
+                "legend": level.get("legend") or {},
+                "starter_code": level.get("starter_code") or "",
+                "max_steps": int(level.get("max_steps") or 200),
+                "xp_reward": int(level.get("xp_reward") or 0),
+                "allowed_api": level.get("allowed_api") or [],
+                "concepts": level.get("concepts") or [],
+                "mode": level.get("mode") or "code",
+                "ui_stage": level.get("ui_stage") or "code",
+                "start_dir": level.get("start_dir") or "E",
+                "world": level.get("world") or 1,
+                "world_theme": level.get("world_theme") or "garden",
+                "star_conditions": level.get("star_conditions") or {},
+                "collectibles": level.get("collectibles") or [],
+                "intro_dialog": level.get("intro_dialog") or "",
+                "success_dialog": level.get("success_dialog") or "",
+                "fail_dialog": level.get("fail_dialog") or "",
+                "turtle_enabled": bool(level.get("turtle_enabled")),
+            }
+        ),
+        "level_progress": row,
+        "next_level_id": next_id,
+        "active_skin": get_active_skin(request.user),
+    }
+    return render(
+        request,
+        "estudy/robot_lab_game.html",
         with_progress(context, request.user),
     )
