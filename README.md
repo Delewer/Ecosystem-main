@@ -1,4 +1,4 @@
-# UNITEX / Ecosystem - platforma educationala cu gamification si analytics
+# UNITEX - platforma educationala cu gamification si analytics
 
 UNITEX este o platforma educationala construita pe Django pentru copii, elevi, profesori, parinti si administratori. Brandul vizibil in interfata este UNITEX, iar proiectul tehnic este organizat in jurul aplicatiilor `unitex_school`, `unitexapp`, `inregistrare` si `estudy`.
 
