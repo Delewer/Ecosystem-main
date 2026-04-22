@@ -1,13 +1,17 @@
 {% extends 'base.html' %}
 
-{% block workspace_banner %}
-<section class="lessons-hero" data-animate>
-    <div class="container lessons-hero__inner">
-        <div class="lessons-hero__copy">
-            <span class="lessons-hero__eyebrow">Explorator de lecții</span>
-            <h1>Învățare digitală simplă și practică</h1>
-            <p>Alege lecțiile potrivite pentru ritmul tău și descoperă abilități noi.</p>
-            <div class="lessons-hero__cta">
+{% block body_class %}workspace-body lessons-page{% endblock %}
+
+{% block page_content %}
+<main class="catalog-layout" data-lessons-dashboard>
+    <section class="lessons-compact-header" aria-labelledby="lessons-page-title" data-animate>
+        <div class="lessons-compact-header__copy">
+            <span class="lessons-compact-header__eyebrow">Explorator de lecții</span>
+            <h1 id="lessons-page-title">Alege lecția următoare</h1>
+            <p>Filtrează modulele și continuă rapid exact de unde ai rămas.</p>
+        </div>
+        <div class="lessons-compact-header__side">
+            <div class="lessons-compact-header__actions">
                 {% if user.is_authenticated %}
                 <a class="btn btn--primary" href="{% url 'estudy:dashboard' %}">Dashboardul meu</a>
                 {% else %}
@@ -15,7 +19,7 @@
                 {% endif %}
                 <a class="btn btn--ghost" href="#lesson-catalog">Vezi modulele</a>
             </div>
-            <div class="lessons-hero__progress" role="group" aria-label="Progres general">
+            <div class="lessons-compact-progress" role="group" aria-label="Progres general">
                 <div class="progress-line" data-progress-container data-progress-initial="{{ progress.percent|default:0 }}">
                     <span
                         class="progress-line__fill"
@@ -32,14 +36,8 @@
                 </span>
             </div>
         </div>
-        <figure class="lessons-hero__visual" aria-hidden="true">
-            <img src="https://illustrations.popsy.co/emerald/online-learning.svg" alt="">
-        </figure>
-    </div>
-</section>
-{% endblock %}
-{% block page_content %}
-<main class="catalog-layout" data-lessons-dashboard>
+    </section>
+
     <section class="catalog-filters" aria-labelledby="catalog-filters-title" data-filters>
         <div class="container catalog-filters__container">
             <header class="catalog-filters__header">
@@ -130,12 +128,15 @@
                     </div>
                     {% if block.lessons %}
                     <ul class="module-card__points">
-                        {% for lesson in block.lessons|slice:':3' %}
-                        <li>{{ lesson.title }}</li>
+                        {% for lesson in block.lessons %}
+                        <li class="{% if lesson.is_completed %}is-complete{% elif not lesson.is_accessible %}is-locked{% endif %}">
+                            {% if lesson.slug and lesson.is_accessible %}
+                            <a class="module-card__lesson-link" href="{% url 'estudy:lesson_detail' slug=lesson.slug %}">{{ lesson.title }}</a>
+                            {% else %}
+                            <span class="module-card__lesson-link">{{ lesson.title }}</span>
+                            {% endif %}
+                        </li>
                         {% endfor %}
-                        {% if block.total > 3 %}
-                        <li class="module-card__points-more">+ inca {{ block.total|add:"-3" }} lectii</li>
-                        {% endif %}
                     </ul>
                     {% endif %}
                     <div class="module-card__footer">

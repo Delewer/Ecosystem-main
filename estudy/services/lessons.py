@@ -14,6 +14,8 @@ from .learner_age import get_registration_profile_age
 from .lesson_access import compute_accessibility
 from .recommendations import refresh_recommendations
 
+LESSONS_LIST_CACHE_VERSION = "20260422-catalog-v3"
+
 
 def build_lesson_blocks(
     subjects: List,
@@ -189,7 +191,13 @@ def prepare_lessons_list(user, params: Dict[str, Any] | None = None) -> Dict[str
             max_created=Max("created_at"),
         )
         key_payload = json.dumps(
-            [user.id, learner_age, params_for_key, lesson_signature],
+            [
+                LESSONS_LIST_CACHE_VERSION,
+                user.id,
+                learner_age,
+                params_for_key,
+                lesson_signature,
+            ],
             sort_keys=True,
             default=str,
         ).encode("utf-8")

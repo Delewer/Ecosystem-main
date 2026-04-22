@@ -784,21 +784,33 @@ body.lesson-page .workspace-main.container {
     color: var(--lk-text); line-height: 1.5;
 }
 .ls-reflection-scale {
-    display: flex; gap: 8px; flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+    gap: 10px;
 }
 .ls-reflection-scale__btn {
-    width: 52px; height: 52px; border-radius: 50%;
+    min-height: 52px;
+    width: 100%;
+    border-radius: 14px;
     border: 3px solid var(--lk-border); background: var(--lk-surface);
-    font-size: 24px; cursor: pointer;
+    padding: 10px 14px;
+    font-size: 14px;
+    line-height: 1.25;
+    font-weight: 800;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    cursor: pointer;
     transition: all 0.2s; display: flex;
     align-items: center; justify-content: center;
 }
 .ls-reflection-scale__btn:hover {
-    border-color: var(--lk-purple); transform: scale(1.15);
+    border-color: var(--lk-purple);
+    transform: translateY(-2px);
 }
 .ls-reflection-scale__btn.is-selected {
     border-color: var(--lk-purple); background: var(--lk-purple-light);
-    transform: scale(1.2); box-shadow: 0 0 12px rgba(124,58,237,0.3);
+    transform: translateY(-2px); box-shadow: 0 0 12px rgba(124,58,237,0.3);
     animation: lk-pop 0.3s ease-out;
 }
 .ls-reflection-draw {
@@ -1111,7 +1123,8 @@ html[data-theme="dark"] .ls-achievement-badge {
     .ls-hints-panel { bottom: 16px; right: 16px; }
     .ls-hints-drawer { width: 280px; max-height: 320px; }
     .ls-code-editor__input { min-height: 140px; font-size: 13px; }
-    .ls-reflection-scale__btn { width: 44px; height: 44px; font-size: 20px; }
+    .ls-reflection-scale { grid-template-columns: 1fr; }
+    .ls-reflection-scale__btn { min-height: 46px; font-size: 13px; }
     .ls-reflection-canvas { height: 160px; }
     .ls-media-embed iframe, .ls-media-embed video { aspect-ratio: 16 / 9; }
     .lesson-hud__streak-label { display: none; }

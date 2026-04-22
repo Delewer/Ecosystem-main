@@ -31,22 +31,41 @@ const RRCutscene = (() => {
     let _panels = [];
     let _resolve = null;
     let _typeTimer = null;
+    let _isTyping = false;
+
+    function _clearTypewriter() {
+        if (_typeTimer) {
+            clearInterval(_typeTimer);
+            _typeTimer = null;
+        }
+        _isTyping = false;
+    }
+
+    function _finishCurrentPanel() {
+        const content = _overlay ? _overlay.querySelector('[data-rr-cutscene-text]') : null;
+        const panel = _panels[_panelIndex];
+        _clearTypewriter();
+        if (content && panel) content.textContent = panel.text;
+    }
 
     function _typeWriter(el, text, speed) {
-        return new Promise(resolve => {
-            el.textContent = '';
-            let i = 0;
-            _typeTimer = setInterval(() => {
-                if (i < text.length) {
-                    el.textContent += text[i];
-                    i++;
-                } else {
-                    clearInterval(_typeTimer);
-                    _typeTimer = null;
-                    resolve();
-                }
-            }, speed || 30);
-        });
+        _clearTypewriter();
+        el.textContent = '';
+        let i = 0;
+        _isTyping = true;
+        _typeTimer = setInterval(() => {
+            if (!_overlay || !_overlay.parentNode) {
+                _clearTypewriter();
+                return;
+            }
+            if (i < text.length) {
+                i++;
+                el.textContent = text.slice(0, i);
+                if (i >= text.length) _clearTypewriter();
+                return;
+            }
+            _clearTypewriter();
+        }, speed || 30);
     }
 
     function _showPanel(index) {
@@ -67,15 +86,24 @@ const RRCutscene = (() => {
     }
 
     function _close() {
-        if (_typeTimer) { clearInterval(_typeTimer); _typeTimer = null; }
+        _clearTypewriter();
         if (_overlay && _overlay.parentNode) _overlay.parentNode.removeChild(_overlay);
         _overlay = null;
         if (_resolve) { _resolve(); _resolve = null; }
     }
 
+    function _handleNext() {
+        if (_isTyping) {
+            _finishCurrentPanel();
+            return;
+        }
+        _showPanel(_panelIndex + 1);
+    }
+
     function play(sceneKey) {
         _panels = SCENES[sceneKey] || [];
         if (!_panels.length) return Promise.resolve();
+        if (_overlay) _close();
 
         return new Promise(resolve => {
             _resolve = resolve;
@@ -98,9 +126,7 @@ const RRCutscene = (() => {
                 </div>
             `;
 
-            _overlay.querySelector('[data-rr-cutscene-next]').addEventListener('click', () => {
-                _showPanel(_panelIndex + 1);
-            });
+            _overlay.querySelector('[data-rr-cutscene-next]').addEventListener('click', _handleNext);
             _overlay.querySelector('[data-rr-cutscene-skip]').addEventListener('click', _close);
 
             document.body.appendChild(_overlay);
