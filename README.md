@@ -1,8 +1,8 @@
-# UNITEX / Ecosystem - platforma educationala AI-first
+# UNITEX / Ecosystem - platforma educationala cu gamification si analytics
 
 UNITEX este o platforma educationala construita pe Django pentru copii, elevi, profesori, parinti si administratori. Brandul vizibil in interfata este UNITEX, iar proiectul tehnic este organizat in jurul aplicatiilor `unitex_school`, `unitexapp`, `inregistrare` si `estudy`.
 
-Versiunea curenta include lectii digitale, dashboard-uri pe roluri, gamification, comunitate, clase, proiecte, analytics, asistenta AI si Robot Lab v2 cu lumi, skin-uri si runner separat pentru executia codului Python.
+Versiunea curenta include lectii digitale, dashboard-uri pe roluri, gamification, comunitate, clase, proiecte, analytics, suport pentru recomandari pe reguli si Robot Lab v2 cu lumi, skin-uri si runner separat pentru executia codului Python.
 
 ## Ce include versiunea curenta
 
@@ -23,15 +23,13 @@ Versiunea curenta include lectii digitale, dashboard-uri pe roluri, gamification
 - Lectii seeduite prin migrari si comanda `seed_demo_data`.
 - Metadate pentru varsta, dificultate, XP, obiective, takeaways, practica, reflectie si media.
 
-### AI si invatare adaptiva
+### Adaptivitate curenta si infrastructura AI-ready
 
-- Hint-uri AI pe lectii si exercitii.
-- Explicatii pentru greseli in teste si cod.
-- Follow-up socratic dupa raspunsuri gresite.
-- Practica personalizata si recomandari.
-- Guard pentru raspunsuri AI bazate pe contextul lectiei.
-- Tracking cost AI pentru prompt/completion si estimari de token-uri.
-- Insight summaries, risk scoring si early warning pentru profesori.
+- Practica personalizata, recomandari si scoring bazate in principal pe reguli/euristici.
+- Insight summaries, risk scoring si early warning pentru profesori prin logica de aplicatie si analytics.
+- Guard de context si mecanisme de siguranta pentru raspunsuri asistate.
+- Tracking de cost pentru scenarii AI (prompt/completion, estimari token) disponibil la nivel de infrastructura.
+- Integrarea cu un model AI extern este partiala si configurabila, nu un flux AI complet activat implicit in toata platforma.
 
 ### Robot Lab v2
 
@@ -155,7 +153,7 @@ Variabile de mediu citite direct de `unitex_school/settings.py`:
 - `ROBOT_RUNNER_TOKEN` - bearer token comun intre Django si runner.
 - `ROBOT_RUNNER_TIMEOUT_MS` - timeout pentru apelul catre runner.
 - `ESTUDY_AUDIT_TRAIL_ENABLED` - activeaza/dezactiveaza audit trail.
-- `ESTUDY_AI_COST_*` - provider, model, moneda, rate si estimari AI.
+- `ESTUDY_AI_COST_*` - provider, model, moneda, rate si estimari pentru costuri AI (cand integrarea AI este folosita).
 
 Setari Django utile, dar nelegate direct la environment in aceasta versiune:
 
