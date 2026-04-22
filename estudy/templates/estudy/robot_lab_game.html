@@ -101,7 +101,7 @@
 <script src="{% static 'estudy/robot_lab/engine/world.js' %}?v=1" defer></script>
 <script src="{% static 'estudy/robot_lab/engine/robot.js' %}?v=1" defer></script>
 <script src="{% static 'estudy/robot_lab/engine/renderer.js' %}?v=1" defer></script>
-<script src="{% static 'estudy/robot_lab/engine/executor.js' %}?v=1" defer></script>
+<script src="{% static 'estudy/robot_lab/engine/executor.js' %}?v=2" defer></script>
 <script src="{% static 'estudy/robot_lab/engine/audio.js' %}?v=1" defer></script>
 <script src="{% static 'estudy/robot_lab/engine/particles.js' %}?v=1" defer></script>
 {# UI #}
@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!resp.ok) throw new Error(data.error || 'Eroare');
 
             var trace = data.execution_trace || [];
-            executor.loadTrace(trace);
+            executor.loadTrace(trace, { solved: !!data.solved });
             executor.runAll();
 
             setConsole(data.console_output || ['Program terminat.']);

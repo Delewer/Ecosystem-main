@@ -24,10 +24,11 @@ const RRExecutor = (() => {
             if (SPEEDS[speed]) this._speed = speed;
         }
 
-        loadTrace(trace) {
+        loadTrace(trace, opts) {
             this._trace = Array.isArray(trace) ? trace : [];
             this._index = -1;
             this._running = false;
+            this._solved = !!(opts && opts.solved);
         }
 
         runAll() {
@@ -42,7 +43,7 @@ const RRExecutor = (() => {
             this._index++;
             if (this._index >= this._trace.length) {
                 this._running = false;
-                this._onComplete({ solved: !this._trace.some(e => e.error) });
+                this._onComplete({ solved: this._solved });
                 return;
             }
 
@@ -63,7 +64,7 @@ const RRExecutor = (() => {
             this._onStep(this._index, this._trace[this._index]);
 
             if (this._index >= this._trace.length - 1) {
-                this._onComplete({ solved: !this._trace.some(e => e.error) });
+                this._onComplete({ solved: this._solved });
             }
         }
 
