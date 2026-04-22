@@ -1,1228 +1,641 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block body_class %}lesson-page lesson-page--immersive{% endblock %}
+{% block body_class %}lesson-page{% endblock %}
+{% block workspace_banner %}{% endblock %}
 
 {% block extra_css %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'estudy/lesson.css' %}">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'estudy/lesson.css' %}?v=20260421a">
 {% endblock %}
 
-{% block workspace_banner %}{% endblock %}
-
 {% block page_content %}
-<div class="lesson-root" data-lesson-slug="{{ lesson.slug }}">
-    <section class="lesson-hero lesson-section" id="intro" data-lesson-section="Intro" data-animate>
-        <div class="lesson-hero__copy">
-            <span class="lesson-pill">Nivel {{ lesson.level|default:1 }}</span>
-            <h1>{{ lesson.title|default:"Nivel 1 В· Prieteni cu variabilele" }}</h1>
-            <p>{{ lesson_intro_text }}</p>
-            {% if lesson_story_anchor %}
-            <p class="lesson-hero__story">{{ lesson_story_anchor }}</p>
+<div class="lesson"
+     data-lesson
+     data-lesson-slug="{{ lesson.slug }}"
+     data-xp-reward="{{ lesson.xp_reward|default:50 }}">
+
+    {# === HUD === #}
+    <div class="lesson-hud">
+        <a class="lesson-hud__back" href="{% url 'estudy:lessons_list' %}">&#8592; Lectii</a>
+        <div class="lesson-hud__progress">
+            <div class="lesson-hud__dot" title="Intro"></div>
+            <div class="lesson-hud__dot" title="Teorie"></div>
+            <div class="lesson-hud__dot" title="Exemple"></div>
+            {% if practice %}
+            <div class="lesson-hud__dot" title="Practica"></div>
             {% endif %}
-
-            <div class="lesson-hero__metrics">
-                <div class="lesson-metric">
-                    <span aria-hidden="true">рџ•’</span>
-                    <small>DuratДѓ</small>
-                    <strong>{{ lesson.duration_minutes|default:15 }} minute</strong>
-                </div>
-                <div class="lesson-metric">
-                    <span aria-hidden="true">рџЋЇ</span>
-                    <small>Nivel</small>
-                    <strong>{{ lesson.get_difficulty_display|default:"ГЋncepДѓtor" }}</strong>
-                </div>
-                <div class="lesson-metric">
-                    <span aria-hidden="true">вљЎ</span>
-                    <small>XP</small>
-                    <strong>+{{ lesson.xp_reward|default:40 }}</strong>
-                </div>
-                <div class="lesson-metric">
-                    <span aria-hidden="true">рџ¤ќ</span>
-                    <small>Mod de lucru</small>
-                    <strong>{{ lesson.get_collaboration_mode_display|default:"Individual" }}</strong>
-                </div>
-                <div class="lesson-metric">
-                    <span aria-hidden="true">рџ“…</span>
-                    <small>Data</small>
-                    <strong>{{ lesson.date|date:"d.m.Y" }}</strong>
-                </div>
-            </div>
-
-            {% if learner_age %}
-            <div class="lesson-age-mode{% if age_mode_source == 'profile' %} lesson-age-mode--auto{% endif %}">
-                <strong>Mod adaptat automat:</strong>
-                <span>{{ age_mode_label }} · profil {{ learner_age }} ani</span>
-            </div>
-            {% endif %}
-
-            {% if lesson_skill_titles or lesson_track_items %}
-            <div class="lesson-hero__meta">
-                {% if lesson_skill_titles %}
-                <div class="lesson-hero__skills" aria-label="Deprinderi vizate">
-                    <small>рџ”– DezvoltДѓm</small>
-                    <div class="lesson-skill-list">
-                        {% for skill_title in lesson_skill_titles %}
-                            <span class="lesson-skill">{{ skill_title }}</span>
-                        {% empty %}
-                            <span class="lesson-skill">Explorare</span>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
-                {% if lesson_track_items %}
-                <div class="lesson-hero__tracks" aria-label="Parcursuri de conИ›inut">
-                    <small>рџ—єпёЏ Trasee sugerate</small>
-                    <ol class="lesson-track-list">
-                        {% for track in lesson_track_items %}
-                            <li>{{ track }}</li>
-                        {% empty %}
-                            <li>UrmeazДѓ fluxul de bazДѓ И™i revino pentru provocДѓri bonus.</li>
-                        {% endfor %}
-                    </ol>
-                </div>
-                {% endif %}
-            </div>
-            {% endif %}
-
-            <div class="lesson-progress-tracker" data-progress-container>
-                <div class="lesson-progress lesson-progress--hero">
-                    <div class="lesson-progress__track">
-                        <span class="lesson-progress__bar" data-lesson-progress-bar aria-valuemin="0" aria-valuemax="100"></span>
-                    </div>
-                    <span class="lesson-progress__label"><span data-lesson-progress-count>0</span>% complet</span>
-                </div>
-                <div class="lesson-progress__stages" role="list">
-                    <button type="button" class="progress-stage is-active" data-progress-stage="concept" data-stage-percent="0" title="Teorie & exemple">
-                        <span>Concept</span>
-                    </button>
-                    <button type="button" class="progress-stage" data-progress-stage="example" data-stage-percent="25" title="Activitatea principala">
-                        <span>{{ example_nav_label }}</span>
-                    </button>
-                    <button type="button" class="progress-stage" data-progress-stage="practice" data-stage-percent="55" title="ExerciИ›ii practice">
-                        <span>{{ practice_nav_label }}</span>
-                    </button>
-                    <button type="button" class="progress-stage" data-progress-stage="test" data-stage-percent="80" title="Test final">
-                        <span>Test</span>
-                    </button>
-                    <button type="button" class="progress-stage" data-progress-stage="summary" data-stage-percent="100" title="Rezumat & level up">
-                        <span>Summary</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="lesson-hero__actions">
-                {% if is_junior_track %}
-                <a class="btn btn--primary" href="#example" data-smooth-scroll>Incepe jocul vizual</a>
-                {% elif show_full_code_lab %}
-                <a class="btn btn--primary" href="#example" data-smooth-scroll>Deschide Robot Lab</a>
-                {% elif is_intro_lesson %}
-                <a class="btn btn--primary" href="#adventure-mode" data-smooth-scroll>CunoaИ™te echipa</a>
-                {% else %}
-                <a class="btn btn--primary" href="#adventure-mode" data-smooth-scroll>IntrДѓ Г®n Code Arena</a>
-                {% endif %}
-                {% if show_robot_lab_cta %}
-                <a class="btn btn--ghost" href="{% url 'estudy:robot_lab_hub' %}">Intra in Robot Lab</a>
-                {% endif %}
-                {% if next_lesson and next_lesson.slug %}
-                    {% if next_locked %}
-                        <button class="btn btn--ghost" type="button" disabled aria-disabled="true">
-                            Finalizeaza lectia curenta pentru a continua
-                        </button>
-                    {% else %}
-                        <a class="btn btn--ghost" href="{% url 'estudy:lesson_detail' slug=next_lesson.slug %}" data-next-lesson>Urmatoarea lectie</a>
-                    {% endif %}
-                {% else %}
-                    <a class="btn btn--ghost" href="#summary" data-smooth-scroll>Vezi concluziile</a>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="lesson-hero__status">
-            <div class="player-card" data-xp-card data-xp-key="unitex-lesson-{{ lesson.slug|default:'demo' }}" data-xp-reward="{{ lesson.xp_reward|default:40 }}">
-                <div class="player-card__row">
-                    <span>XP total</span>
-                    <strong data-xp-amount>120</strong>
-                </div>
-                <div class="player-card__stats">
-                    <div>
-                        <small>Nivel</small>
-                        <strong data-xp-level>1</strong>
-                    </div>
-                    <div>
-                        <small>Badge</small>
-                        <strong data-xp-badge>ГЋncepДѓtor</strong>
-                    </div>
-                    <div>
-                        <small>Streak</small>
-                        <strong><span data-xp-streak>0</span> рџ”Ґ</strong>
-                    </div>
-                </div>
-                <p data-xp-message>Иљine ritmul. Ai deja 0 misiuni consecutive!</p>
-            </div>
-            <figure class="lesson-hero__visual" aria-hidden="true">
-                <img src="https://illustrations.popsy.co/emerald/online-learning.svg" alt="">
-            </figure>
-        </div>
-    </section>
-
-    <section class="lesson-section lesson-card lesson-card--warmup" id="warmup" data-animate>
-        <header class="lesson-card__header">
-            <span class="lesson-card__icon" aria-hidden="true">рџ”Ґ</span>
-            <div>
-                <h2>ГЋncДѓlzirea echipei</h2>
-                <p>Un moment scurt pentru a pregДѓti mintea И™i conversaИ›ia.</p>
-            </div>
-        </header>
-        <div class="lesson-warmup">
-            {% if lesson.warmup_prompt %}
-            <article class="lesson-warmup__card">
-                <h3>ГЋncДѓlzire rapidДѓ</h3>
-                <p>{{ lesson.warmup_prompt }}</p>
-            </article>
-            {% endif %}
-            {% if lesson.discussion_prompts %}
-            <article class="lesson-warmup__card">
-                <h3>ГЋntrebДѓri pentru discuИ›ie</h3>
-                <ul class="lesson-list">
-                    {% for prompt in lesson.discussion_prompts %}
-                        <li>{{ prompt }}</li>
-                    {% empty %}
-                        <li>ГЋmpДѓrtДѓИ™eИ™te o idee sau o curiozitate despre temДѓ.</li>
-                    {% endfor %}
-                </ul>
-            </article>
-            {% endif %}
-            {% if lesson.objectives.all %}
-            <article class="lesson-warmup__card">
-                <h3>Ce ne propunem azi</h3>
-                <ol class="lesson-objectives">
-                    {% for obj in lesson.objectives.all %}
-                        <li>
-                            <strong>{{ obj.description }}</strong>
-                            {% if obj.success_criteria %}<span> В· {{ obj.success_criteria }}</span>{% endif %}
-                        </li>
-                    {% endfor %}
-                </ol>
-            </article>
-            {% endif %}
-        </div>
-    </section>
-
-    <section class="lesson-section lesson-card lesson-card--adventure" id="adventure-mode" data-lesson-section="Adventure" data-animate>
-        <header class="lesson-card__header">
-            {% if is_intro_lesson %}
-            <span class="lesson-card__icon" aria-hidden="true">рџ§ё</span>
-            <div>
-                <h2>Primii paИ™i cu echipa UNITEX</h2>
-                <p>Primele lecИ›ii sunt despre curiozitate, joacДѓ И™i Г®ncredere Г®n cod.</p>
-            </div>
-            {% else %}
-            <span class="lesson-card__icon" aria-hidden="true">вљ”пёЏ</span>
-            <div>
-                <h2>Teorie + Code Arena</h2>
-                <p>ГЋnveИ›i rapid ideea, apoi o aplici direct Г®n misiuni de cod.</p>
-            </div>
-            {% endif %}
-        </header>
-
-        {% if is_intro_lesson %}
-        <div class="adventure-intro">
-            <p class="adventure-intro__lead">
-                Aici descoperi personajele-ghid, ritmul lecИ›iei И™i cum transformДѓm fiecare greИ™ealДѓ Г®ntr-un pas Г®nainte.
-            </p>
-            <div class="adventure-cast" data-character-cast>
-                {% for character in mentor_characters %}
-                <article class="adventure-cast__card{% if forloop.first %} is-active{% endif %}" data-character-card>
-                    <span class="adventure-cast__emoji" aria-hidden="true">{{ character.emoji }}</span>
-                    <div>
-                        <h3>{{ character.name }}</h3>
-                        <small>{{ character.role }}</small>
-                        <p>{{ character.line }}</p>
-                    </div>
-                </article>
-                {% endfor %}
-            </div>
-            <ol class="adventure-path">
-                <li><strong>Pas 1:</strong> ГЋntГўi Г®nИ›elegi ideea principalДѓ prin exemple simple.</li>
-                <li><strong>Pas 2:</strong> Apoi testezi ideea Г®ntr-un mini-joc sau o provocare ghidatДѓ.</li>
-                <li><strong>Pas 3:</strong> La final primeИ™ti feedback, XP И™i Г®И›i consolidezi Г®ncrederea.</li>
-            </ol>
-        </div>
-        {% else %}
-        <div class="code-arena" data-code-arena>
-            <article class="code-arena__theory">
-                <h3>Briefing teoretic</h3>
-                <p>{{ lesson_intro_text }}</p>
-                {% if lesson_theory_points %}
-                <ul>
-                    {% for point in lesson_theory_points %}
-                    <li>{{ point }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-            </article>
-
-            <article class="code-arena__missions">
-                <h3>Misiuni active</h3>
-                <div class="code-arena__mission-list">
-                    {% for step in code_arena_steps %}
-                    <button
-                        type="button"
-                        class="arena-mission{% if forloop.first %} is-active{% endif %}"
-                        data-arena-mission
-                        data-mission-title="{{ step.title|escape }}"
-                        data-mission-goal="{{ step.goal|escape }}"
-                        data-mission-xp="{{ step.xp|escape }}"
-                        data-mission-target="{{ step.target|escape }}"
-                    >
-                        <span class="arena-mission__badge">{{ step.badge }}</span>
-                        <strong>{{ step.title }}</strong>
-                        <small>+{{ step.xp }} XP</small>
-                    </button>
-                    {% endfor %}
-                </div>
-                <div class="code-arena__status" data-arena-status>
-                    <h4 data-arena-status-title>{{ code_arena_steps.0.title|default:"Alege o misiune" }}</h4>
-                    <p data-arena-status-goal>{{ code_arena_steps.0.goal|default:"SelecteazДѓ o misiune pentru a Г®ncepe." }}</p>
-                    <div class="code-arena__status-footer">
-                        <span data-arena-status-xp>+{{ code_arena_steps.0.xp|default:"10" }} XP</span>
-                        <a class="btn btn--primary btn--glow" href="{{ code_arena_steps.0.target|default:'#example' }}" data-arena-status-link>
-                            IntrДѓ Г®n misiune
-                        </a>
-                    </div>
-                </div>
-            </article>
-        </div>
-        {% endif %}
-    </section>
-
-    <div class="lesson-layout">
-        <aside class="lesson-sidebar" aria-label="Navigare lecИ›ie">
-            <div class="lesson-sidebar__theory">
-                <span class="lesson-sidebar__title">Teorie</span>
-                <h2>{{ lesson.title|default:"Lectie de cod" }}</h2>
-                <p>{{ lesson_intro_text }}</p>
-                {% if lesson_theory_points %}
-                <ul class="lesson-sidebar__theory-list">
-                    {% for point in lesson_theory_points %}
-                    <li>{{ point }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-                <button
-                    type="button"
-                    class="btn btn--ghost btn--small lesson-sidebar__hint"
-                    data-hint-modal-open
-                    data-hint-modal-title="Hint rapid"
-                    data-hint-modal-content="{{ practice.data.hint|default:'Observa cuvintele cheie si legatura lor cu variabilele.'|escape }}"
-                >
-                    Deschide hint
-                </button>
-            </div>
-            <div class="lesson-sidebar__nav" data-lesson-nav>
-                <span class="lesson-sidebar__title">Misiuni</span>
-                                <nav class="lesson-nav">
-                    <a class="lesson-nav__link is-active" href="#concept" data-lesson-toc-link data-lesson-nav-link>
-                        <span>Concept</span>
-                        <small>Recapitulare</small>
-                    </a>
-                    <a class="lesson-nav__link" href="#example" data-lesson-toc-link data-lesson-nav-link>
-                        <span>{{ example_nav_label }}</span>
-                        <small>{{ example_nav_hint }}</small>
-                    </a>
-                    <a class="lesson-nav__link" href="#practice" data-lesson-toc-link data-lesson-nav-link>
-                        <span>{{ practice_nav_label }}</span>
-                        <small>{{ practice_nav_hint }}</small>
-                    </a>
-                    <a class="lesson-nav__link" href="#test" data-lesson-toc-link data-lesson-nav-link>
-                        <span>Test</span>
-                        <small>Verificare</small>
-                    </a>
-                    <a class="lesson-nav__link" href="#summary" data-lesson-toc-link data-lesson-nav-link>
-                        <span>Rezumat</span>
-                        <small>Finalizare</small>
-                    </a>
-                </nav>
-            </div>
-            <label class="lesson-sidebar__select" for="lesson-mobile-toc">
-                <span>Salt rapid</span>
-                                <select id="lesson-mobile-toc">
-                    <option value="#concept">Concept</option>
-                    <option value="#example">{{ example_nav_label }}</option>
-                    <option value="#practice">{{ practice_nav_label }}</option>
-                    <option value="#test">Test</option>
-                    <option value="#summary">Rezumat</option>
-                </select>
-            </label>
-            <div class="lesson-sidebar__tip">
-                <p><strong data-lesson-progress-count>0</strong>% din lectie finalizat</p>
-                <p data-streak-message>Ai parcurs deja 0 zile la rand. Tine ritmul.</p>
-            </div>
-        </aside>
-
-        <div class="lesson-body">
-            <section class="lesson-section lesson-card" id="concept" data-lesson-section="Concept" data-animate>
-                <header class="lesson-card__header">
-                    <span class="lesson-card__icon" aria-hidden="true">CP</span>
-                    <div>
-                        <h2>Concept</h2>
-                        <p>Teorie + exemple clare in acelasi loc.</p>
-                    </div>
-                </header>
-
-                <div class="lesson-tabs" data-tab-group="concept">
-                    <div class="lesson-tabs__list" role="tablist">
-                        <button class="lesson-tab is-active" type="button" role="tab" aria-selected="true" data-tab-trigger="theory">Teorie</button>
-                        <button class="lesson-tab" type="button" role="tab" aria-selected="false" data-tab-trigger="examples">{{ concept_examples_label }}</button>
-                    </div>
-                    <div class="lesson-tabs__panels">
-                        <article class="lesson-tab__panel is-active" role="tabpanel" data-tab-panel="theory">
-                            <div class="lesson-prose">
-                                <p>{{ lesson_content_text|linebreaksbr }}</p>
-                                {% if lesson_theory_points %}
-                                    <ul class="lesson-checklist">
-                                        {% for point in lesson_theory_points %}
-                                            <li>{{ point }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                {% endif %}
-                            </div>
-                            {% if lesson.theory_notes %}
-                                <div class="lesson-note" role="note">
-                                    <span class="lesson-note__title">Note importante</span>
-                                    {{ lesson.theory_notes|linebreaks }}
-                                </div>
-                            {% endif %}
-                        </article>
-                        <article class="lesson-tab__panel" role="tabpanel" data-tab-panel="examples" hidden>
-                            <div class="lesson-prose">
-                                <p>{{ lesson_examples_text|linebreaks }}</p>
-                            </div>
-                            <div class="lesson-example-grid">
-                                {% for item in lesson_example_cards %}
-                                <article class="lesson-example-card">
-                                    <h3>{{ item.title }}</h3>
-                                    <pre><code>{{ item.code }}</code></pre>
-                                    <p>{{ item.note }}</p>
-                                </article>
-                                {% endfor %}
-                            </div>
-                            {% if show_guided_code_snippet %}
-                            <div class="lesson-snippet" data-code-block>
-                                <div class="lesson-snippet__toolbar">
-                                    <span>Python</span>
-                                    <button type="button" class="btn btn--ghost lesson-code__copy" data-copy-code>Copiaza codul</button>
-                                </div>
-                                <pre class="language-python"><code>{% if enrichment.code_challenges and enrichment.code_challenges.0.solution %}{{ enrichment.code_challenges.0.solution }}{% else %}nume = "Alex"
-varsta = 12
-mesaj = f"Salut, {nume}! Ai {varsta} ani."
-print(mesaj){% endif %}</code></pre>
-                            </div>
-                            {% endif %}
-                        </article>
-                    </div>
-                </div>
-            </section>
-
-            {% if media_segments %}
-            <section class="lesson-section lesson-card lesson-card--media" id="media-guide" data-lesson-section="Media" data-animate>
-                <header class="lesson-card__header">
-                    <span class="lesson-card__icon" aria-hidden="true">рџЋ¬</span>
-                    <div>
-                        <h2>Momente multimedia</h2>
-                        <p>Parcurge videoclipul sau prezentarea pe capitole clare.</p>
-                    </div>
-                </header>
-                <div class="lesson-media-guide">
-                    {% if lesson_media and lesson_media.video_url %}
-                        <div class="lesson-media-guide__player">
-                            <iframe src="{{ lesson_media.video_url }}" title="Video lecИ›ie" loading="lazy" allowfullscreen></iframe>
-                        </div>
-                    {% elif lesson_media and lesson_media.slides_url %}
-                        <div class="lesson-media-guide__player">
-                            <a class="btn btn--ghost" href="{{ lesson_media.slides_url }}" target="_blank" rel="noopener">Deschide prezentarea</a>
-                        </div>
-                    {% endif %}
-                    <ol class="lesson-media-guide__segments">
-                        {% for segment in media_segments %}
-                            <li>
-                                <strong>{{ segment.title }}</strong>
-                                <span>
-                                    {{ segment.start_seconds|default:0 }}s вЂ“ {{ segment.end_seconds|default:0 }}s
-                                </span>
-                                {% if segment.description %}
-                                    <p>{{ segment.description }}</p>
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ol>
-                </div>
-            </section>
-            {% endif %}
-
             {% if code_exercises %}
-            <section class="lesson-section lesson-card lesson-card--code-exercises" id="code-exercises" data-lesson-section="CodeExercises" data-animate>
-                <header class="lesson-card__header">
-                    <span class="lesson-card__icon" aria-hidden="true">рџ’Ў</span>
-                    <div>
-                        <h2>ExerciИ›ii interactive</h2>
-                        <p>Scrie cod, ruleazДѓ testele И™i vezi rezultatul instant.</p>
-                    </div>
-                </header>
-                <div class="exercise-list">
-                    {% for ex in code_exercises %}
-                    <article class="exercise-card" data-exercise data-exercise-id="{{ ex.id }}">
-                        <div class="exercise-card__head">
-                            <h3 class="exercise-card__title">{{ ex.title }}</h3>
-                            <span class="exercise-chip">{{ ex.get_language_display }}</span>
-                            <span class="exercise-chip">в­ђ {{ ex.difficulty_level }}</span>
-                            <span class="exercise-chip">+{{ ex.points }} XP</span>
-                        </div>
-                        <p class="exercise-card__desc">{{ ex.description }}</p>
-                        <div class="exercise-grid">
-                            <div class="exercise-tests">
-                                <h4>Teste</h4>
-                                <ul class="list">
-                                    {% for t in ex.test_cases %}
-                                        <li>
-                                            <strong>{{ t.description }}</strong><br/>
-                                            <small>Input:</small> <code>{{ t.input }}</code><br/>
-                                            <small>Expected:</small> <code>{{ t.expected_output }}</code>
-                                        </li>
-                                    {% empty %}
-                                        <li>Nu sunt teste configurate.</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <div class="exercise-editor">
-                                <label class="lesson-prose">
-                                    <span>Codul tau</span>
-                                    <textarea rows="10" class="form-control" data-code>{{ ex.starter_code }}</textarea>
-                                </label>
-                                <div class="exercise-actions">
-                                    <button type="button" class="btn btn--primary" data-run>Run</button>
-                                    <button type="button" class="btn btn--ghost" data-reset>Reset</button>
-                                </div>
-                                <pre class="exercise-output" data-output aria-live="polite"></pre>
-                            </div>
-                        </div>
-                    </article>
-                    {% endfor %}
-                </div>
-            </section>
+            <div class="lesson-hud__dot" title="Cod"></div>
             {% endif %}
-
-            <section class="lesson-section lesson-card lesson-card--assistant" id="assistant" data-lesson-section="Assistant" data-animate>
-                <header class="lesson-card__header">
-                    <span class="lesson-card__icon" aria-hidden="true">рџ¤–</span>
-                    <div>
-                        <h2>Asistent AI</h2>
-                        <p>Pune o Г®ntrebare despre aceastДѓ lecИ›ie И™i primeИ™ti imediat un indiciu.</p>
-                    </div>
-                </header>
-                <form class="ai-hint-form" method="post" action="{% url 'estudy:ai_hint' slug=lesson.slug %}" data-ai-hint-form>
-                    {% csrf_token %}
-                    <label class="ai-hint-form__field">
-                        <span>ГЋntrebarea ta</span>
-                        <textarea name="question" rows="3" placeholder="ex: Nu Г®nИ›eleg diferenИ›a dintre variabile И™i constante..." required></textarea>
-                    </label>
-                    <div class="ai-hint-form__actions">
-                        <button type="submit" class="btn btn--primary">Cere un indiciu</button>
-                        <p class="ai-hint-form__status" data-ai-hint-status aria-live="polite"></p>
-                    </div>
-                    <div class="ai-hint-form__result hidden" data-ai-hint-output>
-                        <strong>RДѓspuns AI:</strong>
-                        <p></p>
-                    </div>
-                </form>
-            </section>
-
-            {% if lesson_materials %}
-            <section class="lesson-section lesson-card lesson-card--resources" id="resources" data-lesson-section="Resources" data-animate>
-                <header class="lesson-card__header">
-                    <span class="lesson-card__icon" aria-hidden="true">рџ“љ</span>
-                    <div>
-                        <h2>Resurse suplimentare</h2>
-                        <p>ExploreazДѓ articole И™i videoclipuri care Г®ntДѓresc lecИ›ia.</p>
-                    </div>
-                </header>
-                <div class="resource-list">
-                    {% for material in lesson_materials %}
-                        <article class="resource-card">
-                            <span class="resource-card__badge resource-card__badge--{{ material.resource_type }}">
-                                {{ material.get_resource_type_display }}
-                            </span>
-                            <h3 class="resource-card__title">{{ material.title }}</h3>
-                            <a href="{{ material.url }}" target="_blank" rel="noopener" class="resource-card__link">
-                                Deschide resursa
-                            </a>
-                        </article>
-                    {% endfor %}
-                </div>
-            </section>
+            {% if quiz_test %}
+            <div class="lesson-hud__dot" title="Test"></div>
             {% endif %}
+            <div class="lesson-hud__dot" title="Rezumat"></div>
+        </div>
+        {# Streak combo counter #}
+        <div class="lesson-hud__streak" data-ls-streak hidden>
+            <span class="lesson-hud__streak-fire">&#128293;</span>
+            <span class="lesson-hud__streak-count" data-ls-streak-val>0</span>
+            <span class="lesson-hud__streak-label">combo</span>
+        </div>
+        <div class="lesson-hud__xp">
+            <span>&#9889;</span>
+            <span data-ls-xp-val>0</span> / {{ lesson.xp_reward|default:50 }} XP
+        </div>
+        {# Feature 10: Text-to-speech button #}
+        {% if lesson_voice_text %}
+        <button class="ls-tts-btn" data-ls-tts title="Citeste cu voce tare">
+            &#128264; Citeste
+        </button>
+        <span class="ls-tts-text" hidden>{{ lesson_voice_text }}</span>
+        {% endif %}
+    </div>
 
-            <section class="lesson-section lesson-card lesson-card--code-lab" id="example" data-lesson-section="Example" data-animate>
-                <header class="lesson-card__header">
-                    <span class="lesson-card__icon" aria-hidden="true">{% if show_full_code_lab %}PY{% elif is_junior_track %}PU{% else %}TH{% endif %}</span>
-                    <div>
-                        <h2>{{ example_section_title }}</h2>
-                        <p>{{ example_section_description }}</p>
-                    </div>
-                </header>
-                {% if show_full_code_lab %}
-                {% if robot_lab_preview %}
-                <article class="lesson-robotlab-preview" aria-label="Previzualizare misiune Robot Lab">
-                    <div class="lesson-robotlab-preview__board">
-                        <div class="lesson-robotlab-preview__board-top">
-                            <div class="lesson-robotlab-preview__board-meta">
-                                <span class="lesson-robotlab-preview__eyebrow">Misiune Robot Lab</span>
-                                <strong>{{ robot_lab_preview.title }}</strong>
-                            </div>
-                            <div class="lesson-robotlab-preview__board-side">
-                                <span class="lesson-robotlab-preview__badge">{{ robot_lab_preview.id }}</span>
-                                <div class="lesson-robotlab-preview__stars" aria-hidden="true">
-                                    <span></span>
-                                    <span></span>
-                                    <span></span>
-                                </div>
-                            </div>
-                        </div>
-                        <p class="lesson-robotlab-preview__status" data-robotlab-preview-status>Ghideaza-l pe Robo spre terminal.</p>
-                        <div class="lesson-robotlab-preview__playfield">
-                            <div class="lesson-robotlab-preview__mascot" aria-hidden="true">
-                                <span class="lesson-robotlab-preview__mascot-eyes"></span>
-                                <span class="lesson-robotlab-preview__mascot-smile"></span>
-                            </div>
-                            <div class="lesson-robotlab-preview__map-frame">
-                                <div class="lesson-robotlab-preview__map"
-                                     data-robotlab-preview-map
-                                     style="--robotlab-preview-cols: {{ robot_lab_preview.grid_cols|default:8 }};">
-                                    {% for row in robot_lab_preview.grid_rows %}
-                                        {% for cell in row %}
-                                        <span
-                                            class="lesson-robotlab-preview__cell lesson-robotlab-preview__cell--{{ cell.kind }}{% if cell.kind == 'start' %} is-robot{% endif %}"
-                                            data-robotlab-preview-cell
-                                            data-kind="{{ cell.kind }}"
-                                            data-row="{{ forloop.parentloop.counter0 }}"
-                                            data-col="{{ forloop.counter0 }}"
-                                            title="{{ cell.label }}"
-                                            aria-label="{{ cell.label }}"
-                                        >
-                                            {% if cell.kind == 'terminal' %}
-                                            <span class="lesson-robotlab-preview__cell-icon lesson-robotlab-preview__cell-icon--terminal" aria-hidden="true"></span>
-                                            {% elif cell.kind == 'goal' %}
-                                            <span class="lesson-robotlab-preview__cell-icon lesson-robotlab-preview__cell-icon--goal" aria-hidden="true"></span>
-                                            {% elif cell.kind == 'battery' %}
-                                            <span class="lesson-robotlab-preview__cell-icon lesson-robotlab-preview__cell-icon--battery" aria-hidden="true"></span>
-                                            {% elif cell.kind == 'key' %}
-                                            <span class="lesson-robotlab-preview__cell-icon lesson-robotlab-preview__cell-icon--key" aria-hidden="true"></span>
-                                            {% elif cell.kind == 'door' %}
-                                            <span class="lesson-robotlab-preview__cell-icon lesson-robotlab-preview__cell-icon--door" aria-hidden="true"></span>
-                                            {% elif cell.kind == 'hazard' %}
-                                            <span class="lesson-robotlab-preview__cell-icon lesson-robotlab-preview__cell-icon--hazard" aria-hidden="true"></span>
-                                            {% endif %}
-                                        </span>
-                                        {% endfor %}
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="lesson-robotlab-preview__deck">
-                            <div class="lesson-robotlab-preview__runbar"><span data-robotlab-preview-progress></span></div>
-                            <div class="lesson-robotlab-preview__controls">
-                                <button type="button" class="lesson-robotlab-preview__control lesson-robotlab-preview__control--play" data-robotlab-preview-control="reset" aria-label="Reseteaza robotul"></button>
-                                <button type="button" class="lesson-robotlab-preview__control lesson-robotlab-preview__control--up" data-robotlab-preview-control="up" aria-label="Muta in sus"></button>
-                                <button type="button" class="lesson-robotlab-preview__control lesson-robotlab-preview__control--right" data-robotlab-preview-control="right" aria-label="Muta la dreapta"></button>
-                                <button type="button" class="lesson-robotlab-preview__control lesson-robotlab-preview__control--down" data-robotlab-preview-control="down" aria-label="Muta in jos"></button>
-                                <button type="button" class="lesson-robotlab-preview__control lesson-robotlab-preview__control--left" data-robotlab-preview-control="left" aria-label="Muta la stanga"></button>
-                            </div>
-                        </div>
-                        {% if robot_lab_preview.legend_items %}
-                        <div class="lesson-robotlab-preview__legend" aria-label="Legenda hartii">
-                            {% for item in robot_lab_preview.legend_items %}
-                            <span class="lesson-robotlab-preview__legend-item">
-                                <i class="lesson-robotlab-preview__legend-swatch lesson-robotlab-preview__legend-swatch--{{ item.kind }}">{{ item.symbol }}</i>
-                                <small>{{ item.label }}</small>
-                            </span>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                        {% if robot_lab_preview.play_url or robot_lab_preview.hub_url %}
-                        <div class="lesson-robotlab-preview__actions">
-                            {% if robot_lab_preview.play_url %}
-                            <a class="btn btn--primary" href="{{ robot_lab_preview.play_url }}">Deschide misiunea completa</a>
-                            {% endif %}
-                            {% if robot_lab_preview.hub_url %}
-                            <a class="btn btn--ghost" href="{{ robot_lab_preview.hub_url }}">Toate misiunile Robot Lab</a>
-                            {% endif %}
-                        </div>
+    {# Achievement badges container (populated by JS) #}
+    <div class="ls-achievements" data-ls-achievements hidden></div>
+
+    {# Feature 3: Smart Hints floating button #}
+    {% if lesson_hints %}
+    <div class="ls-hints-panel" data-ls-hints>
+        <button class="ls-hints-btn" data-ls-hints-toggle>
+            &#128161; Ai nevoie de ajutor?
+        </button>
+        <div class="ls-hints-drawer" data-ls-hints-drawer hidden>
+            <div class="ls-hints-drawer__title">&#128161; Indicii</div>
+            {% for hint in lesson_hints %}
+            <div class="ls-hint-item" data-ls-hint data-hint-level="{{ hint.hint_level }}" data-hint-section="{{ hint.section }}"{% if hint.hint_level > 1 %} hidden{% endif %}>
+                <div class="ls-hint-item__level">Nivel {{ hint.hint_level }}</div>
+                <p class="ls-hint-item__text">{{ hint.hint_text }}</p>
+            </div>
+            {% endfor %}
+            <button class="ls-btn ls-btn--ghost ls-btn--small" data-ls-hints-more>&#128275; Arata mai multe indicii</button>
+        </div>
+    </div>
+    {% endif %}
+
+    {# Feature 6: Easter eggs data (hidden, activated by JS) #}
+    {% if lesson_easter_eggs %}
+    <div data-ls-easter-eggs hidden>
+        {% for egg in lesson_easter_eggs %}
+        <div data-egg-trigger="{{ egg.trigger_condition }}"
+             data-egg-type="{{ egg.reward_type }}"
+             data-egg-value="{{ egg.reward_value }}"
+             data-egg-message="{{ egg.message }}"></div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="lesson-steps">
+
+        {# ================================================================ #}
+        {# STEP 0 — Welcome                                                 #}
+        {# ================================================================ #}
+        <section class="lesson-step" data-step="welcome">
+            <div class="lesson-step__inner">
+                <div class="ls-mentor">
+                    <div class="ls-mentor__avatar">&#129302;</div>
+                    <div class="ls-mentor__bubble">
+                        {% if lesson_story_anchor %}
+                        {{ lesson_story_anchor }}
+                        {% else %}
+                        Salut! Sunt ghidul tau pentru aceasta lectie. Hai sa invatam impreuna ceva super!
                         {% endif %}
                     </div>
-                </article>
-                {% endif %}
-                <div class="code-lab" data-code-lab>
-                    <div class="code-lab__mission" data-code-mission>
-                        <h3 class="code-lab__mission-title">Misiune</h3>
-                        <ul class="code-lab__mission-list">
-                            <li data-code-check="assign">Creeaza cel putin o variabila, de exemplu `nume = "Ana"`.</li>
-                            <li data-code-check="print">Afiseaza rezultatul cu `print(...)`.</li>
-                        </ul>
-                        <p class="code-lab__mission-status" data-code-mission-status>Completeaza checklist-ul, apoi apasa Run.</p>
-                    </div>
-                    <div class="code-lab__header">
-                        <span>Editor live</span>
-                        <div class="code-lab__chips">
-                            <span>Python 3.11</span>
-                            <span>Pyodide runtime</span>
-                        </div>
-                    </div>
-                    <div class="code-lab__grid">
-                        <label class="code-lab__field">
-                            <span>Codul tau</span>
-                            <textarea class="code-lab__editor" data-code-input>{% if enrichment.code_challenges and enrichment.code_challenges.0.starter %}{{ enrichment.code_challenges.0.starter }}{% else %}nume = "Alex"
-varsta = 12
-print(f"Salut, {nume}! Ai {varsta} ani.")
-{% endif %}</textarea>
-                        </label>
-                        <div class="code-lab__field">
-                            <span>Previzualizare live</span>
-                            <div class="code-lab__preview language-python" data-code-preview>
-                                <code class="language-python">{% if enrichment.code_challenges and enrichment.code_challenges.0.starter %}{{ enrichment.code_challenges.0.starter }}{% else %}nume = "Alex"
-varsta = 12
-print(f"Salut, {nume}! Ai {varsta} ani.")
-{% endif %}</code>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="code-lab__arena" data-code-arena-game>
-                        <div class="code-lab__arena-head">
-                            <strong>Mini-joc: Arena variabilelor</strong>
-                            <p data-code-arena-status>Scrie codul si apasa Run ca sa muti robotul.</p>
-                        </div>
-                        <div class="code-lab__arena-grid" data-code-arena-grid aria-label="Mini joc"></div>
-                        <div class="code-lab__arena-legend">
-                            <span>R = Robot</span>
-                            <span>V = Variabila</span>
-                            <span>P = print()</span>
-                            <span>G = Goal</span>
-                        </div>
-                    </div>
-                    <label class="code-lab__field code-lab__field--inline">
-                        <span>Input optional</span>
-                        <input type="text" placeholder="Valorile pentru input() separate prin Enter" data-code-stdin>
-                    </label>
-                    <div class="code-lab__actions">
-                        <div class="code-lab__status" data-code-status>Pregatit</div>
-                        <div class="code-lab__buttons">
-                            <button type="button" class="btn btn--primary" data-code-run>Run</button>
-                            <button type="button" class="btn btn--ghost" data-code-reset>Reset</button>
-                        </div>
-                    </div>
-                    <div class="code-lab__console" data-code-output aria-live="polite">
-                        Consola asteapta sa rulezi codul...
-                    </div>
-                    <div class="code-lab__reward" data-code-reward aria-hidden="true">
-                        <strong>XP +10</strong>
-                        <span>Misiune completa!</span>
-                    </div>
                 </div>
-                <p class="lesson-code-caption">Daca apare o eroare, citeste mesajul, ajusteaza codul si incearca din nou.</p>
-                {% elif is_junior_track %}
-                <div class="junior-games" data-junior-games>
-                    <div class="junior-games__summary">
-                        <div>
-                            <span class="junior-games__eyebrow">{{ junior_games.headline }}</span>
-                            <h3>Joaca si invata cu Robo</h3>
-                            <p>{{ junior_games.summary }}</p>
-                        </div>
-                        <div class="junior-games__progress">
-                            <strong data-junior-progress-count>0/3</strong>
-                            <span data-junior-progress-label>Misiuni complete</span>
-                        </div>
-                    </div>
-                    <div class="junior-games__grid">
-                        <article class="junior-game-card" data-junior-game="order" data-junior-order-game data-junior-order-expected="{{ junior_games.order.expected|join:',' }}">
-                            <header class="junior-game-card__header">
-                                <div>
-                                    <h3>{{ junior_games.order.title }}</h3>
-                                    <p>{{ junior_games.order.prompt }}</p>
-                                </div>
-                                <span class="junior-game-card__badge">Ruta</span>
-                            </header>
-                            <div class="junior-order">
-                                <div class="junior-order__board" data-junior-order-board>
-                                    {% for row in junior_games.order.board %}
-                                    <div class="junior-order__row">
-                                        {% for cell in row %}
-                                        <div class="junior-order__cell junior-order__cell--{{ cell.kind }}{% if cell.kind == 'start' %} is-robot{% endif %}"
-                                             data-junior-order-board-cell
-                                             data-row="{{ forloop.parentloop.counter0 }}"
-                                             data-col="{{ forloop.counter0 }}"
-                                             data-kind="{{ cell.kind }}">
-                                            <span>{{ cell.label }}</span>
-                                        </div>
-                                        {% endfor %}
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                                <div class="junior-order__controls">
-                                    <div class="junior-order__bank">
-                                        {% for command in junior_games.order.commands %}
-                                        <button type="button"
-                                                class="junior-token"
-                                                data-junior-order-token
-                                                data-token-id="{{ command.token_id }}"
-                                                data-move="{{ command.move }}">
-                                            <span class="junior-token__icon">{{ command.icon }}</span>
-                                            <span>{{ command.label }}</span>
-                                        </button>
-                                        {% endfor %}
-                                    </div>
-                                    <div class="junior-order__slots" data-junior-order-slots>
-                                        {% for step in junior_games.order.expected %}
-                                        <button type="button" class="junior-order__slot" data-junior-order-slot>
-                                            <span>?</span>
-                                        </button>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="junior-game-card__actions">
-                                <button type="button" class="btn btn--primary" data-junior-order-verify>Verifica</button>
-                                <button type="button" class="btn btn--ghost" data-junior-order-reset>Reset</button>
-                            </div>
-                            <p class="junior-game-card__feedback" data-junior-order-feedback>{{ junior_games.order.hint }}</p>
-                        </article>
 
-                        <article class="junior-game-card" data-junior-game="colors" data-junior-color-game>
-                            <header class="junior-game-card__header">
-                                <div>
-                                    <h3>{{ junior_games.colors.title }}</h3>
-                                    <p>{{ junior_games.colors.prompt }}</p>
-                                </div>
-                                <span class="junior-game-card__badge">Culori</span>
-                            </header>
-                            <div class="junior-colors">
-                                <div class="junior-colors__column">
-                                    {% for pair in junior_games.colors.pairs %}
-                                    <button type="button"
-                                            class="junior-color-card"
-                                            data-junior-color-card
-                                            data-pair-id="{{ pair.pair_id }}"
-                                            style="--junior-card-color: {{ pair.color_hex }};">
-                                        <span class="junior-color-card__swatch"></span>
-                                        <strong>{{ pair.color_name }}</strong>
-                                    </button>
-                                    {% endfor %}
-                                </div>
-                                <div class="junior-colors__column">
-                                    {% for action in junior_games.colors.actions %}
-                                    <button type="button"
-                                            class="junior-action-card"
-                                            data-junior-action-card
-                                            data-pair-id="{{ action.pair_id }}">
-                                        {{ action.label }}
-                                    </button>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            <div class="junior-game-card__actions">
-                                <button type="button" class="btn btn--ghost" data-junior-color-reset>Reset</button>
-                                <span class="junior-game-card__counter" data-junior-color-progress>0 / {{ junior_games.colors.pairs|length }} potriviri</span>
-                            </div>
-                            <p class="junior-game-card__feedback" data-junior-color-feedback>Alege o culoare, apoi regula potrivita.</p>
-                        </article>
+                <div class="ls-welcome">
+                    <div class="ls-welcome__subject">{{ lesson.subject.title|default:"Lectie" }}</div>
+                    <h1 class="ls-welcome__title">{{ lesson.title }}</h1>
+                    <p class="ls-welcome__desc">{{ lesson_intro_text }}</p>
 
-                        <article class="junior-game-card" data-junior-game="memory" data-junior-memory-game>
-                            <header class="junior-game-card__header">
-                                <div>
-                                    <h3>{{ junior_games.memory.title }}</h3>
-                                    <p>{{ junior_games.memory.prompt }}</p>
-                                </div>
-                                <span class="junior-game-card__badge">Memory</span>
-                            </header>
-                            <div class="junior-memory" data-junior-memory-deck>
-                                {% for card in junior_games.memory.cards %}
-                                <button type="button"
-                                        class="junior-memory__card"
-                                        data-junior-memory-card
-                                        data-card-id="{{ card.card_id }}"
-                                        data-pair="{{ card.pair }}">
-                                    <span class="junior-memory__face junior-memory__face--front">?</span>
-                                    <span class="junior-memory__face junior-memory__face--back">
-                                        <strong>{{ card.icon }}</strong>
-                                        <small>{{ card.label }}</small>
-                                    </span>
-                                </button>
-                                {% endfor %}
-                            </div>
-                            <div class="junior-game-card__actions">
-                                <button type="button" class="btn btn--ghost" data-junior-memory-reset>Reset</button>
-                                <span class="junior-game-card__counter" data-junior-memory-progress>0 / 3 perechi</span>
-                            </div>
-                            <p class="junior-game-card__feedback" data-junior-memory-feedback>Intoarce doua carti si gaseste perechile.</p>
-                        </article>
-                    </div>
-                    <div class="junior-games__reward" data-junior-reward hidden>
-                        <strong>Super!</strong>
-                        <span>Ai terminat toate jocurile si ai ajutat robotul.</span>
-                    </div>
-                </div>
-                <p class="lesson-code-caption">Continua cu zona de practica pentru puzzle, potriviri si feedback rapid.</p>
-                {% else %}
-                <div class="practice-grid">
-                    <article class="practice-subcard practice-subcard--briefing">
-                        <div class="practice-subcard__header">
-                            <h3>Intrebari de recapitulare</h3>
+                    <div class="ls-welcome__stats">
+                        <div class="ls-stat">
+                            <span class="ls-stat__icon">&#9200;</span>
+                            <span class="ls-stat__value">{{ lesson.duration_minutes|default:15 }} min</span>
+                            <span class="ls-stat__label">Durata</span>
                         </div>
-                        <p>{{ lesson_examples_text }}</p>
-                        <ul class="lesson-list">
-                            {% for prompt in theory_question_prompts %}
-                            <li>{{ prompt }}</li>
+                        <div class="ls-stat">
+                            <span class="ls-stat__icon">&#127919;</span>
+                            <span class="ls-stat__value">{{ lesson.get_difficulty_display|default:"Usor" }}</span>
+                            <span class="ls-stat__label">Nivel</span>
+                        </div>
+                        <div class="ls-stat">
+                            <span class="ls-stat__icon">&#9889;</span>
+                            <span class="ls-stat__value">+{{ lesson.xp_reward|default:50 }}</span>
+                            <span class="ls-stat__label">XP</span>
+                        </div>
+                        <div class="ls-stat">
+                            <span class="ls-stat__icon">&#128214;</span>
+                            <span class="ls-stat__value">{{ lesson_position }}/{{ subject_total }}</span>
+                            <span class="ls-stat__label">Lectia</span>
+                        </div>
+                    </div>
+
+                    {% if lesson_skill_titles %}
+                    <div class="ls-objectives">
+                        <div class="ls-objectives__title">&#127919; Ce vei invata</div>
+                        <ul class="ls-objectives__list">
+                            {% for skill in lesson_skill_titles %}
+                            <li class="ls-objectives__item">
+                                <span class="ls-objectives__check">&#10003;</span>
+                                {{ skill }}
+                            </li>
                             {% endfor %}
                         </ul>
-                    </article>
-                    <article class="practice-subcard practice-subcard--match">
-                        <div class="lesson-example-grid">
-                            {% for item in lesson_example_cards %}
-                            <article class="lesson-example-card">
-                                <h3>{{ item.title }}</h3>
-                                <pre><code>{{ item.code }}</code></pre>
-                                <p>{{ item.note }}</p>
-                            </article>
-                            {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {# Feature 5: Media segments — video/audio preview #}
+                    {% if lesson_media and lesson_media.video_url %}
+                    <div class="ls-media-preview">
+                        <div class="ls-media-preview__badge">&#127909; Video inclus in lectie</div>
+                    </div>
+                    {% endif %}
+
+                    <button class="ls-btn ls-btn--primary ls-btn--large" data-ls-action="start">
+                        Hai sa incepem! &#128640;
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        {# ================================================================ #}
+        {# STEP 1 — Theory                                                  #}
+        {# ================================================================ #}
+        <section class="lesson-step" data-step="learn">
+            <div class="lesson-step__inner">
+                <div class="ls-mentor">
+                    <div class="ls-mentor__avatar">&#128218;</div>
+                    <div class="ls-mentor__bubble">
+                        {% if is_junior_track %}
+                        Citeste cu atentie! Vei gasi idei importante mai jos. &#128161;
+                        {% else %}
+                        Hai sa intelegem conceptul. Citeste teoria si retine punctele cheie. &#128170;
+                        {% endif %}
+                    </div>
+                </div>
+
+                {# Feature 5: Video embed #}
+                {% if lesson_media and lesson_media.video_url %}
+                <div class="ls-card ls-media-card">
+                    <h3 class="ls-card__title">&#127909; Video explicativ</h3>
+                    <div class="ls-media-embed">
+                        {% if lesson_media.video_platform == "youtube" %}
+                        <iframe src="{{ lesson_media.video_url }}" frameborder="0" allowfullscreen loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                        {% elif lesson_media.video_platform == "vimeo" %}
+                        <iframe src="{{ lesson_media.video_url }}" frameborder="0" allowfullscreen loading="lazy"></iframe>
+                        {% else %}
+                        <video controls preload="metadata" src="{{ lesson_media.video_url }}"></video>
+                        {% endif %}
+                    </div>
+                    {% if media_segments %}
+                    <div class="ls-media-chapters">
+                        <div class="ls-media-chapters__title">&#128205; Capitole</div>
+                        {% for seg in media_segments %}
+                        <div class="ls-media-chapter" data-ls-seek="{{ seg.start_seconds }}">
+                            <span class="ls-media-chapter__time">{{ seg.start_seconds|divisibleby:60 }}:{{ seg.start_seconds|divisibleby:1 }}</span>
+                            <span>{{ seg.title }}</span>
                         </div>
-                    </article>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
                 {% endif %}
-            </section>
 
-            <section class="lesson-section lesson-card" id="practice" data-lesson-section="Practice" data-animate>
-                <header class="lesson-card__header">
-                    <span class="lesson-card__icon" aria-hidden="true">PR</span>
-                    <div>
-                        <h2>{{ practice_section_title }}</h2>
-                        <p>{{ practice_section_description }}</p>
+                {# Feature 5: Audio narration #}
+                {% if lesson_media and lesson_media.audio_url %}
+                <div class="ls-card ls-audio-card">
+                    <h3 class="ls-card__title">&#127911; Asculta explicatia</h3>
+                    <audio controls preload="metadata" src="{{ lesson_media.audio_url }}" style="width:100%;border-radius:8px;"></audio>
+                </div>
+                {% endif %}
+
+                <div class="ls-card">
+                    <h2 class="ls-card__title">{{ lesson.title }}</h2>
+                    <div class="ls-theory">
+                        <p>{{ lesson_content_text }}</p>
                     </div>
-                </header>
-                <div class="lesson-prose">
-                    <p>{{ practice_intro_text }}</p>
                 </div>
 
-                <div class="practice-grid">
-                    <article class="practice-subcard practice-subcard--briefing">
-                        <div class="practice-subcard__header">
-                            <h3>{{ practice_briefing_title }}</h3>
-                            <button
-                                type="button"
-                                class="lesson-hint"
-                                data-hint-modal-open
-                                data-hint-modal-title="Hint practica"
-                                data-hint-modal-content="{{ practice.data.hint|default:'Observa cuvintele cheie: valoare, nume, actualizare. Ele iti spun rolul variabilei.'|escape }}"
-                            >Tip</button>
-                        </div>
-                        <p>{{ practice.instructions|default:"Analizeaza fiecare descriere si leaga-o de conceptul potrivit. Daca ai dubii, deschide hint-ul." }}</p>
-                        <div class="lesson-hint__panel" data-hint-panel hidden>
-                            <p>{{ practice.data.hint|default:"Observa cuvintele cheie: valoare, nume, actualizare. Ele iti spun rolul variabilei." }}</p>
-                        </div>
-                    </article>
+                {% if lesson_theory_points %}
+                <div class="ls-card ls-card--accent">
+                    <h3 class="ls-card__title">&#128161; Puncte cheie</h3>
+                    {% for point in lesson_theory_points %}
+                    <div class="ls-key-point">
+                        <span class="ls-key-point__icon">&#11088;</span>
+                        <span>{{ point }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
 
-                    <article class="practice-subcard practice-subcard--match" data-drag-container>
-                        <div class="match-columns">
-                            <div>
-                                <p class="lesson-prose"><strong>{{ practice_available_label }}</strong></p>
-                                <ul class="match-bank" data-draggable-source>
-                                    {% if practice and practice.data.draggables %}
-                                        {% for item in practice.data.draggables %}
-                                            <li class="match-token" draggable="true" data-id="{{ item.id }}">{{ item.label }}</li>
-                                        {% endfor %}
-                                    {% else %}
-                                        <li class="match-token" draggable="true" data-id="concept">Concept cheie</li>
-                                        <li class="match-token" draggable="true" data-id="definitie">Definitie</li>
-                                        <li class="match-token" draggable="true" data-id="exemplu">Exemplu</li>
-                                    {% endif %}
-                                </ul>
+                {% if lesson_vocabulary %}
+                <div class="ls-card">
+                    <h3 class="ls-card__title">&#128220; Cuvinte noi</h3>
+                    <div class="ls-vocab">
+                        {% for word in lesson_vocabulary %}
+                        <span class="ls-vocab__chip">{{ word }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if lesson_common_mistakes %}
+                <div class="ls-card">
+                    <h3 class="ls-card__title">&#9888;&#65039; Atentie la greseli!</h3>
+                    {% for mistake in lesson_common_mistakes %}
+                    <div class="ls-key-point" style="border-left-color: var(--lk-orange); background: var(--lk-orange-light);">
+                        <span class="ls-key-point__icon">&#9888;</span>
+                        <span>{{ mistake }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if lesson_fun_fact %}
+                <div class="ls-fun-fact">
+                    <span>&#128640;</span>
+                    <span><strong>Stiati ca?</strong> {{ lesson_fun_fact }}</span>
+                </div>
+                {% endif %}
+
+                {# Feature 9: Lesson resources panel #}
+                {% if lesson_materials %}
+                <details class="ls-resources">
+                    <summary class="ls-resources__toggle">&#128218; Materiale suplimentare ({{ lesson_materials|length }})</summary>
+                    <div class="ls-resources__list">
+                        {% for res in lesson_materials %}
+                        <a class="ls-resource-item" href="{{ res.url }}" target="_blank" rel="noopener">
+                            <span class="ls-resource-item__icon">
+                                {% if res.resource_type == "video" %}&#127909;{% elif res.resource_type == "worksheet" %}&#128196;{% elif res.resource_type == "interactive" %}&#127918;{% else %}&#128196;{% endif %}
+                            </span>
+                            <span class="ls-resource-item__title">{{ res.title }}</span>
+                            <span class="ls-resource-item__type">{{ res.get_resource_type_display }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </details>
+                {% endif %}
+
+                <div class="ls-nav-btns">
+                    <button class="ls-btn ls-btn--ghost" data-ls-action="prev">&#8592; Inapoi</button>
+                    <button class="ls-btn ls-btn--primary" data-ls-action="next">Continua &#8594;</button>
+                </div>
+            </div>
+        </section>
+
+        {# ================================================================ #}
+        {# STEP 2 — Examples                                                #}
+        {# ================================================================ #}
+        <section class="lesson-step" data-step="examples">
+            <div class="lesson-step__inner">
+                <div class="ls-mentor">
+                    <div class="ls-mentor__avatar">&#128187;</div>
+                    <div class="ls-mentor__bubble">
+                        {% if show_guided_code_snippet %}
+                        Uite cum arata in cod! Studiaza exemplele pas cu pas. &#129299;
+                        {% else %}
+                        Hai sa vedem cateva exemple practice! &#127912;
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if lesson_examples_text %}
+                <p style="font-size:16px;color:var(--lk-text-dim);margin-bottom:20px;line-height:1.7;font-weight:500;">
+                    {{ lesson_examples_text }}
+                </p>
+                {% endif %}
+
+                {% if lesson_example_cards %}
+                <div class="ls-examples">
+                    {% for card in lesson_example_cards %}
+                    <div class="ls-ex-card">
+                        <div class="ls-ex-card__step">Pas {{ forloop.counter }}</div>
+                        {% if card.code and card.code != "-" %}
+                        <div class="ls-ex-card__code">{{ card.code }}</div>
+                        {% endif %}
+                        {% if card.title %}
+                        <div style="font-weight:800;margin-bottom:4px;font-size:15px;">{{ card.title }}</div>
+                        {% endif %}
+                        {% if card.note %}
+                        <div class="ls-ex-card__note">{{ card.note }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if show_guided_code_snippet and guided_code_snippet %}
+                <div style="margin-top:20px;">
+                    <h3 class="ls-card__title">&#128421; Cod complet</h3>
+                    <div class="ls-code">{{ guided_code_snippet }}<button class="ls-code__copy">Copiaza</button></div>
+                </div>
+                {% endif %}
+
+                {% if lesson_use_cases %}
+                <div class="ls-card" style="margin-top:18px;">
+                    <h3 class="ls-card__title">&#127757; Unde se foloseste</h3>
+                    <ul style="padding-left:20px;margin:0;">
+                        {% for uc in lesson_use_cases %}
+                        <li style="margin-bottom:10px;font-size:15px;line-height:1.6;font-weight:500;">{{ uc }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <div class="ls-nav-btns">
+                    <button class="ls-btn ls-btn--ghost" data-ls-action="prev">&#8592; Inapoi</button>
+                    <button class="ls-btn ls-btn--primary" data-ls-action="next">Continua &#8594;</button>
+                </div>
+            </div>
+        </section>
+
+        {# ================================================================ #}
+        {# STEP 3 — Practice (drag-and-drop)                                #}
+        {# ================================================================ #}
+        {% if practice %}
+        <section class="lesson-step" data-step="practice">
+            <div class="lesson-step__inner">
+                <div class="ls-mentor">
+                    <div class="ls-mentor__avatar">&#127912;</div>
+                    <div class="ls-mentor__bubble">
+                        {{ practice_intro_text|default:"Trage elementele in locurile potrivite! E ca un puzzle!" }} &#129513;
+                    </div>
+                </div>
+
+                <h2 class="ls-card__title" style="text-align:center;font-size:22px;">{{ practice_section_title }}</h2>
+
+                {% if practice.data %}
+                <div data-ls-practice>
+                    {% if practice.data.context %}
+                    <p class="ls-practice-intro">{{ practice.data.context }}</p>
+                    {% endif %}
+
+                    <div class="ls-match-bank">
+                        {% for item in practice.data.draggables %}
+                        <div class="ls-match-token" data-ls-token="{{ item.id|default:item }}">
+                            {{ item.label|default:item }}
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="ls-match-targets">
+                        {% for target in practice.data.targets %}
+                        <div class="ls-match-row">
+                            <div class="ls-match-label">{% firstof target.label target.prompt target %}</div>
+                            <div class="ls-match-slot"
+                                 data-ls-expect="{% firstof target.correct_id target.correct target.accepts %}"
+                                 data-ls-placeholder="{{ practice_placeholder_text }}">
+                                {{ practice_placeholder_text }}
                             </div>
-                            <div>
-                                <p class="lesson-prose"><strong>{{ practice_target_label }}</strong></p>
-                                {% if practice %}
-                                    {% with targets=practice.data.targets %}
-                                        <ul class="match-list"
-                                            data-draggable-target
-                                            data-success-message="{{ practice.data.success_message|default:'Super! Ordinea este corecta.' }}">
-                                            {% if targets %}
-                                                {% for target in targets %}
-                                                    <li class="match-slot" data-id="{{ target.id }}">
-                                                        <span class="match-slot__label">{{ target.label }}</span>
-                                                        <div class="match-slot__drop" data-drop-zone data-expected-id="{{ target.id }}">
-                                                            <span data-placeholder>{{ practice_placeholder_text }}</span>
-                                                        </div>
-                                                    </li>
-                                                {% endfor %}
-                                            {% else %}
-                                                <li class="match-slot" data-id="concept">
-                                                    <span class="match-slot__label">Ce reprezinta o variabila?</span>
-                                                    <div class="match-slot__drop" data-drop-zone data-expected-id="concept">
-                                                        <span data-placeholder>{{ practice_placeholder_text }}</span>
-                                                    </div>
-                                                </li>
-                                                <li class="match-slot" data-id="exemplu">
-                                                    <span class="match-slot__label">Exemplu de variabila</span>
-                                                    <div class="match-slot__drop" data-drop-zone data-expected-id="exemplu">
-                                                        <span data-placeholder>{{ practice_placeholder_text }}</span>
-                                                    </div>
-                                                </li>
-                                            {% endif %}
-                                        </ul>
-                                    {% endwith %}
-                                {% else %}
-                                    <p class="lesson-prose">Activitatea se incarca. Reincearca mai tarziu.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="ls-nav-btns">
+                        <button class="ls-btn ls-btn--ghost" data-ls-reset-practice>&#128260; Reseteaza</button>
+                        <button class="ls-btn ls-btn--success" data-ls-verify>&#10003; Verifica</button>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if practice.data.hint %}
+                <div class="ls-fun-fact" style="margin-top:18px;">
+                    <span>&#128161;</span>
+                    <span><strong>Indiciu:</strong> {{ practice.data.hint }}</span>
+                </div>
+                {% endif %}
+
+                <div class="ls-nav-btns" style="margin-top:24px;">
+                    <button class="ls-btn ls-btn--ghost" data-ls-action="prev">&#8592; Inapoi</button>
+                    <button class="ls-btn ls-btn--primary" data-ls-action="next">Continua &#8594;</button>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        {# ================================================================ #}
+        {# STEP — Inline Code Playground (Feature 2)                        #}
+        {# ================================================================ #}
+        {% if code_exercises %}
+        <section class="lesson-step" data-step="code">
+            <div class="lesson-step__inner">
+                <div class="ls-mentor">
+                    <div class="ls-mentor__avatar">&#128187;</div>
+                    <div class="ls-mentor__bubble">
+                        Acum e randul tau sa scrii cod! Modifica programul si apasa Ruleaza sa vezi ce se intampla. &#128640;
+                    </div>
+                </div>
+
+                {% for exercise in code_exercises %}
+                <div class="ls-card ls-code-playground" data-ls-code-exercise data-exercise-id="{{ exercise.id }}">
+                    <h3 class="ls-card__title">&#128187; {{ exercise.title }}</h3>
+                    <p class="ls-code-playground__desc">{{ exercise.description }}</p>
+
+                    {% if exercise.test_cases %}
+                    <div class="ls-code-tests">
+                        <div class="ls-code-tests__title">&#127919; Teste de trecut:</div>
+                        {% for t in exercise.test_cases %}
+                        <div class="ls-code-test-item">
+                            <span class="ls-code-test-item__icon" data-test-icon="pending">&#9898;</span>
+                            <span>{{ t.description }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="ls-code-editor">
+                        <textarea class="ls-code-editor__input" data-ls-code-input rows="10" spellcheck="false">{{ exercise.starter_code }}</textarea>
+                    </div>
+
+                    <div class="ls-code-actions">
+                        <button class="ls-btn ls-btn--primary ls-btn--small" data-ls-code-run>&#9654; Ruleaza</button>
+                        {% if exercise.hints %}
+                        <button class="ls-btn ls-btn--ghost ls-btn--small" data-ls-code-hint>&#128161; Indiciu</button>
+                        {% endif %}
+                    </div>
+
+                    <pre class="ls-code-output" data-ls-code-output>Apasa "Ruleaza" pentru a vedea rezultatul.</pre>
+
+                    {% if exercise.hints %}
+                    <div class="ls-code-hint-text" data-ls-code-hint-text hidden>
+                        {% for h in exercise.hints %}
+                        <div data-code-hint hidden>{{ h }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <div class="ls-nav-btns">
+                    <button class="ls-btn ls-btn--ghost" data-ls-action="prev">&#8592; Inapoi</button>
+                    <button class="ls-btn ls-btn--primary" data-ls-action="next">Continua &#8594;</button>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        {# ================================================================ #}
+        {# STEP — Quiz                                                      #}
+        {# ================================================================ #}
+        {% if quiz_test %}
+        <section class="lesson-step" data-step="quiz">
+            <div class="lesson-step__inner">
+                <div class="ls-mentor">
+                    <div class="ls-mentor__avatar">&#129504;</div>
+                    <div class="ls-mentor__bubble">
+                        Timpul pentru test! Alege raspunsul corect. Ai incredere in tine! &#128170;
+                    </div>
+                </div>
+
+                <div data-ls-quiz
+                     data-ls-correct="{{ quiz_test.correct_answer }}"
+                     data-ls-explanation="{{ quiz_test.explanation|default:'' }}"
+                     data-ls-test-id="{{ quiz_test.id }}">
+
+                    <div class="ls-quiz-q">{{ quiz_test.question }}</div>
+
+                    <div class="ls-quiz-opts">
+                        {% for option in quiz_options %}
+                        <div class="ls-quiz-opt" data-ls-answer="{{ option }}">
+                            <span class="ls-quiz-marker">{{ forloop.counter }}</span>
+                            <span>{{ option }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div style="text-align:center;margin-top:20px;">
+                        <button class="ls-btn ls-btn--primary" data-ls-quiz-submit disabled>&#10003; Verifica raspunsul</button>
+                    </div>
+
+                    <div class="ls-quiz-fb" data-ls-quiz-fb style="display:none;"></div>
+
+                    {# Feature 8: Difficulty branching — retry hint on wrong answer #}
+                    <div class="ls-quiz-retry" data-ls-quiz-retry hidden>
+                        <div class="ls-mentor" style="margin-top:18px;">
+                            <div class="ls-mentor__avatar" style="width:48px;height:48px;font-size:24px;">&#129300;</div>
+                            <div class="ls-mentor__bubble">
+                                Nu-i nimic! Hai sa recapitulam inainte sa incerci din nou.
+                                {% if lesson_theory_points %}
+                                <br><strong>Aminteste-ti:</strong> {{ lesson_theory_points.0 }}
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="practice-controls practice-controls--secondary">
-                            <button type="button" class="btn btn--primary" data-order-check>Verifica</button>
-                            <button type="button" class="btn btn--ghost" data-order-reset>Reset</button>
-                            <span class="practice-message" data-order-feedback aria-live="polite"></span>
-                        </div>
-                        <div class="practice-explanation"
-                             data-practice-explanation
-                             data-practice-default="{{ practice.data.explanation|default:'Daca raspunsul nu e corect, primesti aici o explicatie scurta.'|escape }}">
-                             {% if practice and practice.data.explanation %}
-                                 {{ practice.data.explanation|linebreaks }}
-                             {% else %}
-                                 Daca raspunsul nu e corect, primesti aici o explicatie scurta.
-                             {% endif %}
-                        </div>
-                        <div class="practice-celebration" data-order-celebration aria-hidden="true">
-                            Super! XP +5 pentru potrivirea corecta.
-                        </div>
-                    </article>
-                </div>
-            </section>
-            <section class="lesson-section lesson-card lesson-card--quiz" id="test" data-lesson-section="Test" data-animate>
-                <header class="lesson-card__header">
-                    <span class="lesson-card__icon" aria-hidden="true">TS</span>
-                    <div>
-                        <h2>Test</h2>
-                        <p>O singura intrebare pentru a valida ce ai invatat.</p>
-                    </div>
-                </header>
-                <div class="test-accordion" data-accordion>
-                    <button class="test-accordion__toggle" type="button" data-accordion-toggle aria-expanded="true">
-                        Deschide / inchide testul
-                    </button>
-                    <div class="test-accordion__panel is-open" data-accordion-panel>
-                        {% if quiz_test %}
-                            <article class="quiz-card"
-                                     data-quiz
-                                     data-submit-href="{% url 'estudy:submit_test_attempt' quiz_test.id %}"
-                                     data-quiz-explanation="{{ quiz_test.explanation|default:'Variabilele pastreaza valori pe care le poti folosi oricand in program.' }}">
-                                <h3 class="quiz-question">{{ quiz_test.question }}</h3>
-                                <form class="quiz-form" method="post" novalidate>
-                                    {% csrf_token %}
-                                    <div class="quiz-options">
-                                        {% for option in quiz_options %}
-                                            <label class="quiz-option" data-quiz-option>
-                                                <input type="radio" name="answer" value="{{ option }}">
-                                                <span>{{ option }}</span>
-                                            </label>
-                                        {% endfor %}
-                                    </div>
-                                    <div class="quiz-actions">
-                                        <button type="submit" class="btn btn--primary">Trimite raspunsul</button>
-                                        <button type="button" class="btn btn--ghost" data-quiz-reset>Reia testul</button>
-                                    </div>
-                                </form>
-                                <p class="quiz-feedback" data-quiz-feedback aria-live="polite"></p>
-                                <div class="quiz-explanation hidden" data-quiz-explanation-block>
-                                    <strong>Explicatie:</strong>
-                                    <p data-quiz-explanation-text>{{ quiz_test.explanation|default:"Variabilele pastreaza valori pe care le poti folosi oricand in program." }}</p>
-                                </div>
-                            </article>
-                        {% else %}
-                            <p class="lesson-prose">Mini testul nu este inca disponibil. Revino curand!</p>
-                        {% endif %}
+                        <button class="ls-btn ls-btn--ghost ls-btn--small" data-ls-quiz-retry-btn style="margin-top:10px;">&#128260; Incearca din nou</button>
                     </div>
                 </div>
-            </section>
 
-            {% if lesson.reflection_prompts.all or lesson.home_extension %}
-            <section class="lesson-section lesson-card lesson-card--reflection" id="reflection" data-lesson-section="Reflectie" data-animate>
-                <header class="lesson-card__header">
-                    <span class="lesson-card__icon" aria-hidden="true">RF</span>
-                    <div>
-                        <h2>Reflectie si misiune pentru acasa</h2>
-                        <p>O pauza scurta pentru a fixa ideile si a le duce mai departe.</p>
+                <div class="ls-nav-btns">
+                    <button class="ls-btn ls-btn--ghost" data-ls-action="prev">&#8592; Inapoi</button>
+                    <button class="ls-btn ls-btn--primary" data-ls-action="next">Continua &#8594;</button>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        {# ================================================================ #}
+        {# STEP — Summary / Completion                                      #}
+        {# ================================================================ #}
+        <section class="lesson-step" data-step="summary">
+            <div class="lesson-step__inner">
+                <div class="ls-complete">
+                    <div class="ls-complete__badge">&#127942;</div>
+                    <h2 class="ls-complete__title">Felicitari!</h2>
+                    <p class="ls-complete__sub">
+                        Ai terminat <strong>{{ lesson.title }}</strong>! &#127881;
+                        {% if lesson_theory_points %}
+                        Acum stii: {{ lesson_theory_points.0 }}.
+                        {% endif %}
+                    </p>
+
+                    <div class="ls-rewards">
+                        <div class="ls-reward">
+                            <span class="ls-reward__icon">&#9889;</span>
+                            <span class="ls-reward__val" data-ls-xp-final>+{{ lesson.xp_reward|default:50 }}</span>
+                            <span class="ls-reward__lbl">XP castigat</span>
+                        </div>
+                        <div class="ls-reward">
+                            <span class="ls-reward__icon">&#128640;</span>
+                            <span class="ls-reward__val">{{ lesson_position }}/{{ subject_total }}</span>
+                            <span class="ls-reward__lbl">Lectii</span>
+                        </div>
                     </div>
-                </header>
-                <div class="lesson-reflection">
-                    {% if lesson.reflection_prompts.all %}
-                    <div class="lesson-reflection__prompts">
-                        <h3>Ganduri de impartasit</h3>
-                        <ul>
-                            {% for prompt in lesson.reflection_prompts.all %}
-                                <li>
-                                    <strong>{{ prompt.prompt }}</strong>
-                                    {% if prompt.format == prompt.FORMAT_SCALE and prompt.scale_labels %}
-                                        <span> - {{ prompt.scale_labels|join:', ' }}</span>
-                                    {% endif %}
-                                </li>
+
+                    {# Feature 7: Reflection prompts #}
+                    {% if reflection_prompts %}
+                    <div class="ls-card ls-reflection" style="text-align:left;margin-bottom:24px;">
+                        <h3 class="ls-card__title">&#128173; Ce ai simtit?</h3>
+                        {% for rp in reflection_prompts %}
+                        <div class="ls-reflection-prompt" data-ls-reflection>
+                            <p class="ls-reflection-prompt__text">{{ rp.prompt }}</p>
+                            {% if rp.format == "scale" %}
+                            <div class="ls-reflection-scale" data-ls-reflection-scale>
+                                {% for label in rp.scale_labels %}
+                                <button class="ls-reflection-scale__btn" data-scale-val="{{ forloop.counter }}">{{ label }}</button>
+                                {% empty %}
+                                <button class="ls-reflection-scale__btn" data-scale-val="1">&#128542;</button>
+                                <button class="ls-reflection-scale__btn" data-scale-val="2">&#128528;</button>
+                                <button class="ls-reflection-scale__btn" data-scale-val="3">&#128578;</button>
+                                <button class="ls-reflection-scale__btn" data-scale-val="4">&#128513;</button>
+                                <button class="ls-reflection-scale__btn" data-scale-val="5">&#129321;</button>
+                                {% endfor %}
+                            </div>
+                            {% elif rp.format == "draw" %}
+                            <div class="ls-reflection-draw">
+                                <canvas class="ls-reflection-canvas" data-ls-canvas width="400" height="200"></canvas>
+                                <button class="ls-btn ls-btn--ghost ls-btn--small" data-ls-canvas-clear>&#128465; Sterge</button>
+                            </div>
+                            {% else %}
+                            <textarea class="ls-reflection-input" data-ls-reflection-input rows="3" placeholder="Scrie aici gandurile tale..."></textarea>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if lesson_recap_questions %}
+                    <div class="ls-card" style="text-align:left;margin-bottom:24px;">
+                        <h3 class="ls-card__title">&#128173; Gandeste-te la...</h3>
+                        <ul style="padding-left:20px;margin:0;">
+                            {% for q in lesson_recap_questions %}
+                            <li style="margin-bottom:10px;font-size:15px;line-height:1.6;font-weight:500;">{{ q }}</li>
                             {% endfor %}
                         </ul>
                     </div>
                     {% endif %}
-                    {% if lesson.home_extension %}
-                    <aside class="lesson-reflection__home">
-                        <h3>Provocare pentru acasa</h3>
-                        <p>{{ lesson.home_extension }}</p>
-                    </aside>
-                    {% endif %}
-                </div>
-            </section>
-            {% endif %}
 
-            <section class="lesson-section lesson-card lesson-summary" id="summary" data-lesson-section="Summary" data-animate>
-                <header class="lesson-card__header">
-                    <span class="lesson-card__icon" aria-hidden="true">UP</span>
-                    <div>
-                        <h2>Rezumat si nivel urmator</h2>
-                        <p>Inchide misiunea, revendica XP-ul si continua aventura.</p>
-                    </div>
-                </header>
-                <div class="lesson-summary__body">
-                    <div class="lesson-summary__status" data-summary-card>
-                        {% if progress and progress.completed %}
-                            <p>Felicitari! Ai finalizat lectia si streak-ul tau ramane activ.</p>
-                        {% else %}
-                            <p>Esti foarte aproape de final. Marcheaza lectia si trecem la urmatoarea.</p>
-                        {% endif %}
-                        <div class="levelup-banner" data-levelup aria-hidden="true">
-                            <strong>Level up!</strong>
-                            <span>XP +{{ lesson.xp_reward|default:40 }}</span>
-                        </div>
-                    </div>
-                    <div class="lesson-summary__actions">
-                        <button class="btn btn--ghost toggle-completion"
-                                data-complete-btn
-                                data-label-pending="Marcheaza lectia"
-                                data-label-completed="Lectia bifata"
-                                data-complete-href="{% url 'estudy:toggle_lesson_completion' slug=lesson.slug %}">
-                            {% if progress and progress.completed %}
-                                Lectia bifata
-                            {% else %}
-                                Marcheaza lectia
-                            {% endif %}
+                    <div class="ls-nav-btns">
+                        <button class="ls-btn ls-btn--success ls-btn--large" data-ls-complete data-ls-action="next">
+                            &#10003; Gata! Marcheaza ca terminata
                         </button>
-                        {% if next_lesson and next_lesson.slug %}
-                            {% if next_locked %}
-                                <button class="btn btn--primary btn--large" type="button" disabled aria-disabled="true">
-                                    Finalizeaza lectia pentru nivelul urmator
-                                </button>
-                            {% else %}
-                                <a class="btn btn--primary btn--large" href="{% url 'estudy:lesson_detail' slug=next_lesson.slug %}" data-next-lesson>
-                                    Continua aventura
-                                </a>
-                            {% endif %}
+                    </div>
+
+                    <div class="ls-nav-btns">
+                        {% if next_lesson and not next_locked %}
+                        <a class="ls-btn ls-btn--primary" href="{% url 'estudy:lesson_detail' slug=next_lesson.slug %}">
+                            Lectia urmatoare &#8594;
+                        </a>
                         {% endif %}
+                        <a class="ls-btn ls-btn--ghost" href="{% url 'estudy:lessons_list' %}">
+                            &#8592; Inapoi la lectii
+                        </a>
                         {% if show_robot_lab_cta %}
-                            <a class="btn btn--ghost" href="{% url 'estudy:robot_lab_hub' %}">
-                                Deschide Robot Lab
-                            </a>
+                        <a class="ls-btn ls-btn--ghost" href="{% url 'estudy:robot_lab_world_map' %}">
+                            &#129302; Robot Lab
+                        </a>
                         {% endif %}
                     </div>
-                    <p class="lesson-summary__tip">Tip: pastreaza streak-ul activ si castiga badge-uri noi.</p>
                 </div>
-            </section>
-        </div>
-    </div>
-    <div class="lesson-hint-modal" data-lesson-hint-modal hidden>
-        <button type="button" class="lesson-hint-modal__backdrop" data-lesson-hint-modal-close aria-label="Inchide"></button>
-        <article class="lesson-hint-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="lesson-hint-modal-title">
-            <button type="button" class="lesson-hint-modal__close" data-lesson-hint-modal-close aria-label="Inchide">×</button>
-            <p class="lesson-hint-modal__eyebrow">Hint</p>
-            <h3 id="lesson-hint-modal-title" data-lesson-hint-modal-title>Hint</h3>
-            <p class="lesson-hint-modal__content" data-lesson-hint-modal-content>
-                Ruleaza activitatea pentru a primi un indiciu.
-            </p>
-        </article>
-    </div>
-</div>
+            </div>
+        </section>
+
+    </div>{# /lesson-steps #}
+</div>{# /lesson #}
 {% endblock %}
 
 {% block extra_js %}
 {{ block.super }}
-<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
-<script src="{% static 'estudy/lesson.js' %}" defer></script>
-<script>
-// Minimal JS to run code exercises inline using the API
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-document.addEventListener('click', async (e) => {
-    const runBtn = e.target.closest('[data-run]');
-    if (!runBtn) return;
-    const card = runBtn.closest('[data-exercise]');
-    if (!card) return;
-    const codeEl = card.querySelector('[data-code]');
-    const outEl = card.querySelector('[data-output]');
-    const resetBtn = card.querySelector('[data-reset]');
-    const exerciseId = parseInt(card.dataset.exerciseId, 10);
-    const original = codeEl.defaultValue;
-    if (resetBtn) {
-        resetBtn.onclick = () => {
-            codeEl.value = original;
-            outEl.textContent = '';
-        }
-    }
-    outEl.textContent = 'Running...';
-    try {
-        const resp = await fetch("{% url 'estudy:run_code_api' %}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body: JSON.stringify({ exercise_id: exerciseId, code: codeEl.value })
-        });
-        const data = await resp.json();
-        let lines = [];
-        if (!resp.ok) {
-            lines.push('Error: ' + (data.error || 'Unknown'));
-        } else {
-            if (data.error) lines.push('Error: ' + data.error);
-            lines.push(`Passed: ${data.passed}/${data.total}`);
-            lines.push(`Time: ${data.execution_time_ms} ms`);
-            (data.test_results || []).forEach((tr, i) => {
-                lines.push(`\n#${i+1} ${tr.description}`);
-                lines.push(` input: ${tr.input}`);
-                lines.push(` expected: ${tr.expected}`);
-                lines.push(` actual: ${tr.actual}`);
-                lines.push(` passed: ${tr.passed}`);
-            });
-        }
-        outEl.textContent = lines.join('\n');
-    } catch (err) {
-        outEl.textContent = 'Request failed: ' + err;
-    }
-});
-</script>
+<script src="{% static 'estudy/lesson.js' %}?v=20260411b" defer></script>
 {% endblock %}

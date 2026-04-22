@@ -36,24 +36,6 @@
             <img src="https://illustrations.popsy.co/emerald/online-learning.svg" alt="">
         </figure>
     </div>
-    <nav class="lessons-quick-nav" aria-label="Navigație UNITEX">
-        <div class="container">
-            <ul>
-                <li class="lessons-quick-nav__back">
-                    <a href="{% url 'estudy:dashboard' %}" data-history-back aria-label="Înapoi la pagina anterioară">
-                        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Înapoi
-                    </a>
-                </li>
-                <li><a href="{% url 'estudy:dashboard' %}">Dashboard</a></li>
-                <li><a href="{% url 'estudy:lessons_list' %}" class="is-active">Lecții</a></li>
-                <li><a href="{% url 'estudy:missions' %}">Misiuni</a></li>
-                <li><a href="{% url 'estudy:leaderboard' %}">Clasament</a></li>
-                <li><a href="{% url 'estudy:projects' %}">Proiecte</a></li>
-                <li><a href="{% url 'estudy:classrooms' %}">Clase</a></li>
-                <li><a href="{% url 'estudy:community' %}">Comunitate</a></li>
-            </ul>
-        </div>
-    </nav>
 </section>
 {% endblock %}
 {% block page_content %}
@@ -134,146 +116,53 @@
                 <p>Explorează traseele UNITEX și pornește lecțiile preferate. Fiecare card arată progresul tău.</p>
             </header>
             <div class="module-grid" data-lessons-list>
-                <article class="module-card" data-module-slug="modul-1-alfabetizare-digitala" data-module-completed="1" data-module-total="4" data-animate>
-                    <div class="module-card__icon" aria-hidden="true">💻</div>
-                    <div class="module-card__head">
-                        <h3>Alfabetizare digitală</h3>
-                        <p>Teorie de baza, vocabular digital si mini-teste usoare.</p>
+                {% for block in lesson_blocks %}
+                <article class="module-card" data-module-slug="{{ block.slug }}" data-module-completed="{{ block.completed }}" data-module-total="{{ block.total }}" data-animate>
+                    <div class="module-card__icon" aria-hidden="true">
+                        {% if block.type == 'path' %}&#128640;{% else %}{% with name=block.title|lower %}{% if 'python' in name %}&#128013;{% elif 'web' in name %}&#127760;{% elif 'matematica' in name or 'math' in name %}&#128290;{% elif 'coding' in name or 'quest' in name %}&#129302;{% elif 'alfabetiz' in name or 'digital' in name %}&#128187;{% elif 'joc' in name or 'game' in name %}&#127918;{% elif 'proiect' in name %}&#127912;{% elif 'logic' in name or 'gandire' in name %}&#129504;{% else %}&#128218;{% endif %}{% endwith %}{% endif %}
                     </div>
-                    <ul class="module-card__points">
-                        <li>Notiuni simple despre siguranta si folosirea dispozitivelor.</li>
-                        <li>Explicatii scurte, fara laborator de cod.</li>
-                        <li>Quiz-uri rapide si verificari usoare.</li>
-                    </ul>
-                    <div class="module-card__footer">
-                        <div class="module-card__progress">
-                            <div class="module-progress" role="presentation">
-                                <span class="module-progress__fill" data-module-progress-bar></span>
-                            </div>
-                            <span class="module-progress__label" data-module-progress-label>1 din 4 lecții</span>
-                        </div>
-                        {% if digital_literacy_entry_slug %}
-                        <a class="btn btn--primary" href="{% url 'estudy:lesson_detail' slug=digital_literacy_entry_slug %}">Vezi teoria</a>
-                        {% else %}
-                        <a class="btn btn--primary" href="{% url 'estudy:lesson_module_digital_literacy' %}">Vezi teoria</a>
+                    <div class="module-card__head">
+                        <h3>{{ block.title }}</h3>
+                        {% if block.description %}<p>{{ block.description }}</p>{% endif %}
+                        {% if block.type == 'path' and block.difficulty_label %}
+                        <span class="module-card__age-mode">{{ block.difficulty_label }}</span>
                         {% endif %}
                     </div>
-                </article>
-
-                <article class="module-card" data-module-slug="modul-2-exploratori-logici" data-module-completed="0" data-module-total="5" data-animate>
-                    <div class="module-card__icon" aria-hidden="true">🧠</div>
-                    <div class="module-card__head">
-                        <h3>Gândire logică</h3>
-                        <p>Construiește algoritmi prietenoși și rezolvă provocări creative.</p>
-                    </div>
+                    {% if block.lessons %}
                     <ul class="module-card__points">
-                        <li>Structuri logice și diagrame de flux.</li>
-                        <li>Instrucțiuni condiționale și bucle.</li>
-                        <li>Jocuri de puzzle pentru antrenarea minții.</li>
+                        {% for lesson in block.lessons|slice:':3' %}
+                        <li>{{ lesson.title }}</li>
+                        {% endfor %}
+                        {% if block.total > 3 %}
+                        <li class="module-card__points-more">+ inca {{ block.total|add:"-3" }} lectii</li>
+                        {% endif %}
                     </ul>
+                    {% endif %}
                     <div class="module-card__footer">
                         <div class="module-card__progress">
                             <div class="module-progress" role="presentation">
-                                <span class="module-progress__fill" data-module-progress-bar></span>
+                                <span class="module-progress__fill" data-module-progress-bar style="width: {{ block.progress_percent }}%;"></span>
                             </div>
-                            <span class="module-progress__label" data-module-progress-label>0 din 5 lecții</span>
+                            <span class="module-progress__label" data-module-progress-label>{{ block.completed }} din {{ block.total }} {% if block.total == 1 %}lectie{% else %}lectii{% endif %}</span>
                         </div>
-                        <button type="button" class="btn btn--ghost" disabled aria-disabled="true">În curând</button>
-                    </div>
-                </article>
-
-                <article class="module-card" data-module-slug="modul-3-programare-python" data-module-completed="0" data-module-total="6" data-animate>
-                    <div class="module-card__icon" aria-hidden="true">🐍</div>
-                    <div class="module-card__head">
-                        <h3>Programare în Python</h3>
-                        <p>Modulul principal pentru programare: vizual la 8-10 ani, cod real la 11+.</p>
-                        <span class="module-card__age-mode">{{ python_mode_label }}</span>
-                    </div>
-                    <ul class="module-card__points">
-                        <li>8-10 ani: puzzle, potriviri si activitati cu minimum de text.</li>
-                        <li>11+ ani: teorie, intrebari de verificare si Robot Lab cu cod Python.</li>
-                        <li>Feedback clar la fiecare pas, inclusiv erori si hint-uri.</li>
-                    </ul>
-                    <div class="module-card__footer">
-                        <div class="module-card__progress">
-                            <div class="module-progress" role="presentation">
-                                <span class="module-progress__fill" data-module-progress-bar></span>
-                            </div>
-                            <span class="module-progress__label" data-module-progress-label>0 din 6 lecții</span>
-                        </div>
-                        {% if python_entry_slug %}
-                        <a class="btn btn--primary" href="{% url 'estudy:lesson_detail' slug=python_entry_slug %}">Intra in modul</a>
+                        {% if block.next_lesson and block.next_lesson.slug %}
+                        <a class="btn btn--primary" href="{% url 'estudy:lesson_detail' slug=block.next_lesson.slug %}">
+                            {% if block.completed and block.completed < block.total %}Continua{% elif block.completed == block.total and block.total > 0 %}Reviziuie{% else %}Incepe{% endif %}
+                        </a>
                         {% else %}
                         <button type="button" class="btn btn--ghost" disabled aria-disabled="true">In curand</button>
                         {% endif %}
                     </div>
                 </article>
-
-                <article class="module-card" data-module-slug="modul-4-creare-jocuri" data-module-completed="0" data-module-total="5" data-animate>
-                    <div class="module-card__icon" aria-hidden="true">🎮</div>
+                {% empty %}
+                <article class="module-card module-card--empty" data-animate>
+                    <div class="module-card__icon" aria-hidden="true">&#128218;</div>
                     <div class="module-card__head">
-                        <h3>Creare de mini-jocuri</h3>
-                        <p>Transformă ideile în jocuri animate și interactive.</p>
-                    </div>
-                    <ul class="module-card__points">
-                        <li>Design de personaje și decoruri.</li>
-                        <li>Logica jocului și evenimente.</li>
-                        <li>Testare și prezentarea proiectului.</li>
-                    </ul>
-                    <div class="module-card__footer">
-                        <div class="module-card__progress">
-                            <div class="module-progress" role="presentation">
-                                <span class="module-progress__fill" data-module-progress-bar></span>
-                            </div>
-                            <span class="module-progress__label" data-module-progress-label>0 din 5 lecții</span>
-                        </div>
-                        <button type="button" class="btn btn--ghost" disabled aria-disabled="true">În curând</button>
+                        <h3>Niciun modul disponibil</h3>
+                        <p>Foloseste filtrele de mai sus sau revino mai tarziu cand adaugam continut nou.</p>
                     </div>
                 </article>
-
-                <article class="module-card" data-module-slug="modul-5-introducere-web" data-module-completed="0" data-module-total="5" data-animate>
-                    <div class="module-card__icon" aria-hidden="true">🌐</div>
-                    <div class="module-card__head">
-                        <h3>Introducere în web</h3>
-                        <p>Descoperă cum se construiesc site-urile și aplică ideile tale.</p>
-                    </div>
-                    <ul class="module-card__points">
-                        <li>Structura HTML și stilizare CSS.</li>
-                        <li>Interactivitate de bază cu JavaScript.</li>
-                        <li>Mini-portofoliu publicat online.</li>
-                    </ul>
-                    <div class="module-card__footer">
-                        <div class="module-card__progress">
-                            <div class="module-progress" role="presentation">
-                                <span class="module-progress__fill" data-module-progress-bar></span>
-                            </div>
-                            <span class="module-progress__label" data-module-progress-label>0 din 5 lecții</span>
-                        </div>
-                        <button type="button" class="btn btn--ghost" disabled aria-disabled="true">În curând</button>
-                    </div>
-                </article>
-
-                <article class="module-card" data-module-slug="modul-6-proiecte-avansate" data-module-completed="0" data-module-total="4" data-animate>
-                    <div class="module-card__icon" aria-hidden="true">🎨</div>
-                    <div class="module-card__head">
-                        <h3>Proiecte creative</h3>
-                        <p>Aplică tot ce ai învățat și construiește un portofoliu memorabil.</p>
-                    </div>
-                    <ul class="module-card__points">
-                        <li>Planificarea și documentarea proiectului.</li>
-                        <li>Colaborare și prezentare în echipă.</li>
-                        <li>Feedback și îmbunătățire continuă.</li>
-                    </ul>
-                    <div class="module-card__footer">
-                        <div class="module-card__progress">
-                            <div class="module-progress" role="presentation">
-                                <span class="module-progress__fill" data-module-progress-bar></span>
-                            </div>
-                            <span class="module-progress__label" data-module-progress-label>0 din 4 lecții</span>
-                        </div>
-                        <button type="button" class="btn btn--ghost" disabled aria-disabled="true">În curând</button>
-                    </div>
-                </article>
+                {% endfor %}
             </div>
         </div>
     </section>

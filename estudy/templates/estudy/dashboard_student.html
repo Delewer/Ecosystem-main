@@ -2,230 +2,462 @@
 
 {% block title %}Dashboard elev · UnITex{% endblock %}
 
+{% block workspace_banner %}{% endblock %}
+
 {% block page_content %}
-<section class="dashboard-hero card shadow-lg">
-    <div class="dashboard-hero__summary">
-        <p class="dashboard-hero__greeting">Salut, {{ profile.display_or_username }}</p>
-        <h1 class="dashboard-hero__title">Pregătit pentru o nouă aventură digitală?</h1>
-        <p class="dashboard-hero__intro">Progresul tău general este de <strong>{{ progress.percent|default:0 }}%</strong>. Continuă să explorezi lecțiile, să strângi XP și să deblochezi insigne rare.</p>
-        <div class="dashboard-hero__progress">
-            <div class="dashboard-hero__progress-bar">
-                <div class="dashboard-hero__progress-fill" style="width: {{ profile.progress_to_next_level|floatformat:0 }}%"></div>
-            </div>
-            <span class="dashboard-hero__progress-label">Nivel {{ profile.level }} · {{ profile.xp }} XP</span>
-        </div>
-        <div class="dashboard-hero__stats">
-            <div class="stat-chip">
-                <span class="stat-chip__label">Nivel</span>
-                <span class="stat-chip__value">{{ profile.level }}</span>
-            </div>
-            <div class="stat-chip">
-                <span class="stat-chip__label">Streak</span>
-                <span class="stat-chip__value"><i class="fa-solid fa-fire me-1"></i>{{ profile.streak }} zile</span>
-            </div>
-            <div class="stat-chip">
-                <span class="stat-chip__label">Lecții terminate</span>
-                <span class="stat-chip__value">{{ progress.completed|default:0 }}/{{ progress.total|default:0 }}</span>
-            </div>
-        </div>
-        <div class="dashboard-hero__actions">
-            {% if primary_recommendation and primary_recommendation.lesson.slug %}
-                <a class="btn btn-primary" href="{% url 'estudy:lesson_detail' slug=primary_recommendation.lesson.slug %}"><i class="fa-solid fa-play me-2"></i>Continuă lecția recomandată</a>
-            {% else %}
-                <a class="btn btn-primary" href="{% url 'estudy:lessons_list' %}"><i class="fa-solid fa-compass me-2"></i>Descoperă lecții noi</a>
-            {% endif %}
-            <a class="btn btn-outline-light" href="{% url 'estudy:missions' %}"><i class="fa-solid fa-flag-checkered me-2"></i>Misiunile mele</a>
+
+{# ============================================================= #}
+{# HERO — Mascot greeting + XP + Streak                          #}
+{# ============================================================= #}
+<section class="hub-hero">
+    <div class="hub-hero__left">
+        <div class="hub-hero__mascot">&#129302;</div>
+        <div class="hub-hero__speech">
+            <p class="hub-hero__greeting">Salut, <strong>{{ profile.display_or_username }}</strong>! &#128075;</p>
+            <p class="hub-hero__msg">
+                {% if current_streak >= 7 %}Streak de {{ current_streak }} zile! &#128293; Esti de neoprit!
+                {% elif current_streak >= 3 %}{{ current_streak }} zile la rand — continua asa! &#128170;
+                {% elif progress.percent > 50 %}Ai parcurs peste jumatate din lectii — bravo! &#127775;
+                {% else %}Hai sa invatam ceva nou azi! &#128640;
+                {% endif %}
+            </p>
         </div>
     </div>
-    <div class="dashboard-hero__badges">
-        <h2 class="dashboard-hero__badges-title">Insigne evidențiate</h2>
-        <div class="badge-cloud">
-            {% if highlighted_badges %}
-                {% for user_badge in highlighted_badges %}
-                    <div class="badge-cloud__item" style="--badge-color: {{ user_badge.badge.color }};">
-                        <div class="badge-cloud__icon"><i class="fa {{ user_badge.badge.icon }}"></i></div>
-                        <div class="badge-cloud__meta">
-                            <span class="badge-cloud__name">{{ user_badge.badge.name }}</span>
-                            <span class="badge-cloud__hint">+{{ user_badge.badge.xp_reward }} XP</span>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p class="text-muted small mb-0">Adună XP completând lecții pentru a debloca primele tale insigne.</p>
-            {% endif %}
+    <div class="hub-hero__right">
+        <div class="hub-xp-ring" data-hub-xp-ring>
+            <svg viewBox="0 0 120 120" class="hub-xp-ring__svg">
+                <circle cx="60" cy="60" r="52" class="hub-xp-ring__bg"/>
+                <circle cx="60" cy="60" r="52" class="hub-xp-ring__fill"
+                        stroke-dasharray="327"
+                        stroke-dashoffset="{{ 327|add:0 }}"
+                        style="stroke-dashoffset: calc(327 - 327 * {{ profile.progress_to_next_level|floatformat:0 }} / 100)"/>
+            </svg>
+            <div class="hub-xp-ring__center">
+                <span class="hub-xp-ring__level">{{ profile.level }}</span>
+                <span class="hub-xp-ring__label">Nivel</span>
+            </div>
         </div>
+        <div class="hub-stats-row">
+            <div class="hub-chip hub-chip--xp">&#11088; {{ profile.xp }} XP</div>
+            <div class="hub-chip hub-chip--streak{% if current_streak >= 7 %} hub-chip--blazing{% endif %}">&#128293; {{ current_streak }} zile</div>
+            <div class="hub-chip">&#128218; {{ progress.completed|default:0 }}/{{ progress.total|default:0 }}</div>
+        </div>
+        {% if not show_onboarding %}
+        <a class="hub-btn hub-btn--ghost hub-btn--small" href="?replay=1" style="margin-top:10px;">&#127919; Reia tutorialul</a>
+        {% endif %}
     </div>
 </section>
 
-<section class="dashboard-section">
-    <div class="dashboard-grid">
-        <article class="dashboard-card">
-            <div class="dashboard-card__header">
-                <div>
-                    <h2 class="dashboard-card__title">Misiuni active</h2>
-                    <p class="dashboard-card__subtitle">Completează-le astăzi pentru bonus XP.</p>
+{# ============================================================= #}
+{# PRIMARY CTA — Continue where you left off                     #}
+{# ============================================================= #}
+{% if primary_recommendation and primary_recommendation.lesson.slug %}
+<a class="hub-primary-cta" href="{% url 'estudy:lesson_detail' slug=primary_recommendation.lesson.slug %}">
+    <div class="hub-primary-cta__body">
+        <span class="hub-primary-cta__eyebrow">&#9654;&#65039; Urmatoarea ta lectie</span>
+        <h2 class="hub-primary-cta__title">{{ primary_recommendation.lesson.title }}</h2>
+        <p class="hub-primary-cta__reason">{{ primary_recommendation.reason }}</p>
+    </div>
+    <span class="hub-primary-cta__go">Hai sa incepem &#8594;</span>
+</a>
+{% else %}
+<a class="hub-primary-cta hub-primary-cta--empty" href="{% url 'estudy:lessons_list' %}">
+    <div class="hub-primary-cta__body">
+        <span class="hub-primary-cta__eyebrow">&#127775; Exploreaza lumea UNITEX</span>
+        <h2 class="hub-primary-cta__title">Alege o lectie noua</h2>
+        <p class="hub-primary-cta__reason">Ai terminat tot ce aveai pregatit — treci la catalog!</p>
+    </div>
+    <span class="hub-primary-cta__go">Deschide lectiile &#8594;</span>
+</a>
+{% endif %}
+
+{# ============================================================= #}
+{# ACTIVITY ZONES — Ranked 2x2 grid                              #}
+{# ============================================================= #}
+<section class="hub-zones hub-zones--ranked">
+    <h2 class="hub-section-title">&#127959; Alege aventura ta</h2>
+    <div class="hub-zones__grid hub-zones__grid--ranked">
+
+        <a class="hub-zone hub-zone--lessons hub-zone--lead" href="{% url 'estudy:lessons_list' %}">
+            <div class="hub-zone__icon">&#128218;</div>
+            <div class="hub-zone__body">
+                <h3 class="hub-zone__title">Lectii</h3>
+                <p class="hub-zone__desc">Exploreaza lumea cunoasterii pas cu pas</p>
+                <div class="hub-zone__progress">
+                    <div class="hub-zone__bar"><div class="hub-zone__bar-fill" style="width:{{ progress.percent|default:0 }}%"></div></div>
+                    <span class="hub-zone__bar-label">{{ progress.percent|default:0 }}%</span>
                 </div>
-                <a class="btn btn-sm btn-outline-primary" href="{% url 'estudy:missions' %}">Toate misiunile</a>
             </div>
-            <div class="dashboard-card__body">
+            <span class="hub-zone__arrow">&#8594;</span>
+        </a>
+
+        <a class="hub-zone hub-zone--robot" href="{% url 'estudy:robot_lab_world_map' %}">
+            <div class="hub-zone__icon">&#129302;</div>
+            <div class="hub-zone__body">
+                <h3 class="hub-zone__title">Robot Lab</h3>
+                <p class="hub-zone__desc">Programeaza robotul si salveaza lumea</p>
+                <div class="hub-zone__badge">Harta lumii</div>
+            </div>
+            <span class="hub-zone__arrow">&#8594;</span>
+        </a>
+
+        <a class="hub-zone hub-zone--typing" href="{% url 'estudy:typing_game' %}">
+            <div class="hub-zone__icon">&#9997;&#65039;</div>
+            <div class="hub-zone__body">
+                <h3 class="hub-zone__title">Aventura Tastaturii</h3>
+                <p class="hub-zone__desc">Invata sa scrii rapid si corect</p>
+                <div class="hub-zone__badge">6 nivele</div>
+            </div>
+            <span class="hub-zone__arrow">&#8594;</span>
+        </a>
+
+        <a class="hub-zone hub-zone--missions" href="{% url 'estudy:missions' %}">
+            <div class="hub-zone__icon">&#127919;</div>
+            <div class="hub-zone__body">
+                <h3 class="hub-zone__title">Misiuni</h3>
+                <p class="hub-zone__desc">Provocari zilnice pentru bonus XP</p>
                 {% if missions.daily %}
-                    <ul class="mission-list">
-                        {% for mission in missions.daily %}
-                            <li class="mission-item">
-                                <div class="mission-item__head">
-                                    <span class="mission-chip" style="--mission-color: {{ mission.mission.color }}"><i class="fa {{ mission.mission.icon }} me-1"></i>Daily</span>
-                                    <span class="mission-progress-label">{{ mission.progress }}/{{ mission.mission.target_value }}</span>
-                                </div>
-                                <div class="mission-item__title">{{ mission.mission.title }}</div>
-                                <p class="mission-item__desc">{{ mission.mission.description }}</p>
-                                <div class="progress mission-progress">
-                                    <div class="progress-bar" style="width: {% widthratio mission.progress mission.mission.target_value 100 %}%"></div>
-                                </div>
-                                <div class="mission-item__reward"><i class="fa-solid fa-bolt me-1"></i>+{{ mission.mission.reward_points }} XP</div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-muted mb-0">Nu ai misiuni active. Revino mai târziu pentru provocări noi!</p>
+                <div class="hub-zone__badge hub-zone__badge--hot">{{ missions.daily|length }} active</div>
                 {% endif %}
             </div>
-        </article>
+            <span class="hub-zone__arrow">&#8594;</span>
+        </a>
 
-        <article class="dashboard-card">
-            <div class="dashboard-card__header">
-                <div>
-                    <h2 class="dashboard-card__title">Lecții recomandate</h2>
-                    <p class="dashboard-card__subtitle">Selectate pe baza lecțiilor finalizate.</p>
+    </div>
+</section>
+
+{# ============================================================= #}
+{# SECONDARY — Everything else behind disclosure                 #}
+{# ============================================================= #}
+<details class="hub-more" data-hub-more>
+    <summary class="hub-more__toggle">
+        <span class="hub-more__toggle-label">
+            <span aria-hidden="true">&#8942;</span>
+            Mai mult pentru tine
+        </span>
+        <span class="hub-more__toggle-hint">Provocarea zilei, insigne, clasament si acces rapid</span>
+        <span class="hub-more__chev" aria-hidden="true">&#9662;</span>
+    </summary>
+
+    <div class="hub-more__panel">
+        <section class="hub-row">
+            <div class="hub-card hub-card--challenge" id="daily-challenge-widget">
+                <div class="hub-card__header">
+                    <h2>&#9889; Provocarea zilei</h2>
+                </div>
+                {% if daily_challenge %}
+                <div class="hub-challenge">
+                    <div class="hub-challenge__title">{{ daily_challenge.title }}</div>
+                    <p class="hub-challenge__desc">{{ daily_challenge.description }}</p>
+                    {% if daily_challenge.lesson and daily_challenge.lesson.slug %}
+                    <a class="hub-challenge__link" href="{% url 'estudy:lesson_detail' slug=daily_challenge.lesson.slug %}">
+                        &#128214; {{ daily_challenge.lesson.title }} <span class="hub-challenge__xp">+{{ daily_challenge.xp_bonus }} XP</span>
+                    </a>
+                    {% endif %}
+                    {% if daily_challenge_completed %}
+                    <div class="hub-challenge__done">&#9989; Completata! Bravo!</div>
+                    {% else %}
+                    <div class="hub-challenge__timer" data-challenge-timer data-seconds="{{ daily_challenge_seconds }}">
+                        <i class="fa-regular fa-clock"></i>
+                        <span data-timer-display>--:--:--</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <p class="hub-card__empty">Nicio provocare activa acum. Revino mai tarziu!</p>
+                {% endif %}
+            </div>
+
+            <div class="hub-card hub-card--badges">
+                <div class="hub-card__header">
+                    <h2>&#127941; Insignele tale</h2>
+                </div>
+                <div class="hub-badges">
+                    {% if highlighted_badges %}
+                        {% for user_badge in highlighted_badges %}
+                        <div class="hub-badge" style="--badge-color: {{ user_badge.badge.color }};">
+                            <div class="hub-badge__icon"><i class="fa {{ user_badge.badge.icon }}"></i></div>
+                            <span class="hub-badge__name">{{ user_badge.badge.name }}</span>
+                            <span class="hub-badge__xp">+{{ user_badge.badge.xp_reward }} XP</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="hub-card__empty">Completeaza lectii si misiuni pentru a debloca insigne! &#128274;</p>
+                    {% endif %}
+                    {% if badges.count > 3 %}
+                    <div class="hub-badges__more">+{{ badges.count|add:"-3" }} alte insigne</div>
+                    {% endif %}
                 </div>
             </div>
-            <div class="dashboard-card__body">
+        </section>
+
+        <section class="hub-row hub-row--triple">
+            <div class="hub-card">
+                <div class="hub-card__header">
+                    <h2>&#128214; Recomandate pentru tine</h2>
+                </div>
                 {% if recommendations %}
-                    <ul class="lesson-reco-list">
-                        {% for rec in recommendations|slice:':4' %}
-                            <li class="lesson-reco">
-                                <div>
-                                    <div class="lesson-reco__title">{{ rec.lesson.title }}</div>
-                                    <div class="lesson-reco__meta">{{ rec.reason }}</div>
-                                </div>
-                                {% if rec.lesson.slug %}
-                                    <a class="btn btn-sm btn-outline-primary" href="{% url 'estudy:lesson_detail' slug=rec.lesson.slug %}">Start</a>
-                                {% else %}
-                                    <span class="text-muted small">În pregătire</span>
-                                {% endif %}
-                            </li>
-                        {% endfor %}
-                    </ul>
+                <div class="hub-reco-list">
+                    {% for rec in recommendations|slice:':4' %}
+                    <a class="hub-reco" href="{% if rec.lesson.slug %}{% url 'estudy:lesson_detail' slug=rec.lesson.slug %}{% else %}#{% endif %}">
+                        <div class="hub-reco__info">
+                            <span class="hub-reco__title">{{ rec.lesson.title }}</span>
+                            <span class="hub-reco__reason">{{ rec.reason }}</span>
+                        </div>
+                        <span class="hub-reco__go">&#9654;</span>
+                    </a>
+                    {% endfor %}
+                </div>
                 {% else %}
-                    <p class="text-muted mb-0">Ai parcurs toate lecțiile sugerate. Alege un nou subiect!</p>
+                <p class="hub-card__empty">Ai parcurs toate lectiile sugerate — esti un campion! &#127942;</p>
                 {% endif %}
             </div>
-        </article>
 
-        <article class="dashboard-card">
-            <div class="dashboard-card__header">
-                <div>
-                    <h2 class="dashboard-card__title">Ultimele notificări</h2>
-                    <p class="dashboard-card__subtitle">Rămâi la curent cu noutățile și feedback-ul.</p>
+            <div class="hub-card">
+                <div class="hub-card__header">
+                    <h2>&#127942; Clasament</h2>
+                    <a class="hub-card__link" href="{% url 'estudy:leaderboard' %}">Vezi tot &#8594;</a>
                 </div>
-                <a class="btn btn-sm btn-outline-secondary" href="{% url 'estudy:notifications' %}">Toate</a>
-            </div>
-            <div class="dashboard-card__body">
-                {% if notifications %}
-                    <ul class="notification-list">
-                        {% for item in notifications %}
-                            <li class="notification-item">
-                                <div class="notification-item__title">{{ item.title }}</div>
-                                <p class="notification-item__desc">{{ item.message }}</p>
-                                <span class="notification-item__time">{{ item.created_at|date:"d MMM · HH:mm" }}</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-muted mb-0">Nu există notificări noi momentan.</p>
-                {% endif %}
-            </div>
-        </article>
-    </div>
-</section>
-
-<section class="dashboard-section">
-    <div class="dashboard-grid">
-        <article class="dashboard-card">
-            <div class="dashboard-card__header">
-                <div>
-                    <h2 class="dashboard-card__title">Provocări zilnice</h2>
-                    <p class="dashboard-card__subtitle">Completează provocările pentru bonusuri speciale.</p>
-                </div>
-            </div>
-            <div class="dashboard-card__body">
-                {% if challenges %}
-                    <ul class="challenge-list">
-                        {% for challenge in challenges %}
-                            <li class="challenge-item">
-                                <div class="challenge-item__title">{{ challenge.title }}</div>
-                                <p class="challenge-item__desc">{{ challenge.description }}</p>
-                                <span class="challenge-item__time"><i class="fa-solid fa-calendar-day me-1"></i>{{ challenge.start_date|date:"d MMM" }} - {{ challenge.end_date|date:"d MMM" }}</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-muted mb-0">Nicio provocare activă acum. Reîncarcă pagina mai târziu!</p>
-                {% endif %}
-            </div>
-        </article>
-
-        <article class="dashboard-card">
-            <div class="dashboard-card__header">
-                <div>
-                    <h2 class="dashboard-card__title">Clasament rapid</h2>
-                    <p class="dashboard-card__subtitle">Top 5 elevi din această săptămână.</p>
-                </div>
-                <a class="btn btn-sm btn-outline-primary" href="{% url 'estudy:leaderboard' %}">Clasament complet</a>
-            </div>
-            <div class="dashboard-card__body">
                 {% if leaderboard %}
-                    <ul class="leaderboard-list">
-                        {% for entry in leaderboard %}
-                            <li class="leaderboard-item">
-                                <div class="leaderboard-item__rank">#{{ entry.position }}</div>
-                                <div class="leaderboard-item__user">{{ entry.username }}</div>
-                                <div class="leaderboard-item__score"><i class="fa-solid fa-star"></i>{{ entry.score }}</div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-muted mb-0">Clasamentul se pregătește. Participă la lecții pentru a apărea aici!</p>
-                {% endif %}
-            </div>
-        </article>
-
-        <article class="dashboard-card">
-            <div class="dashboard-card__header">
-                <div>
-                    <h2 class="dashboard-card__title">Proiecte recente</h2>
-                    <p class="dashboard-card__subtitle">Lucrările tale și feedback-ul profesorilor.</p>
+                <div class="hub-leaderboard">
+                    {% for entry in leaderboard %}
+                    <div class="hub-lb-row{% if forloop.first %} hub-lb-row--gold{% endif %}">
+                        <span class="hub-lb-row__rank">
+                            {% if entry.position == 1 %}&#129351;{% elif entry.position == 2 %}&#129352;{% elif entry.position == 3 %}&#129353;{% else %}#{{ entry.position }}{% endif %}
+                        </span>
+                        <span class="hub-lb-row__name">{{ entry.username }}</span>
+                        <span class="hub-lb-row__score">&#11088; {{ entry.score }}</span>
+                    </div>
+                    {% endfor %}
                 </div>
-                <a class="btn btn-sm btn-outline-secondary" href="{% url 'estudy:projects' %}">Toate proiectele</a>
-            </div>
-            <div class="dashboard-card__body">
-                {% if recent_projects %}
-                    <ul class="project-list">
-                        {% for submission in recent_projects %}
-                            <li class="project-item">
-                                <div>
-                                    <div class="project-item__title">{{ submission.project.title }}</div>
-                                    <span class="project-item__status">{{ submission.get_status_display|default:"În progres" }}</span>
-                                </div>
-                                <span class="project-item__time">{{ submission.uploaded_at|date:"d MMM" }}</span>
-                            </li>
-                        {% endfor %}
-                    </ul>
                 {% else %}
-                    <p class="text-muted mb-0">Încă nu ai încărcat proiecte. Încearcă unul din secțiunea „Proiecte”.</p>
+                <p class="hub-card__empty">Clasamentul se pregateste!</p>
                 {% endif %}
             </div>
-        </article>
-    </div>
-</section>
-{% endblock %}
 
+            <div class="hub-card hub-card--actions">
+                <div class="hub-card__header">
+                    <h2>&#128640; Acces rapid</h2>
+                </div>
+                <div class="hub-quick-links">
+                    <a class="hub-quick" href="{% url 'estudy:community' %}">
+                        <span class="hub-quick__icon">&#128172;</span>
+                        <span>Comunitate</span>
+                    </a>
+                    <a class="hub-quick" href="{% url 'estudy:projects' %}">
+                        <span class="hub-quick__icon">&#128196;</span>
+                        <span>Proiecte</span>
+                    </a>
+                    <a class="hub-quick" href="{% url 'estudy:classrooms' %}">
+                        <span class="hub-quick__icon">&#127979;</span>
+                        <span>Clase</span>
+                    </a>
+                    <a class="hub-quick" href="{% url 'estudy:notifications' %}">
+                        <span class="hub-quick__icon">&#128276;</span>
+                        <span>Notificari</span>
+                        {% if notifications %}<span class="hub-quick__badge">{{ notifications|length }}</span>{% endif %}
+                    </a>
+                    <a class="hub-quick" href="{% url 'estudy:overview' %}">
+                        <span class="hub-quick__icon">&#128202;</span>
+                        <span>Statistici</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+</details>
+
+{# ============================================================= #}
+{# ONBOARDING — Welcome flow for new students                     #}
+{# ============================================================= #}
+<div class="onb-overlay" id="onb-overlay"{% if not show_onboarding %} hidden{% endif %}
+     data-complete-url="{% url 'estudy:mark_onboarding_complete' %}"
+     data-csrf="{{ csrf_token }}"
+     data-replay="{% if onboarding_replay %}1{% else %}0{% endif %}"
+     {% if primary_recommendation and primary_recommendation.lesson.slug %}data-first-lesson-url="{% url 'estudy:lesson_detail' slug=primary_recommendation.lesson.slug %}"{% endif %}>
+    <div class="onb-modal">
+        <div class="onb-step is-active" data-onb-step="0">
+            <div class="onb-step__emoji">&#129302;</div>
+            <h2 class="onb-step__title">Bine ai venit in UNITEX!</h2>
+            <p class="onb-step__desc">
+                Sunt Robo, ghidul tau digital! Hai sa-ti arat cum functioneaza totul.
+                Va fi distractiv, promit!
+            </p>
+        </div>
+        <div class="onb-step" data-onb-step="1">
+            <div class="onb-step__emoji">&#128218;</div>
+            <h2 class="onb-step__title">Lectii interactive</h2>
+            <p class="onb-step__desc">
+                Parcurge lectii pas cu pas, rezolva quiz-uri si castiga XP!
+                Fiecare lectie te ajuta sa inveti lucruri noi despre lumea digitala.
+            </p>
+        </div>
+        <div class="onb-step" data-onb-step="2">
+            <div class="onb-step__emoji">&#9000;&#65039;</div>
+            <h2 class="onb-step__title">Joc de tastatura</h2>
+            <p class="onb-step__desc">
+                Antreneaza-ti degetele cu mini-jocuri rapide! Litere, cuvinte si
+                modul arcade te ajuta sa scrii mai rapid si mai corect.
+            </p>
+        </div>
+        <div class="onb-step" data-onb-step="3">
+            <div class="onb-step__emoji">&#129302;</div>
+            <h2 class="onb-step__title">Robot Lab</h2>
+            <p class="onb-step__desc">
+                Programeaza un robot si salveaza Planeta Zeta-9!
+                Rezolva puzzle-uri de cod si strange stele pe harta lumilor.
+            </p>
+        </div>
+        <div class="onb-step" data-onb-step="4">
+            <div class="onb-step__emoji">&#9889;</div>
+            <h2 class="onb-step__title">XP, streak si misiuni</h2>
+            <p class="onb-step__desc">
+                Urca in niveluri cu XP, mentine-ti streak-ul zilnic si completeaza
+                misiuni pentru bonusuri. Cu cat joci mai mult, cu atat mai bine!
+            </p>
+        </div>
+        <div class="onb-step" data-onb-step="5">
+            <div class="onb-step__emoji">&#127942;</div>
+            <h2 class="onb-step__title">Esti pregatit!</h2>
+            <p class="onb-step__desc">
+                Te trimit direct la prima ta lectie.
+                Daca ai nevoie de ajutor, cauta butonul de indicii in lectii.
+            </p>
+        </div>
+        <div class="onb-dots">
+            <span class="onb-dot is-active" data-onb-dot="0"></span>
+            <span class="onb-dot" data-onb-dot="1"></span>
+            <span class="onb-dot" data-onb-dot="2"></span>
+            <span class="onb-dot" data-onb-dot="3"></span>
+            <span class="onb-dot" data-onb-dot="4"></span>
+            <span class="onb-dot" data-onb-dot="5"></span>
+        </div>
+        <div class="onb-actions">
+            <button class="onb-btn onb-btn--skip" id="onb-skip">Sari peste</button>
+            <button class="onb-btn onb-btn--next" id="onb-next">Urmatorul &#8594;</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.onb-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    animation: onb-fade 0.4s ease-out;
+}
+.onb-overlay[hidden] { display: none; }
+@keyframes onb-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.onb-modal {
+    background: var(--color-surface, #FFF);
+    border-radius: 24px; padding: 40px 36px 32px;
+    max-width: 460px; width: 92%;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+    text-align: center; position: relative;
+}
+html[data-theme="dark"] .onb-modal { background: #1E293B; }
+
+.onb-step { display: none; }
+.onb-step.is-active { display: block; animation: onb-slide 0.4s cubic-bezier(0.22,1,0.36,1); }
+@keyframes onb-slide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.onb-step__emoji { font-size: 64px; margin-bottom: 12px; animation: onb-bounce 2s ease-in-out infinite; }
+@keyframes onb-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+.onb-step__title { font-size: 22px; font-weight: 900; margin: 0 0 10px; color: var(--color-heading, #1E293B); }
+.onb-step__desc { font-size: 15px; font-weight: 500; color: var(--color-text-muted, #64748B); margin: 0; line-height: 1.7; }
+
+.onb-dots { display: flex; justify-content: center; gap: 8px; margin: 24px 0 20px; }
+.onb-dot {
+    width: 10px; height: 10px; border-radius: 5px;
+    background: var(--color-border-soft, #E8ECFF);
+    transition: all 0.3s;
+}
+.onb-dot.is-active { background: #7C3AED; width: 24px; }
+
+.onb-actions { display: flex; justify-content: space-between; gap: 12px; }
+.onb-btn {
+    padding: 10px 24px; border-radius: 12px; border: none;
+    font-size: 14px; font-weight: 700; font-family: inherit;
+    cursor: pointer; transition: all 0.2s;
+}
+.onb-btn--skip { background: transparent; color: var(--color-text-muted, #94A3B8); }
+.onb-btn--skip:hover { color: var(--color-text, #1E293B); }
+.onb-btn--next {
+    background: linear-gradient(135deg, #7C3AED, #6D28D9); color: #FFF;
+    flex: 1; max-width: 200px;
+}
+.onb-btn--next:hover { box-shadow: 0 4px 16px rgba(124,58,237,0.35); transform: translateY(-1px); }
+</style>
+
+<script>
+(function() {
+    var overlay = document.getElementById('onb-overlay');
+    if (!overlay || overlay.hidden) return;
+
+    var completeUrl = overlay.dataset.completeUrl;
+    var csrf = overlay.dataset.csrf;
+    var isReplay = overlay.dataset.replay === '1';
+    var firstLessonUrl = overlay.dataset.firstLessonUrl || '';
+
+    var steps = overlay.querySelectorAll('[data-onb-step]');
+    var dots = overlay.querySelectorAll('[data-onb-dot]');
+    var nextBtn = document.getElementById('onb-next');
+    var skipBtn = document.getElementById('onb-skip');
+    var current = 0;
+    var total = steps.length;
+
+    function show(idx) {
+        steps.forEach(function(s) { s.classList.remove('is-active'); });
+        dots.forEach(function(d) { d.classList.remove('is-active'); });
+        steps[idx].classList.add('is-active');
+        dots[idx].classList.add('is-active');
+        current = idx;
+        if (idx === total - 1) {
+            nextBtn.innerHTML = firstLessonUrl
+                ? 'Incepe prima lectie &#128640;'
+                : 'Hai sa incepem! &#128640;';
+        } else {
+            nextBtn.innerHTML = 'Urmatorul &#8594;';
+        }
+    }
+
+    nextBtn.addEventListener('click', function() {
+        if (current < total - 1) { show(current + 1); }
+        else { finish(true); }
+    });
+
+    skipBtn.addEventListener('click', function() { finish(false); });
+
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) finish(false);
+    });
+
+    function markComplete() {
+        if (isReplay || !completeUrl) return Promise.resolve();
+        return fetch(completeUrl, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrf, 'Accept': 'application/json' },
+            credentials: 'same-origin'
+        }).catch(function() { /* best-effort */ });
+    }
+
+    function finish(redirectToLesson) {
+        var doRedirect = redirectToLesson && firstLessonUrl && !isReplay;
+        var completion = markComplete();
+        overlay.animate([
+            { opacity: 1 }, { opacity: 0 }
+        ], { duration: 300, easing: 'ease-out' }).onfinish = function() {
+            overlay.hidden = true;
+            if (doRedirect) {
+                Promise.resolve(completion).then(function() {
+                    window.location.href = firstLessonUrl;
+                });
+            }
+        };
+    }
+})();
+</script>
+
+{% endblock %}

@@ -22,6 +22,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="{% static 'images/logo.gif' %}" type="image/gif">
     <link rel="stylesheet" href="{% static 'unitexapp/style.css' %}">
     {% block extra_css %}{% endblock %}
     <title>{% block page_title %}Scoala IT UNITEX{% endblock %}</title>
@@ -45,6 +46,9 @@
                         <li><a class="navbar__link nav-link" href="{% url 'estudy:lessons_list' %}">Lecții</a></li>
                         {% if user.is_authenticated %}
                             <li><a class="navbar__link nav-link" href="{% url 'estudy:dashboard' %}">Dashboard</a></li>
+                            <li><a class="navbar__link nav-link" href="{% url 'estudy:robot_lab_world_map' %}">Robot Lab</a></li>
+                            <li><a class="navbar__link nav-link" href="{% url 'estudy:typing_game' %}">Tastatură</a></li>
+                            <li><a class="navbar__link nav-link" href="{% url 'estudy:missions' %}">Misiuni</a></li>
                             <li><a class="navbar__link nav-link" href="{% url 'inregistrare_profile' %}">Profil</a></li>
                             <li><a class="navbar__link nav-link" href="{% url 'logout' %}">Deconectare</a></li>
                         {% else %}
@@ -53,6 +57,12 @@
                         {% endif %}
                     </ul>
                     <div class="navbar__actions">
+                        {% if user.is_authenticated and user.userprofile %}
+                        <a class="navbar__xp" href="{% url 'estudy:dashboard' %}" aria-label="Progresul tau">
+                            <span class="navbar__xp-level" aria-hidden="true">Nv {{ user.userprofile.level|default:1 }}</span>
+                            <span>&#11088; {{ user.userprofile.xp|default:0 }}</span>
+                        </a>
+                        {% endif %}
                         <button class="theme-toggle" type="button" aria-label="Comuta tema" data-theme-toggle data-theme="light">
                             <span class="theme-toggle__track" aria-hidden="true">
                                 <span class="theme-toggle__thumb">
