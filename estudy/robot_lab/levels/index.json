@@ -1,90 +1,223 @@
 {
-  "version": "1.0",
+  "version": "2.0",
   "unlock_strategy": "linear",
+  "worlds": [
+    {"world_id": 1, "name": "Gradina", "theme": "garden", "unlock_condition": null},
+    {"world_id": 2, "name": "Pestera de Gheata", "theme": "ice", "unlock_condition": "complete_world_1"},
+    {"world_id": 3, "name": "Vulcanul", "theme": "volcano", "unlock_condition": "complete_world_2"},
+    {"world_id": 4, "name": "Statia Spatiala", "theme": "space", "unlock_condition": "complete_world_3"},
+    {"world_id": 5, "name": "Nucleul Final", "theme": "core", "unlock_condition": "complete_world_4"}
+  ],
   "levels": [
     {
-      "id": "W1-L01",
-      "file": "W1-L01.json",
-      "world": 1,
-      "order": 1,
+      "id": "W1-L01", "file": "W1-L01.json", "world": 1, "order": 1,
       "title": "Misiunea sagetilor",
       "goal": "Foloseste butoanele ca sa ajungi la terminal",
-      "concepts": ["sequencing"],
-      "difficulty": "easy",
-      "xp_reward": 20,
-      "mode": "junior",
-      "ui_stage": "buttons",
-      "recommended_age": "8-10"
+      "concepts": ["sequencing"], "difficulty": "easy", "xp_reward": 20,
+      "mode": "junior", "ui_stage": "buttons", "recommended_age": "8-10"
     },
     {
-      "id": "W1-L02",
-      "file": "W1-L02.json",
-      "world": 1,
-      "order": 2,
+      "id": "W1-L02", "file": "W1-L02.json", "world": 1, "order": 2,
       "title": "Vezi codul",
       "goal": "Construieste ruta si priveste cum apare codul",
-      "concepts": ["sequencing", "debugging"],
-      "difficulty": "easy",
-      "xp_reward": 25,
-      "mode": "junior",
-      "ui_stage": "buttons_code",
-      "recommended_age": "8-10"
+      "concepts": ["sequencing", "debugging"], "difficulty": "easy", "xp_reward": 25,
+      "mode": "junior", "ui_stage": "buttons_code", "recommended_age": "8-10"
     },
     {
-      "id": "W1-L03",
-      "file": "W1-L03.json",
-      "world": 1,
-      "order": 3,
+      "id": "W1-L03", "file": "W1-L03.json", "world": 1, "order": 3,
       "title": "Completeaza linia lipsa",
       "goal": "Completeaza comanda lipsa",
-      "concepts": ["sequencing", "debugging"],
-      "difficulty": "easy",
-      "xp_reward": 30,
-      "mode": "code",
-      "ui_stage": "fill_gaps",
-      "recommended_age": "11-13"
+      "concepts": ["sequencing", "debugging"], "difficulty": "easy", "xp_reward": 30,
+      "mode": "code", "ui_stage": "fill_gaps", "recommended_age": "11-13"
     },
     {
-      "id": "W1-L04",
-      "file": "W1-L04.json",
-      "world": 1,
-      "order": 4,
+      "id": "W1-L04", "file": "W1-L04.json", "world": 1, "order": 4,
       "title": "Scrie ruta completa",
       "goal": "Scrie singur tot programul",
-      "concepts": ["sequencing", "debugging"],
-      "difficulty": "medium",
-      "xp_reward": 35,
-      "mode": "code",
-      "ui_stage": "code",
-      "recommended_age": "11-13"
+      "concepts": ["sequencing", "debugging"], "difficulty": "medium", "xp_reward": 35,
+      "mode": "code", "ui_stage": "code", "recommended_age": "11-13"
     },
     {
-      "id": "W1-L05",
-      "file": "W1-L05.json",
-      "world": 1,
-      "order": 5,
+      "id": "W1-L05", "file": "W1-L05.json", "world": 1, "order": 5,
       "title": "Depaneaza labirintul",
       "goal": "Ajungi la terminal fara sa lovesti peretii",
-      "concepts": ["sequencing", "debugging"],
-      "difficulty": "medium",
-      "xp_reward": 40,
-      "mode": "code",
-      "ui_stage": "code",
-      "recommended_age": "11-13"
+      "concepts": ["sequencing", "debugging"], "difficulty": "medium", "xp_reward": 40,
+      "mode": "code", "ui_stage": "code", "recommended_age": "11-13"
     },
     {
-      "id": "W1-L06",
-      "file": "W1-L06.json",
-      "world": 1,
-      "order": 6,
+      "id": "W1-L06", "file": "W1-L06.json", "world": 1, "order": 6,
       "title": "Ruta optima",
       "goal": "Rezolva misiunea, apoi imbunatateste numarul de pasi",
-      "concepts": ["sequencing", "debugging"],
-      "difficulty": "medium",
-      "xp_reward": 45,
-      "mode": "code",
-      "ui_stage": "code",
-      "recommended_age": "14-16+"
+      "concepts": ["sequencing", "debugging"], "difficulty": "medium", "xp_reward": 45,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W2-L01", "file": "W2-L01.json", "world": 2, "order": 1,
+      "title": "Start alunecos",
+      "goal": "Ajungi la tinta pe gheata",
+      "concepts": ["loops"], "difficulty": "easy", "xp_reward": 30,
+      "mode": "code", "ui_stage": "code", "recommended_age": "11-13"
+    },
+    {
+      "id": "W2-L02", "file": "W2-L02.json", "world": 2, "order": 2,
+      "title": "Bucla de gheata",
+      "goal": "Foloseste o bucla for ca sa traversezi gheata",
+      "concepts": ["loops"], "difficulty": "easy", "xp_reward": 35,
+      "mode": "code", "ui_stage": "code", "recommended_age": "11-13"
+    },
+    {
+      "id": "W2-L03", "file": "W2-L03.json", "world": 2, "order": 3,
+      "title": "Opreste-te la caldurar",
+      "goal": "Foloseste bucle si incalzitoare ca sa navighezi",
+      "concepts": ["loops"], "difficulty": "medium", "xp_reward": 40,
+      "mode": "code", "ui_stage": "code", "recommended_age": "11-13"
+    },
+    {
+      "id": "W2-L04", "file": "W2-L04.json", "world": 2, "order": 4,
+      "title": "Labirint de cristal",
+      "goal": "Parcurge labirintul de gheata cu bucle while",
+      "concepts": ["loops"], "difficulty": "medium", "xp_reward": 45,
+      "mode": "code", "ui_stage": "code", "recommended_age": "11-13"
+    },
+    {
+      "id": "W2-L05", "file": "W2-L05.json", "world": 2, "order": 5,
+      "title": "Peretii de gheata",
+      "goal": "Combina bucle si directii pe gheata",
+      "concepts": ["loops", "debugging"], "difficulty": "hard", "xp_reward": 50,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W2-L06", "file": "W2-L06.json", "world": 2, "order": 6,
+      "title": "Avalansa finala",
+      "goal": "Traseul optim pe cel mai mare labirint de gheata",
+      "concepts": ["loops", "debugging"], "difficulty": "hard", "xp_reward": 55,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W3-L01", "file": "W3-L01.json", "world": 3, "order": 1,
+      "title": "Intrare fierbinte",
+      "goal": "Treci peste lava folosind conditii",
+      "concepts": ["conditions"], "difficulty": "easy", "xp_reward": 35,
+      "mode": "code", "ui_stage": "code", "recommended_age": "11-13"
+    },
+    {
+      "id": "W3-L02", "file": "W3-L02.json", "world": 3, "order": 2,
+      "title": "Temporizatorul",
+      "goal": "Lava se schimba la fiecare 3 pasi — planifica bine",
+      "concepts": ["conditions"], "difficulty": "easy", "xp_reward": 40,
+      "mode": "code", "ui_stage": "code", "recommended_age": "11-13"
+    },
+    {
+      "id": "W3-L03", "file": "W3-L03.json", "world": 3, "order": 3,
+      "title": "Racitorul magic",
+      "goal": "Colecteaza racitorul si treci prin lava",
+      "concepts": ["conditions"], "difficulty": "medium", "xp_reward": 45,
+      "mode": "code", "ui_stage": "code", "recommended_age": "11-13"
+    },
+    {
+      "id": "W3-L04", "file": "W3-L04.json", "world": 3, "order": 4,
+      "title": "Drumul de foc",
+      "goal": "Combina conditii si colectabile pe lava",
+      "concepts": ["conditions", "loops"], "difficulty": "medium", "xp_reward": 50,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W3-L05", "file": "W3-L05.json", "world": 3, "order": 5,
+      "title": "Flacara dubla",
+      "goal": "Doua zone de lava cu temporizatoare diferite",
+      "concepts": ["conditions", "loops"], "difficulty": "hard", "xp_reward": 55,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W3-L06", "file": "W3-L06.json", "world": 3, "order": 6,
+      "title": "Inima vulcanului",
+      "goal": "Nivelul final — toate mecanicile combinate",
+      "concepts": ["conditions", "loops", "debugging"], "difficulty": "hard", "xp_reward": 60,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W4-L01", "file": "W4-L01.json", "world": 4, "order": 1,
+      "title": "Portal simplu",
+      "goal": "Foloseste portalul ca sa ajungi la tinta",
+      "concepts": ["functions"], "difficulty": "easy", "xp_reward": 40,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W4-L02", "file": "W4-L02.json", "world": 4, "order": 2,
+      "title": "Functia ta",
+      "goal": "Defineste o functie si cheam-o",
+      "concepts": ["functions"], "difficulty": "easy", "xp_reward": 45,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W4-L03", "file": "W4-L03.json", "world": 4, "order": 3,
+      "title": "Gravitatie zero",
+      "goal": "Navigheza fara gravitatie cu functii",
+      "concepts": ["functions"], "difficulty": "medium", "xp_reward": 50,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W4-L04", "file": "W4-L04.json", "world": 4, "order": 4,
+      "title": "Parametrii",
+      "goal": "Functii cu parametri pentru a controla directia",
+      "concepts": ["functions"], "difficulty": "medium", "xp_reward": 55,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W4-L05", "file": "W4-L05.json", "world": 4, "order": 5,
+      "title": "Reteaua de portaluri",
+      "goal": "Mai multe portaluri — planifica teleportarile",
+      "concepts": ["functions", "debugging"], "difficulty": "hard", "xp_reward": 60,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W4-L06", "file": "W4-L06.json", "world": 4, "order": 6,
+      "title": "Statia principala",
+      "goal": "Combina portaluri, functii si gravitatie",
+      "concepts": ["functions", "loops", "debugging"], "difficulty": "hard", "xp_reward": 65,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W5-L01", "file": "W5-L01.json", "world": 5, "order": 1,
+      "title": "Nucleul exterior",
+      "goal": "Toate tipurile de dale — combina tot ce ai invatat",
+      "concepts": ["algorithms"], "difficulty": "medium", "xp_reward": 50,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W5-L02", "file": "W5-L02.json", "world": 5, "order": 2,
+      "title": "Oglinda robotica",
+      "goal": "Un robot inamic iti copiaza miscarile",
+      "concepts": ["algorithms"], "difficulty": "medium", "xp_reward": 55,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W5-L03", "file": "W5-L03.json", "world": 5, "order": 3,
+      "title": "Optimizarea traseului",
+      "goal": "Gaseste drumul cel mai scurt",
+      "concepts": ["algorithms", "debugging"], "difficulty": "hard", "xp_reward": 60,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W5-L04", "file": "W5-L04.json", "world": 5, "order": 4,
+      "title": "Recursivitate",
+      "goal": "Rezolva puzzle-ul recursiv",
+      "concepts": ["algorithms", "functions"], "difficulty": "hard", "xp_reward": 65,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W5-L05", "file": "W5-L05.json", "world": 5, "order": 5,
+      "title": "Ultimul test",
+      "goal": "Toate mecanicile combinate in labirint",
+      "concepts": ["algorithms", "loops", "conditions"], "difficulty": "hard", "xp_reward": 70,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
+    },
+    {
+      "id": "W5-L06", "file": "W5-L06.json", "world": 5, "order": 6,
+      "title": "Salvarea planetei",
+      "goal": "Nivelul final — salveaza Zeta-9!",
+      "concepts": ["algorithms", "functions", "loops", "conditions"], "difficulty": "hard", "xp_reward": 100,
+      "mode": "code", "ui_stage": "code", "recommended_age": "14-16+"
     }
   ]
 }

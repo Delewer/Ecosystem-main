@@ -16,13 +16,21 @@
   "mode": "code",
   "ui_stage": "code",
   "recommended_age": "11-13",
-  "allowed_api": [
-    "up",
-    "down",
-    "left",
-    "right",
-    "at_goal"
-  ],
+  "world": 1,
+  "world_theme": "garden",
+  "optimal_steps": 9,
+  "star_conditions": {
+    "one": "reach_goal",
+    "two": "steps_lte_14",
+    "three": "steps_lte_optimal"
+  },
+  "collectibles": [],
+  "intro_dialog": "ZIPP: Acum esti pe cont propriu! Scrie tot programul.",
+  "success_dialog": "ZIPP: Esti un programator adevarat!",
+  "fail_dialog": "ZIPP: Numara casutele pe harta si ajusteaza comenzile.",
+  "background_theme": "garden",
+  "music_theme": "upbeat_garden",
+  "allowed_api": ["up", "down", "left", "right", "at_goal"],
   "legend": {
     "#": "perete",
     ".": "spatiu",
@@ -30,11 +38,15 @@
     "T": "terminal"
   },
   "grid": [
-    "########",
-    "#S.....#",
-    "#...##.#",
-    "#...T..#",
-    "########"
+    "############",
+    "#S.........#",
+    "#.####.##..#",
+    "#......#...#",
+    "#.####.#.#.#",
+    "#..........#",
+    "#.##.####..#",
+    "#..........T",
+    "############"
   ],
   "starter_code": "# Scrie ruta completa\n"
 }

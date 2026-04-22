@@ -9,20 +9,28 @@
   },
   "concepts": ["sequencing", "debugging"],
   "difficulty": "medium",
-  "max_steps": 36,
+  "max_steps": 40,
   "time_limit_ms": 1000,
   "xp_reward": 40,
   "start_dir": "E",
   "mode": "code",
   "ui_stage": "code",
   "recommended_age": "11-13",
-  "allowed_api": [
-    "up",
-    "down",
-    "left",
-    "right",
-    "at_goal"
-  ],
+  "world": 1,
+  "world_theme": "garden",
+  "optimal_steps": 12,
+  "star_conditions": {
+    "one": "reach_goal",
+    "two": "steps_lte_18",
+    "three": "steps_lte_optimal"
+  },
+  "collectibles": [],
+  "intro_dialog": "ZIPP: Labirint mare! Citeste consola daca lovesti un perete.",
+  "success_dialog": "ZIPP: Depanare reusita! Esti atent la detalii!",
+  "fail_dialog": "ZIPP: Consola iti arata la ce pas ai gresit.",
+  "background_theme": "garden",
+  "music_theme": "upbeat_garden",
+  "allowed_api": ["up", "down", "left", "right", "at_goal"],
   "legend": {
     "#": "perete",
     ".": "spatiu",
@@ -30,11 +38,16 @@
     "T": "terminal"
   },
   "grid": [
-    "#########",
-    "#S.....##",
-    "###.##..#",
-    "#....T..#",
-    "#########"
+    "############",
+    "#S...#.....#",
+    "#.##.#.###.#",
+    "#.#..#.....#",
+    "#.#.####.#.#",
+    "#.#........#",
+    "#.####.###.#",
+    "#..........#",
+    "#.##.####.T#",
+    "############"
   ],
   "starter_code": "# Corecteaza ruta dupa fiecare rulare\n"
 }

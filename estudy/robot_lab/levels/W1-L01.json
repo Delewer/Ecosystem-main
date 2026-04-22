@@ -16,13 +16,21 @@
   "mode": "junior",
   "ui_stage": "buttons",
   "recommended_age": "8-10",
-  "allowed_api": [
-    "up",
-    "down",
-    "left",
-    "right",
-    "at_goal"
-  ],
+  "world": 1,
+  "world_theme": "garden",
+  "optimal_steps": 5,
+  "star_conditions": {
+    "one": "reach_goal",
+    "two": "steps_lte_8",
+    "three": "steps_lte_optimal"
+  },
+  "collectibles": [],
+  "intro_dialog": "ZIPP: Salut! Eu sunt ZIPP. Ajuta-ma sa ajung la terminal!",
+  "success_dialog": "ZIPP: Bravo! Energia revine in sector!",
+  "fail_dialog": "ZIPP: Hmm... sa incercam din nou!",
+  "background_theme": "garden",
+  "music_theme": "upbeat_garden",
+  "allowed_api": ["up", "down", "left", "right", "at_goal"],
   "legend": {
     "#": "perete",
     ".": "spatiu",
@@ -30,10 +38,11 @@
     "T": "terminal"
   },
   "grid": [
-    "########",
-    "#S...#.#",
-    "#...T..#",
-    "########"
+    "##########",
+    "#S.....#.#",
+    "#.###..T.#",
+    "#........#",
+    "##########"
   ],
   "starter_code": ""
 }

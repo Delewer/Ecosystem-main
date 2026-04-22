@@ -9,20 +9,28 @@
   },
   "concepts": ["sequencing", "debugging"],
   "difficulty": "medium",
-  "max_steps": 40,
+  "max_steps": 45,
   "time_limit_ms": 1100,
   "xp_reward": 45,
   "start_dir": "E",
   "mode": "code",
   "ui_stage": "code",
   "recommended_age": "14-16+",
-  "allowed_api": [
-    "up",
-    "down",
-    "left",
-    "right",
-    "at_goal"
-  ],
+  "world": 1,
+  "world_theme": "garden",
+  "optimal_steps": 14,
+  "star_conditions": {
+    "one": "reach_goal",
+    "two": "steps_lte_20",
+    "three": "steps_lte_optimal"
+  },
+  "collectibles": [],
+  "intro_dialog": "ZIPP: Ultimul sector din Gradina! Gaseste ruta cea mai scurta!",
+  "success_dialog": "ZIPP: Gradina e restaurata! Un nou sector se deschide!",
+  "fail_dialog": "ZIPP: Incearca sa gasesti o cale mai scurta!",
+  "background_theme": "garden",
+  "music_theme": "upbeat_garden",
+  "allowed_api": ["up", "down", "left", "right", "at_goal"],
   "legend": {
     "#": "perete",
     ".": "spatiu",
@@ -30,11 +38,18 @@
     "T": "terminal"
   },
   "grid": [
-    "#########",
-    "#S......#",
-    "#..##...#",
-    "#..T....#",
-    "#########"
+    "#############",
+    "#S..#.......#",
+    "#.#.#.#####.#",
+    "#.#.#.....#.#",
+    "#.#.#####.#.#",
+    "#.#.......#.#",
+    "#.#########.#",
+    "#...........#",
+    "####.######.#",
+    "#...........#",
+    "#.########.T#",
+    "#############"
   ],
   "starter_code": "# Rezolva mai intai, apoi optimizeaza\n"
 }

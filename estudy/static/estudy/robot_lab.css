@@ -150,6 +150,655 @@
     gap: 0.45rem;
 }
 
+.robotlab-play--embedded {
+    gap: 0.9rem;
+}
+
+.robotlab-play--embedded .card {
+    border-radius: 18px;
+    padding: 1rem;
+}
+
+.robotlab-embed-hero {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.robotlab-embed-hero__copy {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.robotlab-embed-hero__copy h3,
+.robotlab-embed-section-head h4,
+.robotlab-console-card--embedded h4,
+.robotlab-trace-card--embedded h4 {
+    margin: 0;
+}
+
+.robotlab-embed-hero__copy p,
+.robotlab-embed-section-head p,
+.robotlab-embed-brief__bubble p,
+.robotlab-embed-brief__note p {
+    margin: 0;
+    color: #bdd3ed;
+}
+
+.robotlab-embed-hero__meta {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.robotlab-embed-layout {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1.02fr) minmax(320px, 0.98fr);
+}
+
+.robotlab-grid-card--embedded,
+.robotlab-editor-card--embedded,
+.robotlab-trace-card--embedded {
+    min-height: 0;
+    display: grid;
+    gap: 0.9rem;
+    align-content: start;
+}
+
+.robotlab-grid-card--embedded {
+    grid-template-rows: auto auto minmax(280px, auto) auto;
+}
+
+.robotlab-editor-card--embedded {
+    grid-template-rows: auto auto auto auto auto auto;
+}
+
+.robotlab-terminal-card {
+    min-height: 100%;
+}
+
+.robotlab-terminal-card .robotlab-field textarea {
+    min-height: 240px;
+    resize: vertical;
+}
+
+.robotlab-trace-card--embedded .robotlab-trace {
+    max-height: 220px;
+}
+
+.robotlab-embed-section-head {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.robotlab-embed-section-head > div {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.robotlab-embed-brief {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: minmax(0, 1fr) minmax(200px, 0.8fr);
+}
+
+.robotlab-embed-brief__bubble,
+.robotlab-embed-brief__note {
+    border: 1px solid rgba(103, 157, 228, 0.28);
+    border-radius: 14px;
+    background: rgba(8, 23, 47, 0.42);
+    padding: 0.85rem;
+    display: grid;
+    gap: 0.35rem;
+}
+
+.robotlab-embed-brief__note span {
+    color: #8fb5e1;
+    font-size: 0.82rem;
+}
+
+.robotlab-grid-shell--embedded {
+    padding: 0;
+}
+
+.robotlab-play--embedded .robotlab-grid {
+    min-height: 420px;
+    height: auto;
+}
+
+.robotlab-control-deck--embedded {
+    margin-top: 0;
+    padding: 0.85rem;
+    border: 1px solid rgba(103, 157, 228, 0.28);
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(18, 39, 71, 0.85), rgba(10, 26, 50, 0.92));
+}
+
+.robotlab-control-deck--embedded .robotlab-playback {
+    margin-top: 0;
+}
+
+.robotlab-console-card--embedded {
+    border: 1px solid rgba(103, 157, 228, 0.32);
+    border-radius: 18px;
+    background:
+        linear-gradient(180deg, rgba(5, 17, 36, 0.96), rgba(9, 25, 48, 0.98));
+    padding: 0.95rem;
+    display: grid;
+    gap: 0.8rem;
+}
+
+.robotlab-console-card__head {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.robotlab-console-card__bar {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.robotlab-console-card__actions,
+.robotlab-console-card__tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.robotlab-console-card__actions .btn,
+.robotlab-console-card__tools .btn {
+    min-width: 140px;
+    justify-content: center;
+}
+
+.robotlab-console-card__footer {
+    display: grid;
+    gap: 0.8rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid rgba(102, 153, 225, 0.18);
+}
+
+.robotlab-console-list {
+    margin: 0;
+    padding-left: 1.15rem;
+    display: grid;
+    gap: 0.35rem;
+    color: #c7dbf5;
+    min-height: 140px;
+    border-radius: 14px;
+    border: 1px solid rgba(83, 129, 196, 0.22);
+    background: rgba(2, 8, 23, 0.75);
+    padding: 0.95rem 1rem 0.95rem 2rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.robotlab-status-wrap {
+    display: grid;
+    gap: 0.3rem;
+}
+
+.robotlab-status-wrap__label {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #91b8e6;
+}
+
+.robotlab-status {
+    margin: 0;
+}
+
+.robotlab-status[data-status-kind="success"] {
+    color: #9af0b5;
+}
+
+.robotlab-status[data-status-kind="warning"] {
+    color: #ffd88f;
+}
+
+.robotlab-status[data-status-kind="error"] {
+    color: #ff9fa2;
+}
+
+.robotlab-embed-hints {
+    display: grid;
+    gap: 0.55rem;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.robotlab-play--embedded .robotlab-hint-btn {
+    min-height: 54px;
+    border-radius: 16px;
+}
+
+.robotlab-play--storybook {
+    gap: 1rem;
+}
+
+.robotlab-play--storybook .robotlab-embed-hud,
+.robotlab-play--storybook .robotlab-embed-world,
+.robotlab-play--storybook .robotlab-embed-sidecar {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.86);
+    border-radius: 30px;
+    box-shadow: 0 28px 60px -34px rgba(8, 55, 103, 0.55);
+}
+
+.robotlab-play--storybook .robotlab-embed-hud::before,
+.robotlab-play--storybook .robotlab-embed-world::before,
+.robotlab-play--storybook .robotlab-embed-sidecar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 14px 14px, rgba(255, 255, 255, 0.16) 2px, transparent 2.5px) 0 0 / 28px 28px;
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.robotlab-play--storybook .robotlab-embed-hud {
+    background: linear-gradient(180deg, #29baf0 0%, #1ea8e6 100%);
+    color: #0b4867;
+    padding: 1.1rem 1.2rem;
+}
+
+.robotlab-embed-hud__top,
+.robotlab-embed-hud__rail {
+    position: relative;
+    z-index: 1;
+}
+
+.robotlab-embed-hud__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.robotlab-embed-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.robotlab-embed-brand__mark {
+    width: 4.4rem;
+    height: 4.4rem;
+    border-radius: 1.4rem;
+    display: grid;
+    place-items: center;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #0c3550;
+    background: linear-gradient(180deg, #fff47a 0%, #ffc72f 100%);
+    box-shadow:
+        0 14px 24px -18px rgba(0, 0, 0, 0.35),
+        inset 0 3px 0 rgba(255, 255, 255, 0.55);
+}
+
+.robotlab-embed-brand__copy {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.robotlab-play--storybook .robotlab-embed-brand__copy h3 {
+    margin: 0;
+    font-size: clamp(1.8rem, 2.4vw, 2.3rem);
+    color: #083a57;
+}
+
+.robotlab-play--storybook .robotlab-embed-brand__copy p {
+    margin: 0;
+    color: rgba(8, 58, 87, 0.82);
+    font-size: 1rem;
+}
+
+.robotlab-embed-score {
+    display: grid;
+    justify-items: end;
+    gap: 0.6rem;
+}
+
+.robotlab-embed-score__pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #0b4d6f;
+    font-weight: 800;
+    box-shadow: 0 10px 20px -18px rgba(0, 0, 0, 0.35);
+}
+
+.robotlab-embed-stars {
+    display: inline-flex;
+    gap: 0.4rem;
+}
+
+.robotlab-embed-stars span {
+    width: 1.55rem;
+    height: 1.55rem;
+    clip-path: polygon(50% 0%, 62% 35%, 100% 35%, 69% 57%, 79% 100%, 50% 74%, 21% 100%, 31% 57%, 0% 35%, 38% 35%);
+    background: linear-gradient(180deg, #ffe167 0%, #ffb61c 100%);
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.45);
+}
+
+.robotlab-embed-hud__rail {
+    margin-top: 0.85rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.robotlab-play--storybook .chip {
+    background: rgba(255, 255, 255, 0.9);
+    color: #0d5b81;
+    border: 1px solid rgba(13, 91, 129, 0.12);
+    font-weight: 700;
+}
+
+.robotlab-play--storybook .robotlab-level-nav .btn--ghost {
+    background: rgba(255, 255, 255, 0.9);
+    color: #0d5b81;
+    border: 1px solid rgba(13, 91, 129, 0.12);
+}
+
+.robotlab-play--storybook .robotlab-level-nav .btn--ghost:hover,
+.robotlab-play--storybook .robotlab-level-nav .btn--ghost:focus-visible {
+    color: #083a57;
+    background: #ffffff;
+    transform: translateY(-1px);
+}
+
+.robotlab-embed-stage {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1.38fr) minmax(360px, 0.82fr);
+    align-items: stretch;
+}
+
+.robotlab-embed-world {
+    background: linear-gradient(180deg, #1bb6ee 0%, #18aae5 100%);
+    color: #0a3d58;
+    padding: 1rem;
+}
+
+.robotlab-embed-world__top,
+.robotlab-embed-world__bubble,
+.robotlab-grid-shell--storybook,
+.robotlab-embed-dock {
+    position: relative;
+    z-index: 1;
+}
+
+.robotlab-embed-world__top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.robotlab-play--storybook .robotlab-embed-world__top h4 {
+    margin: 0;
+    font-size: clamp(1.7rem, 2.6vw, 2.35rem);
+    color: #083956;
+}
+
+.robotlab-play--storybook .robotlab-embed-world__top p {
+    margin: 0;
+    color: rgba(8, 57, 86, 0.82);
+}
+
+.robotlab-embed-world__bubble {
+    margin-top: 0.9rem;
+    max-width: 28rem;
+    padding: 1rem 1.15rem;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 18px 38px -30px rgba(0, 0, 0, 0.4);
+}
+
+.robotlab-embed-world__bubble strong {
+    display: block;
+    margin-bottom: 0.2rem;
+    color: #0a4c6f;
+}
+
+.robotlab-grid-shell--storybook {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 32px;
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    background:
+        radial-gradient(circle at 18% 14%, rgba(255, 255, 255, 0.34) 0, transparent 28%),
+        linear-gradient(180deg, #c9f6ff 0%, #a9ecff 100%);
+    box-shadow:
+        inset 0 12px 28px -24px rgba(255, 255, 255, 0.95),
+        inset 0 -20px 40px -34px rgba(20, 111, 156, 0.42);
+}
+
+.robotlab-play--storybook .robotlab-grid {
+    min-height: 520px;
+    padding: 0.95rem;
+    gap: 6px;
+    border: none;
+    border-radius: 26px;
+    background: rgba(13, 89, 126, 0.26);
+    box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.22);
+}
+
+.robotlab-play--storybook .robotlab-cell {
+    min-height: 48px;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.22);
+}
+
+.robotlab-embed-dock {
+    margin-top: 1rem;
+    padding: 0.9rem 1rem;
+    border-radius: 24px;
+    background:
+        linear-gradient(180deg, #ffd84d 0%, #ffbf19 100%);
+    box-shadow:
+        inset 0 3px 0 rgba(255, 255, 255, 0.36),
+        0 18px 38px -30px rgba(146, 89, 0, 0.42);
+}
+
+.robotlab-embed-dock__summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.robotlab-embed-dock__summary span {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.38rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.76);
+    color: #744900;
+    font-weight: 800;
+    font-size: 0.8rem;
+}
+
+.robotlab-embed-dock__caption {
+    margin-top: 0.6rem;
+    color: #7a4f05;
+    font-weight: 700;
+}
+
+.robotlab-embed-sidecar {
+    background: linear-gradient(180deg, #19afe8 0%, #0f95d4 100%);
+    padding: 1rem;
+    display: grid;
+    gap: 0.95rem;
+    align-content: start;
+}
+
+.robotlab-embed-mentor,
+.robotlab-terminal-card,
+.robotlab-trace-card--storybook {
+    position: relative;
+    z-index: 1;
+}
+
+.robotlab-embed-mentor {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.8rem;
+    align-items: center;
+}
+
+.robotlab-embed-mentor__avatar {
+    width: 4.4rem;
+    height: 4.4rem;
+    border-radius: 999px;
+    background: radial-gradient(circle at 34% 28%, #a5f8ff 0%, #4cd4f7 46%, #1aa7d9 100%);
+    position: relative;
+    box-shadow:
+        0 18px 28px -20px rgba(0, 0, 0, 0.38),
+        inset 0 3px 0 rgba(255, 255, 255, 0.46);
+}
+
+.robotlab-embed-mentor__eyes,
+.robotlab-embed-mentor__smile {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.robotlab-embed-mentor__eyes {
+    top: 1.45rem;
+    width: 1.6rem;
+    height: 0.6rem;
+}
+
+.robotlab-embed-mentor__eyes::before,
+.robotlab-embed-mentor__eyes::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 999px;
+    background: #0d3650;
+}
+
+.robotlab-embed-mentor__eyes::before {
+    left: 0;
+}
+
+.robotlab-embed-mentor__eyes::after {
+    right: 0;
+}
+
+.robotlab-embed-mentor__smile {
+    top: 2.15rem;
+    width: 1.3rem;
+    height: 0.7rem;
+    border-bottom: 3px solid #0d3650;
+    border-radius: 0 0 999px 999px;
+}
+
+.robotlab-embed-mentor__bubble {
+    padding: 0.95rem 1rem;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.94);
+    color: #0a4a6c;
+    box-shadow: 0 18px 38px -30px rgba(0, 0, 0, 0.4);
+}
+
+.robotlab-embed-mentor__bubble strong {
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.robotlab-terminal-card {
+    display: grid;
+    gap: 0.8rem;
+    padding: 1rem;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 2px solid rgba(255, 255, 255, 0.28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.robotlab-play--storybook .robotlab-terminal-card .robotlab-embed-section-head h4,
+.robotlab-play--storybook .robotlab-terminal-card .robotlab-embed-section-head p,
+.robotlab-play--storybook .robotlab-terminal-card .robotlab-checkbox {
+    color: #eef8ff;
+}
+
+.robotlab-play--storybook .robotlab-terminal-card .robotlab-eyebrow {
+    background: rgba(255, 255, 255, 0.18);
+    color: #eaf7ff;
+}
+
+.robotlab-play--storybook .robotlab-field textarea {
+    border-radius: 22px;
+    border: 2px solid rgba(131, 214, 255, 0.25);
+    background: rgba(3, 10, 25, 0.92);
+    box-shadow: inset 0 12px 20px -18px rgba(255, 255, 255, 0.08);
+    min-height: 260px;
+}
+
+.robotlab-console-card--storybook {
+    background: linear-gradient(180deg, rgba(5, 13, 30, 0.96), rgba(8, 23, 44, 0.98));
+    border: 2px solid rgba(112, 206, 255, 0.22);
+    border-radius: 24px;
+}
+
+.robotlab-play--storybook .robotlab-console-card__head h4 {
+    color: #f7fbff;
+}
+
+.robotlab-play--storybook .robotlab-console-card__actions .btn--primary {
+    background: linear-gradient(180deg, #7dff77 0%, #38cb47 100%);
+    color: #073b22;
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.42);
+}
+
+.robotlab-play--storybook .robotlab-console-card__actions .btn--ghost,
+.robotlab-play--storybook .robotlab-console-card__tools .btn,
+.robotlab-play--storybook .robotlab-hint-btn {
+    background: rgba(255, 255, 255, 0.9);
+    color: #0c5a81;
+    border: none;
+}
+
+.robotlab-play--storybook .robotlab-console-list {
+    border-radius: 20px;
+    border: 2px solid rgba(93, 129, 196, 0.2);
+    background: rgba(2, 8, 23, 0.86);
+}
+
+.robotlab-trace-card--storybook {
+    padding: 1rem;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 2px solid rgba(255, 255, 255, 0.22);
+}
+
+.robotlab-play--storybook .robotlab-trace-card--storybook h4,
+.robotlab-play--storybook .robotlab-trace-card--storybook .robotlab-trace,
+.robotlab-play--storybook .robotlab-trace-card--storybook .robotlab-eyebrow {
+    color: #eef8ff;
+}
+
+.robotlab-play--storybook .robotlab-trace {
+    background: rgba(5, 16, 33, 0.48);
+    border-radius: 18px;
+    padding: 0.95rem 1.1rem 0.95rem 2rem;
+}
+
+.robotlab-play--storybook .robotlab-embed-hints {
+    gap: 0.75rem;
+}
+
 .robotlab-split {
     display: grid;
     gap: 1rem;
@@ -601,6 +1250,35 @@ body.robotlab-play-page .robotlab-page.robotlab-play {
 }
 
 @media (max-width: 960px) {
+    .robotlab-embed-stage {
+        grid-template-columns: 1fr;
+    }
+
+    .robotlab-embed-hud__top,
+    .robotlab-embed-hud__rail,
+    .robotlab-embed-world__top,
+    .robotlab-embed-brand {
+        grid-template-columns: 1fr;
+        display: grid;
+    }
+
+    .robotlab-embed-score {
+        justify-items: start;
+    }
+
+    .robotlab-play--storybook .robotlab-grid {
+        min-height: 360px;
+    }
+
+    .robotlab-embed-layout,
+    .robotlab-embed-brief {
+        grid-template-columns: 1fr;
+    }
+
+    .robotlab-grid-card--embedded {
+        grid-template-rows: auto auto minmax(220px, auto) auto;
+    }
+
     body.robotlab-play-page {
         overflow: auto;
     }
@@ -1541,4 +2219,1164 @@ body.robotlab-play-page .robotlab-editor-card {
     .robotlab-builder__columns {
         grid-template-columns: 1fr;
     }
+}
+
+/* Unified one-block layout */
+
+.robotlab-play--single {
+    gap: 1rem;
+}
+
+.robotlab-unified-card {
+    display: grid;
+    gap: 1rem;
+    overflow: hidden;
+}
+
+.robotlab-unified-header,
+.robotlab-unified-stage__head,
+.robotlab-unified-stage__footer,
+.robotlab-unified-section-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.85rem;
+}
+
+.robotlab-unified-header__copy,
+.robotlab-unified-section-head > div {
+    display: grid;
+    gap: 0.35rem;
+}
+
+.robotlab-unified-header__copy h3,
+.robotlab-unified-section-head h4,
+.robotlab-unified-note h4,
+.robotlab-trace-card--single h4 {
+    margin: 0;
+}
+
+.robotlab-unified-header__copy p,
+.robotlab-unified-stage__head p,
+.robotlab-unified-section-head p,
+.robotlab-unified-note p,
+.robotlab-unified-stage__footer p {
+    margin: 0;
+}
+
+.robotlab-unified-meta {
+    display: grid;
+    gap: 0.85rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.robotlab-unified-note,
+.robotlab-unified-stage,
+.robotlab-unified-code,
+.robotlab-unified-help {
+    border-radius: 24px;
+    border: 1px solid rgba(103, 157, 228, 0.28);
+    background: rgba(8, 23, 47, 0.42);
+    padding: 1rem;
+}
+
+.robotlab-unified-note {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.robotlab-unified-stage,
+.robotlab-unified-code,
+.robotlab-unified-help {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.robotlab-unified-stage__task {
+    border-radius: 18px;
+    padding: 0.95rem 1rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    display: grid;
+    gap: 0.25rem;
+}
+
+.robotlab-grid-shell--single {
+    padding: 0.9rem;
+    border-radius: 28px;
+}
+
+.robotlab-play--single .robotlab-grid {
+    min-height: 340px;
+    height: auto;
+}
+
+.robotlab-unified-stage__footer {
+    align-items: center;
+}
+
+.robotlab-unified-controls {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.robotlab-console-card--single {
+    border-radius: 22px;
+    padding: 1rem;
+    display: grid;
+    gap: 0.8rem;
+}
+
+.robotlab-console-card--single .robotlab-console-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.robotlab-console-card--single .robotlab-console-card__actions .btn {
+    flex: 1 1 150px;
+    min-width: 0;
+    justify-content: center;
+}
+
+.robotlab-console-card--single .robotlab-console-list {
+    min-height: 120px;
+}
+
+.robotlab-embed-hints--single {
+    display: grid;
+    gap: 0.6rem;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.robotlab-trace-details {
+    border-radius: 20px;
+    border: 1px solid rgba(103, 157, 228, 0.24);
+    background: rgba(3, 10, 25, 0.26);
+    overflow: hidden;
+}
+
+.robotlab-trace-details summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 0.9rem 1rem;
+    font-weight: 700;
+}
+
+.robotlab-trace-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.robotlab-trace-card--single {
+    padding: 0 1rem 1rem;
+    background: transparent;
+    border: 0;
+}
+
+.robotlab-trace-card--single .robotlab-trace {
+    margin: 0;
+    max-height: 220px;
+}
+
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-card {
+    background: linear-gradient(180deg, #1fb4ec 0%, #1196d6 100%);
+    border: 2px solid rgba(255, 255, 255, 0.88);
+    border-radius: 30px;
+    box-shadow: 0 28px 60px -34px rgba(8, 55, 103, 0.55);
+}
+
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-note,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-stage,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-code,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-help {
+    background: rgba(255, 255, 255, 0.14);
+    border: 2px solid rgba(255, 255, 255, 0.22);
+}
+
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-header__copy h3,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-section-head h4,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-note h4,
+.robotlab-play--embedded.robotlab-play--single .robotlab-status-wrap__label,
+.robotlab-play--embedded.robotlab-play--single .robotlab-status,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-header__copy p,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-note p,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-stage__head p,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-stage__footer p,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-section-head p {
+    color: #eef8ff;
+}
+
+.robotlab-play--embedded.robotlab-play--single .robotlab-grid-shell--single {
+    background:
+        radial-gradient(circle at 18% 14%, rgba(255, 255, 255, 0.34) 0, transparent 28%),
+        linear-gradient(180deg, #c9f6ff 0%, #a9ecff 100%);
+    border: 3px solid rgba(255, 255, 255, 0.9);
+}
+
+.robotlab-play--embedded.robotlab-play--single .robotlab-grid {
+    min-height: 420px;
+    border-radius: 26px;
+    background: rgba(13, 89, 126, 0.26);
+}
+
+.robotlab-play--embedded.robotlab-play--single .robotlab-console-card--single,
+.robotlab-play--embedded.robotlab-play--single .robotlab-trace-details,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-stage__task {
+    background: rgba(255, 255, 255, 0.92);
+    color: #0a4a6c;
+}
+
+.robotlab-play--embedded.robotlab-play--single .robotlab-console-card--single .robotlab-status,
+.robotlab-play--embedded.robotlab-play--single .robotlab-console-card--single .robotlab-status-wrap__label,
+.robotlab-play--embedded.robotlab-play--single .robotlab-console-card--single h4,
+.robotlab-play--embedded.robotlab-play--single .robotlab-console-card--single .robotlab-eyebrow,
+.robotlab-play--embedded.robotlab-play--single .robotlab-trace-card--single h4,
+.robotlab-play--embedded.robotlab-play--single .robotlab-trace-card--single .robotlab-eyebrow,
+.robotlab-play--embedded.robotlab-play--single .robotlab-trace-card--single .robotlab-trace,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-stage__task p,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-stage__task strong {
+    color: #0a4a6c;
+}
+
+.robotlab-play--embedded.robotlab-play--single .robotlab-field textarea {
+    min-height: 220px;
+}
+
+body.robotlab-play-page .robotlab-play--single .robotlab-unified-card {
+    background:
+        radial-gradient(circle at top right, rgba(255, 221, 85, 0.24), transparent 26%),
+        linear-gradient(180deg, rgba(255, 250, 227, 0.98), rgba(255, 243, 207, 0.98));
+    border: 3px solid rgba(255, 255, 255, 0.9);
+}
+
+body.robotlab-play-page .robotlab-play--single .robotlab-unified-header__copy h3,
+body.robotlab-play-page .robotlab-play--single .robotlab-unified-section-head h4,
+body.robotlab-play-page .robotlab-play--single .robotlab-unified-note h4 {
+    color: #235678;
+}
+
+body.robotlab-play-page .robotlab-play--single .robotlab-unified-header__copy p,
+body.robotlab-play-page .robotlab-play--single .robotlab-unified-stage__head p,
+body.robotlab-play-page .robotlab-play--single .robotlab-unified-section-head p,
+body.robotlab-play-page .robotlab-play--single .robotlab-unified-note p,
+body.robotlab-play-page .robotlab-play--single .robotlab-unified-stage__footer p {
+    color: #496989;
+}
+
+body.robotlab-play-page .robotlab-play--single .robotlab-unified-note,
+body.robotlab-play-page .robotlab-play--single .robotlab-unified-stage,
+body.robotlab-play-page .robotlab-play--single .robotlab-unified-code,
+body.robotlab-play-page .robotlab-play--single .robotlab-unified-help {
+    background: rgba(255, 255, 255, 0.62);
+    border: 2px solid rgba(255, 255, 255, 0.84);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+body.robotlab-play-page .robotlab-play--single .robotlab-unified-stage__task,
+body.robotlab-play-page .robotlab-play--single .robotlab-trace-details,
+body.robotlab-play-page .robotlab-play--single .robotlab-console-card--single {
+    background: rgba(255, 255, 255, 0.82);
+    border: 2px solid rgba(119, 199, 242, 0.24);
+}
+
+body.robotlab-play-page .robotlab-play--single .robotlab-grid-shell--single {
+    background: linear-gradient(180deg, rgba(32, 190, 56, 0.15), rgba(18, 147, 41, 0.18));
+    border: 3px solid rgba(255, 255, 255, 0.78);
+}
+
+body.robotlab-play-page .robotlab-play--single .robotlab-grid {
+    min-height: 360px;
+}
+
+@media (max-width: 860px) {
+    .robotlab-unified-header,
+    .robotlab-unified-stage__head,
+    .robotlab-unified-stage__footer,
+    .robotlab-unified-section-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .robotlab-play--single .robotlab-grid {
+        min-height: 280px;
+    }
+
+    .robotlab-console-card--single .robotlab-console-card__actions .btn {
+        flex-basis: calc(50% - 0.4rem);
+    }
+}
+
+@media (max-width: 640px) {
+    .robotlab-unified-card {
+        gap: 0.85rem;
+    }
+
+    .robotlab-unified-note,
+    .robotlab-unified-stage,
+    .robotlab-unified-code,
+    .robotlab-unified-help,
+    .robotlab-console-card--single {
+        padding: 0.85rem;
+        border-radius: 20px;
+    }
+
+    .robotlab-play--single .robotlab-grid {
+        min-height: 240px;
+    }
+
+    .robotlab-console-card--single .robotlab-console-card__actions .btn {
+        flex-basis: 100%;
+    }
+}
+
+/* Calm visual refresh: no hover, cleaner board, softer controls */
+
+.robotlab-play--single .btn,
+.robotlab-play--single .chip,
+.robotlab-play--single .card,
+.robotlab-play--single .robotlab-cell,
+.robotlab-play--single .robotlab-trace-details,
+.robotlab-play--single .robotlab-unified-note,
+.robotlab-play--single .robotlab-unified-stage,
+.robotlab-play--single .robotlab-unified-code,
+.robotlab-play--single .robotlab-unified-help,
+.robotlab-play--single .robotlab-console-card--single {
+    transition: none !important;
+    animation: none !important;
+}
+
+.robotlab-play--single *,
+.robotlab-play--single *::before,
+.robotlab-play--single *::after,
+body.robotlab-play-page .robotlab-play--single *,
+body.robotlab-play-page .robotlab-play--single *::before,
+body.robotlab-play-page .robotlab-play--single *::after,
+.robotlab-play--embedded.robotlab-play--single *,
+.robotlab-play--embedded.robotlab-play--single *::before,
+.robotlab-play--embedded.robotlab-play--single *::after {
+    transition: none !important;
+    animation: none !important;
+}
+
+.robotlab-play--single .btn:hover,
+.robotlab-play--single .btn:focus-visible,
+.robotlab-play--single .btn:focus,
+.robotlab-play--single .btn:active,
+.robotlab-play--single .btn--primary:hover,
+.robotlab-play--single .btn--primary:focus,
+.robotlab-play--single .btn--primary:focus-visible,
+.robotlab-play--single .btn--primary:active,
+.robotlab-play--single .btn--ghost:hover,
+.robotlab-play--single .btn--ghost:focus,
+.robotlab-play--single .btn--ghost:focus-visible,
+.robotlab-play--single .btn--ghost:active,
+.robotlab-play--single .robotlab-level-nav .btn--ghost:hover,
+.robotlab-play--single .robotlab-level-nav .btn--ghost:focus-visible,
+body.robotlab-play-page .robotlab-play .btn:hover,
+body.robotlab-play-page .robotlab-play .btn:focus,
+body.robotlab-play-page .robotlab-play .btn:focus-visible,
+body.robotlab-play-page .robotlab-play .btn:active {
+    transform: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+}
+
+.robotlab-play--single .chip:hover,
+.robotlab-play--single .chip:focus,
+.robotlab-play--single .card:hover,
+.robotlab-play--single .card:focus-within,
+.robotlab-play--single .robotlab-cell:hover,
+.robotlab-play--single .robotlab-grid-shell--single:hover,
+.robotlab-play--single .robotlab-unified-card:hover,
+.robotlab-play--single .robotlab-unified-note:hover,
+.robotlab-play--single .robotlab-unified-stage:hover,
+.robotlab-play--single .robotlab-unified-code:hover,
+.robotlab-play--single .robotlab-unified-help:hover,
+body.robotlab-play-page .robotlab-play--single .chip:hover,
+body.robotlab-play-page .robotlab-play--single .card:hover,
+body.robotlab-play-page .robotlab-play--single .card:focus-within,
+body.robotlab-play-page .robotlab-play--single .robotlab-cell:hover {
+    transform: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+}
+
+.robotlab-play--single .btn:focus-visible {
+    outline: 2px solid rgba(87, 158, 190, 0.35);
+    outline-offset: 2px;
+}
+
+.robotlab-play--single .robotlab-unified-card {
+    border-radius: 28px;
+    border: 1px solid rgba(184, 213, 225, 0.9);
+    background:
+        linear-gradient(180deg, rgba(246, 252, 255, 0.98), rgba(233, 245, 250, 0.98));
+    box-shadow: 0 16px 34px -24px rgba(43, 101, 133, 0.2);
+}
+
+.robotlab-play--single .robotlab-unified-header__copy h3,
+.robotlab-play--single .robotlab-unified-section-head h4,
+.robotlab-play--single .robotlab-unified-note h4,
+.robotlab-play--single .robotlab-trace-card--single h4 {
+    color: #204d67;
+}
+
+.robotlab-play--single .robotlab-unified-header__copy p,
+.robotlab-play--single .robotlab-unified-stage__head p,
+.robotlab-play--single .robotlab-unified-section-head p,
+.robotlab-play--single .robotlab-unified-note p,
+.robotlab-play--single .robotlab-unified-stage__footer p,
+.robotlab-play--single .robotlab-status-wrap__label,
+.robotlab-play--single .robotlab-status {
+    color: #537086;
+}
+
+.robotlab-play--single .robotlab-unified-note,
+.robotlab-play--single .robotlab-unified-stage,
+.robotlab-play--single .robotlab-unified-code,
+.robotlab-play--single .robotlab-unified-help {
+    border-radius: 22px;
+    border: 1px solid rgba(198, 219, 228, 0.9);
+    background: rgba(255, 255, 255, 0.82);
+    box-shadow: none;
+}
+
+.robotlab-play--single .robotlab-eyebrow,
+.robotlab-play--single .chip {
+    background: rgba(83, 145, 174, 0.11);
+    color: #2d5e78;
+    border: 1px solid rgba(149, 188, 205, 0.38);
+    box-shadow: none;
+}
+
+.robotlab-play--single .btn {
+    border-radius: 999px;
+    box-shadow: none;
+    transform: none !important;
+}
+
+.robotlab-play--single .btn--primary {
+    background: linear-gradient(180deg, #58b7e2, #318fc0);
+    color: #ffffff;
+}
+
+.robotlab-play--single .btn--primary:hover,
+.robotlab-play--single .btn--primary:focus,
+.robotlab-play--single .btn--primary:focus-visible,
+.robotlab-play--single .btn--primary:active,
+body.robotlab-play-page .robotlab-play--single .btn--primary:hover,
+body.robotlab-play-page .robotlab-play--single .btn--primary:focus,
+body.robotlab-play-page .robotlab-play--single .btn--primary:focus-visible,
+body.robotlab-play-page .robotlab-play--single .btn--primary:active {
+    background: linear-gradient(180deg, #58b7e2, #318fc0) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+}
+
+.robotlab-play--single .btn--ghost {
+    background: linear-gradient(180deg, #ffffff, #f1f8fb);
+    color: #27536d;
+    border: 1px solid rgba(182, 209, 220, 0.95);
+}
+
+.robotlab-play--single .btn--ghost:hover,
+.robotlab-play--single .btn--ghost:focus,
+.robotlab-play--single .btn--ghost:focus-visible,
+.robotlab-play--single .btn--ghost:active,
+body.robotlab-play-page .robotlab-play--single .btn--ghost:hover,
+body.robotlab-play-page .robotlab-play--single .btn--ghost:focus,
+body.robotlab-play-page .robotlab-play--single .btn--ghost:focus-visible,
+body.robotlab-play-page .robotlab-play--single .btn--ghost:active {
+    background: linear-gradient(180deg, #ffffff, #f1f8fb) !important;
+    color: #27536d !important;
+    border: 1px solid rgba(182, 209, 220, 0.95) !important;
+}
+
+.robotlab-play--single .robotlab-grid-shell--single {
+    padding: 1rem;
+    border-radius: 24px;
+    border: 1px solid rgba(181, 207, 218, 0.95);
+    background:
+        linear-gradient(180deg, rgba(212, 234, 243, 0.98), rgba(194, 220, 230, 0.98));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62);
+}
+
+.robotlab-play--single .robotlab-grid {
+    min-height: 360px;
+    gap: 8px;
+    padding: 0.8rem;
+    border-radius: 20px;
+    border: 1px solid rgba(173, 199, 210, 0.9);
+    background: linear-gradient(180deg, #a9cfdb, #98c0cc);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.robotlab-play--single .robotlab-cell,
+body.robotlab-play-page .robotlab-play--single .robotlab-cell,
+.robotlab-play--embedded.robotlab-play--single .robotlab-cell {
+    min-height: 50px;
+    border-radius: 14px;
+    border: 1px solid rgba(122, 160, 178, 0.34);
+    background: linear-gradient(180deg, rgba(226, 243, 248, 0.98), rgba(204, 229, 237, 0.98));
+    color: #264c63;
+    box-shadow: none;
+}
+
+.robotlab-play--single .robotlab-cell::before,
+body.robotlab-play-page .robotlab-play--single .robotlab-cell::before,
+.robotlab-play--embedded.robotlab-play--single .robotlab-cell::before {
+    inset: 2px;
+    border-radius: 11px;
+    opacity: 0.92;
+}
+
+.robotlab-play--single .robotlab-cell.is-wall,
+body.robotlab-play-page .robotlab-play--single .robotlab-cell.is-wall,
+.robotlab-play--embedded.robotlab-play--single .robotlab-cell.is-wall {
+    border-color: rgba(46, 73, 95, 0.44);
+    background: linear-gradient(180deg, #334b62, #2a3f53);
+}
+
+.robotlab-play--single .robotlab-cell.is-wall::before,
+body.robotlab-play-page .robotlab-play--single .robotlab-cell.is-wall::before,
+.robotlab-play--embedded.robotlab-play--single .robotlab-cell.is-wall::before {
+    opacity: 0.88;
+}
+
+.robotlab-play--single .robotlab-cell.is-goal,
+.robotlab-play--single .robotlab-cell.is-terminal,
+.robotlab-play--single .robotlab-cell.is-item,
+.robotlab-play--single .robotlab-cell.is-door,
+.robotlab-play--single .robotlab-cell.is-hazard {
+    background: linear-gradient(180deg, rgba(217, 241, 248, 0.98), rgba(196, 226, 235, 0.98));
+}
+
+.robotlab-play--single .robotlab-cell.has-robot,
+body.robotlab-play-page .robotlab-play--single .robotlab-cell.has-robot,
+.robotlab-play--embedded.robotlab-play--single .robotlab-cell.has-robot {
+    outline: 3px solid #f2bc4c;
+    outline-offset: -2px;
+    box-shadow: 0 0 0 4px rgba(242, 188, 76, 0.16);
+}
+
+.robotlab-play--single .robotlab-field textarea,
+body.robotlab-play-page .robotlab-play--single .robotlab-field textarea,
+.robotlab-play--embedded.robotlab-play--single .robotlab-field textarea {
+    border-radius: 20px;
+    border: 1px solid rgba(190, 214, 224, 0.95);
+    background:
+        linear-gradient(transparent 31px, rgba(108, 154, 176, 0.08) 32px) 0 0 / 100% 32px,
+        linear-gradient(180deg, #ffffff, #f4fbff);
+    color: #24465d;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.robotlab-play--single .robotlab-console-card--single,
+.robotlab-play--single .robotlab-trace-details {
+    border-radius: 20px;
+    border: 1px solid rgba(198, 219, 228, 0.95);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 250, 253, 0.96));
+}
+
+.robotlab-play--single .robotlab-console-list {
+    border-radius: 16px;
+    border: 1px solid rgba(214, 229, 236, 0.95);
+    background: rgba(247, 252, 255, 0.98);
+    color: #36556b;
+    box-shadow: none;
+}
+
+.robotlab-play--single .robotlab-trace-card--single .robotlab-trace,
+.robotlab-play--single .robotlab-trace-card--single .robotlab-trace li,
+.robotlab-play--single .robotlab-console-card--single h4,
+.robotlab-play--single .robotlab-console-card--single .robotlab-eyebrow,
+.robotlab-play--single .robotlab-console-card--single .robotlab-status-wrap__label,
+.robotlab-play--single .robotlab-console-card--single .robotlab-status {
+    color: #2f566f;
+}
+
+.robotlab-play--single .robotlab-status {
+    padding: 0.75rem 0.95rem;
+    border-radius: 16px;
+    border: 1px solid rgba(214, 229, 236, 0.95);
+    background: rgba(239, 247, 251, 0.98);
+}
+
+.robotlab-play--single .robotlab-status[data-status-kind="success"] {
+    background: rgba(226, 247, 233, 0.98);
+    color: #2a6a43;
+}
+
+.robotlab-play--single .robotlab-status[data-status-kind="warning"] {
+    background: rgba(255, 246, 222, 0.98);
+    color: #8a6512;
+}
+
+.robotlab-play--single .robotlab-status[data-status-kind="error"] {
+    background: rgba(255, 236, 240, 0.98);
+    color: #a24759;
+}
+
+.robotlab-play--single .robotlab-trace-details summary {
+    color: #29506a;
+}
+
+.robotlab-play--single .robotlab-hint-btn {
+    justify-content: center;
+}
+
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-card,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-note,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-stage,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-code,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-help {
+    box-shadow: none;
+}
+
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-card {
+    border: 1px solid rgba(186, 219, 231, 0.95);
+    background: linear-gradient(180deg, rgba(240, 250, 255, 0.98), rgba(226, 244, 250, 0.98));
+}
+
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-header__copy h3,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-section-head h4,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-note h4,
+.robotlab-play--embedded.robotlab-play--single .robotlab-console-card--single h4,
+.robotlab-play--embedded.robotlab-play--single .robotlab-trace-card--single h4 {
+    color: #1f4c66;
+}
+
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-header__copy p,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-note p,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-stage__head p,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-stage__footer p,
+.robotlab-play--embedded.robotlab-play--single .robotlab-unified-section-head p,
+.robotlab-play--embedded.robotlab-play--single .robotlab-console-card--single .robotlab-status-wrap__label,
+.robotlab-play--embedded.robotlab-play--single .robotlab-console-card--single .robotlab-status,
+.robotlab-play--embedded.robotlab-play--single .robotlab-trace-card--single .robotlab-trace {
+    color: #4f7085;
+}
+
+@media (max-width: 860px) {
+    .robotlab-play--single .robotlab-grid {
+        gap: 6px;
+    }
+
+    .robotlab-play--single .robotlab-cell,
+    body.robotlab-play-page .robotlab-play--single .robotlab-cell,
+    .robotlab-play--embedded.robotlab-play--single .robotlab-cell {
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 640px) {
+    .robotlab-play--single .robotlab-grid-shell--single {
+        padding: 0.7rem;
+    }
+
+    .robotlab-play--single .robotlab-grid {
+        min-height: 220px;
+        padding: 0.5rem;
+        gap: 5px;
+    }
+
+    .robotlab-play--single .robotlab-cell,
+    body.robotlab-play-page .robotlab-play--single .robotlab-cell,
+    .robotlab-play--embedded.robotlab-play--single .robotlab-cell {
+        min-height: 38px;
+        border-radius: 12px;
+    }
+}
+
+/* Full play window */
+
+body.robotlab-play-page {
+    overflow: hidden;
+}
+
+body.robotlab-play-page .site-shell {
+    height: 100vh;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+body.robotlab-play-page main.site-main {
+    min-height: 0;
+    padding-top: 0.45rem;
+    gap: 0.75rem;
+    overflow: hidden;
+}
+
+body.robotlab-play-page .site-footer,
+body.robotlab-play-page .cookie-banner,
+body.robotlab-play-page .scroll-progress,
+body.robotlab-play-page .scroll-top-button {
+    display: none !important;
+}
+
+body.robotlab-play-page .workspace-shell {
+    gap: 0.45rem;
+    min-height: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body.robotlab-play-page .workspace-main {
+    width: min(100vw - 1.5rem, 1620px);
+    max-width: none;
+    min-height: 0;
+    gap: 0.75rem;
+    padding-bottom: 0;
+    overflow: hidden;
+}
+
+body.robotlab-play-page .robotlab-play--full {
+    margin-bottom: 0;
+    min-height: calc(100vh - var(--navbar-height, 78px) - 1rem);
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-unified-card--window {
+    height: calc(100vh - var(--navbar-height, 78px) - 1.2rem);
+    min-height: 0;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    gap: 0.7rem;
+    padding: 0.8rem;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-window-topbar,
+body.robotlab-play-page .robotlab-play--full .robotlab-window-topbar__nav,
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-stage__head,
+body.robotlab-play-page .robotlab-play--full .robotlab-unified-section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-window-topbar__copy,
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-stage__head > div,
+body.robotlab-play-page .robotlab-play--full .robotlab-unified-section-head > div {
+    display: grid;
+    gap: 0.35rem;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-window-topbar__copy h3,
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-stage__head h4,
+body.robotlab-play-page .robotlab-play--full .robotlab-window-note h4,
+body.robotlab-play-page .robotlab-play--full .robotlab-side-help h4 {
+    margin: 0;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-window-topbar__copy h3 {
+    font-size: clamp(1.25rem, 2vw, 1.55rem);
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-window-topbar__copy p,
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-stage__head p,
+body.robotlab-play-page .robotlab-play--full .robotlab-window-note p,
+body.robotlab-play-page .robotlab-play--full .robotlab-side-help p {
+    margin: 0;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-window-topbar__copy p {
+    font-size: 0.92rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-window-meta {
+    display: grid;
+    gap: 0.55rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-window-note {
+    display: grid;
+    gap: 0.3rem;
+    min-height: 0;
+    padding: 0.6rem 0.75rem;
+    border-radius: 18px;
+    border: 1px solid rgba(192, 216, 226, 0.95);
+    background: rgba(255, 255, 255, 0.72);
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-window-note--profile {
+    background: rgba(248, 253, 255, 0.9);
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-window-note p {
+    font-size: 0.85rem;
+    line-height: 1.28;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-window-note .chip {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.7rem;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-window {
+    display: grid;
+    gap: 0.7rem;
+    grid-template-columns: minmax(0, 1.2fr) minmax(380px, 0.94fr);
+    min-height: 0;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-stage,
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-sidebar {
+    min-height: 0;
+    border-radius: 22px;
+    border: 1px solid rgba(192, 216, 226, 0.95);
+    background: rgba(255, 255, 255, 0.7);
+    padding: 0.75rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78);
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-stage {
+    display: grid;
+    gap: 0.6rem;
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-stage__task {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.7rem 0.85rem;
+    border-radius: 18px;
+    border: 1px solid rgba(202, 220, 228, 0.92);
+    background: rgba(248, 252, 255, 0.88);
+    color: #2c5a74;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-stage .robotlab-grid-shell--single {
+    display: flex;
+    min-height: 0;
+    padding: 0.65rem;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-stage .robotlab-grid {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+    padding: 0.55rem;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-stage__dock {
+    display: grid;
+    gap: 0.55rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-builder {
+    display: grid;
+    gap: 0.45rem;
+    padding: 0.65rem;
+    border-radius: 18px;
+    border: 1px solid rgba(193, 214, 225, 0.95);
+    background: rgba(248, 252, 255, 0.92);
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-builder__head {
+    display: grid;
+    gap: 0.2rem;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-builder__head p {
+    color: #5a7589;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-builder__body {
+    display: grid;
+    gap: 0.55rem;
+    grid-template-columns: minmax(180px, 0.82fr) minmax(0, 1fr);
+    align-items: start;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-builder__extras {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-direction-pad {
+    gap: 0.42rem;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-command-toolbar {
+    gap: 0.42rem;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-command-btn {
+    min-width: 58px;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-command-btn--direction {
+    min-height: 48px;
+    font-size: 1.05rem;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-stage__playback {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.45rem;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-sidebar {
+    display: grid;
+    gap: 0.6rem;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    overflow: hidden;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-editor {
+    min-height: 0;
+    display: grid;
+    gap: 0.55rem;
+    grid-template-rows: auto minmax(0, 1fr);
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-editor__stack {
+    min-height: 0;
+    display: grid;
+    gap: 0.55rem;
+    grid-template-rows: auto minmax(0, 1fr);
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-builder-card--list {
+    max-height: 120px;
+    overflow: auto;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-editor .robotlab-field {
+    min-height: 0;
+    display: grid;
+    gap: 0.45rem;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-mission-editor .robotlab-field textarea {
+    min-height: 0;
+    height: 100%;
+    max-height: none;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-console-card--single {
+    gap: 0.65rem;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-console-card--single .robotlab-console-card__actions {
+    gap: 0.45rem;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-console-card--single .robotlab-console-card__actions .btn {
+    flex: 1 1 calc(50% - 0.3rem);
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-console-card--single .robotlab-console-list {
+    min-height: 0;
+    max-height: 120px;
+    overflow: auto;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-side-help {
+    min-height: 0;
+    display: grid;
+    gap: 0.55rem;
+    overflow: hidden;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-side-help .robotlab-embed-hints--single {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-side-help .robotlab-trace-details {
+    min-height: 0;
+}
+
+body.robotlab-play-page .robotlab-play--full .robotlab-side-help .robotlab-trace {
+    max-height: 90px;
+    overflow: auto;
+}
+
+@media (max-width: 1280px) {
+    body.robotlab-play-page {
+        overflow: auto;
+    }
+
+    body.robotlab-play-page .site-shell,
+    body.robotlab-play-page main.site-main,
+    body.robotlab-play-page .workspace-shell,
+    body.robotlab-play-page .workspace-main {
+        height: auto;
+        min-height: 0;
+        overflow: visible;
+    }
+
+    body.robotlab-play-page .site-footer {
+        display: block !important;
+    }
+
+    body.robotlab-play-page .robotlab-play--full .robotlab-unified-card--window {
+        height: auto;
+        min-height: 0;
+    }
+
+    body.robotlab-play-page .robotlab-play--full .robotlab-window-meta {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    body.robotlab-play-page .robotlab-play--full .robotlab-mission-window {
+        grid-template-columns: 1fr;
+    }
+
+    body.robotlab-play-page .robotlab-play--full .robotlab-mission-stage__dock {
+        grid-template-columns: 1fr;
+    }
+
+    body.robotlab-play-page .robotlab-play--full .robotlab-mission-stage__playback {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 860px) {
+    body.robotlab-play-page .workspace-main {
+        width: min(100vw - 1rem, 100%);
+    }
+
+    body.robotlab-play-page .robotlab-play--full .robotlab-window-meta,
+    body.robotlab-play-page .robotlab-play--full .robotlab-mission-builder__body,
+    body.robotlab-play-page .robotlab-play--full .robotlab-side-help .robotlab-embed-hints--single {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── RoboMentor animated character ──────────────────────────── */
+.robo-mentor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+}
+.robo-mentor__svg {
+    display: block;
+    filter: drop-shadow(0 2px 8px rgba(59,130,246,0.15));
+    transition: filter 0.3s;
+}
+
+/* idle blink */
+.robo-mentor--blink .robo-mentor__eye--left,
+.robo-mentor--blink .robo-mentor__eye--right {
+    ry: 1.5;
+    transition: ry 0.08s;
+}
+
+/* thinking — antenna spin */
+.robo-mentor--thinking .robo-mentor__antenna-tip {
+    animation: robo-antenna-spin 0.6s linear infinite;
+}
+@keyframes robo-antenna-spin {
+    from { transform-origin: 60px 8px; transform: rotate(0deg); }
+    to   { transform-origin: 60px 8px; transform: rotate(360deg); }
+}
+.robo-mentor--thinking .robo-mentor__core {
+    animation: robo-core-pulse 0.8s ease-in-out infinite;
+}
+@keyframes robo-core-pulse {
+    0%,100% { opacity: 0.4; }
+    50%     { opacity: 1; }
+}
+
+/* success — green glow */
+.robo-mentor--success .robo-mentor__svg {
+    filter: drop-shadow(0 0 12px rgba(34,197,94,0.5));
+}
+.robo-mentor--success .robo-mentor__eye--left,
+.robo-mentor--success .robo-mentor__eye--right {
+    fill: #22C55E;
+}
+.robo-mentor--success .robo-mentor__mouth {
+    rx: 8;
+    height: 6;
+    fill: #22C55E;
+}
+
+/* error — red shake */
+.robo-mentor--error .robo-mentor__svg {
+    filter: drop-shadow(0 0 10px rgba(239,68,68,0.45));
+    animation: robo-shake 0.4s ease-in-out;
+}
+@keyframes robo-shake {
+    0%,100% { transform: translateX(0); }
+    20%     { transform: translateX(-4px); }
+    40%     { transform: translateX(4px); }
+    60%     { transform: translateX(-3px); }
+    80%     { transform: translateX(3px); }
+}
+.robo-mentor--error .robo-mentor__eye--left,
+.robo-mentor--error .robo-mentor__eye--right {
+    fill: #EF4444;
+}
+
+/* hint — blue pulse */
+.robo-mentor--hint .robo-mentor__svg {
+    filter: drop-shadow(0 0 10px rgba(59,130,246,0.4));
+    animation: robo-hint-glow 1.5s ease-in-out infinite;
+}
+@keyframes robo-hint-glow {
+    0%,100% { filter: drop-shadow(0 0 6px rgba(59,130,246,0.25)); }
+    50%     { filter: drop-shadow(0 0 16px rgba(99,102,241,0.5)); }
+}
+
+/* speech bubble */
+.robo-mentor__bubble {
+    background: var(--color-surface-soft, #F1F5F9);
+    border: 1px solid var(--color-border, rgba(148,163,184,0.18));
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    max-width: 220px;
+    position: relative;
+}
+.robo-mentor__bubble::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid var(--color-surface-soft, #F1F5F9);
+}
+.robo-mentor__bubble-text {
+    font-size: 0.78rem;
+    line-height: 1.4;
+    margin: 0;
+    color: var(--color-body, #0F172A);
+}
+
+/* ── Turtle canvas ──────────────────────────────────────────── */
+.robotlab-turtle-panel {
+    margin-top: 1rem;
+}
+.robotlab-turtle-panel__title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--color-muted, #64748B);
+}
+#turtle-canvas {
+    border: 1px solid var(--color-border, rgba(148,163,184,0.18));
+    border-radius: 0.5rem;
+    display: block;
+    max-width: 100%;
+    background: #0F172A;
 }

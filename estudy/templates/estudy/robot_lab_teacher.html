@@ -2,119 +2,139 @@
 {% load static %}
 
 {% block title %}Robot Lab Analytics{% endblock %}
-{% block workspace_title %}Robot Lab Analytics{% endblock %}
-{% block workspace_subtitle %}Vizualizare read-only pentru profesori si admini.{% endblock %}
-
-{% block extra_css %}
-{{ block.super }}
-<link rel="stylesheet" href="{% static 'estudy/robot_lab.css' %}">
-{% endblock %}
+{% block workspace_title %}&#128200; Robot Lab Analytics{% endblock %}
+{% block workspace_subtitle %}Panou de analiza pentru profesori si admini.{% endblock %}
 
 {% block page_content %}
-<section class="robotlab-page">
-    <header class="card robotlab-header">
-        <h2>Teacher dashboard</h2>
-        <a class="btn btn--ghost" href="{% url 'estudy:robot_lab_hub' %}">Inapoi la hub</a>
-    </header>
+<section class="hub-section">
+    <div class="hub-card" style="margin-bottom:1rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <h2 style="font-size:18px;font-weight:900;margin:0;">&#128202; Panou profesor — Robot Lab</h2>
+            <a class="hub-btn hub-btn--ghost" href="{% url 'estudy:robot_lab_hub' %}">&#8592; Inapoi la hub</a>
+        </div>
+    </div>
 
-    <section class="card robotlab-filters">
-        <form method="get">
-            <label>
-                Level ID
-                <input type="text" name="level_id" value="{{ robot_lab_filters.level_id }}">
-            </label>
-            <label>
-                Error type
-                <input type="text" name="error_type" value="{{ robot_lab_filters.error_type }}">
-            </label>
-            <label>
-                Date from
-                <input type="date" name="date_from" value="{{ robot_lab_filters.date_from }}">
-            </label>
-            <label>
-                Date to
-                <input type="date" name="date_to" value="{{ robot_lab_filters.date_to }}">
-            </label>
-            <label>
-                Classroom (optional)
-                <input type="text" name="classroom" value="{{ robot_lab_filters.classroom }}">
-            </label>
-            <button type="submit" class="btn btn--primary btn--small">Filtreaza</button>
+    <div class="hub-card" style="margin-bottom:1rem;">
+        <div class="hub-card__header">
+            <h2>&#128269; Filtre</h2>
+        </div>
+        <form method="get" class="hub-form" style="flex-direction:row;flex-wrap:wrap;gap:12px;align-items:flex-end;">
+            <div class="hub-form__group" style="min-width:120px;">
+                <label class="hub-form__label">&#127380; Level ID</label>
+                <input type="text" class="hub-input" name="level_id" value="{{ robot_lab_filters.level_id }}">
+            </div>
+            <div class="hub-form__group" style="min-width:140px;">
+                <label class="hub-form__label">&#9888; Tip eroare</label>
+                <input type="text" class="hub-input" name="error_type" value="{{ robot_lab_filters.error_type }}">
+            </div>
+            <div class="hub-form__group" style="min-width:140px;">
+                <label class="hub-form__label">&#128197; De la data</label>
+                <input type="date" class="hub-input" name="date_from" value="{{ robot_lab_filters.date_from }}">
+            </div>
+            <div class="hub-form__group" style="min-width:140px;">
+                <label class="hub-form__label">&#128197; Pana la data</label>
+                <input type="date" class="hub-input" name="date_to" value="{{ robot_lab_filters.date_to }}">
+            </div>
+            <div class="hub-form__group" style="min-width:140px;">
+                <label class="hub-form__label">&#127979; Clasa</label>
+                <input type="text" class="hub-input" name="classroom" value="{{ robot_lab_filters.classroom }}">
+            </div>
+            <button type="submit" class="hub-btn hub-btn--primary hub-btn--small">&#128269; Filtreaza</button>
         </form>
-    </section>
+    </div>
 
-    <section class="robotlab-summary-grid">
-        <article class="card robotlab-stat">
-            <small>Total runs</small>
-            <strong>{{ robot_lab_analytics.summary.total_runs }}</strong>
-        </article>
-        <article class="card robotlab-stat">
-            <small>Solved runs</small>
-            <strong>{{ robot_lab_analytics.summary.solved_runs }}</strong>
-        </article>
-        <article class="card robotlab-stat">
-            <small>Solve rate</small>
-            <strong>{{ robot_lab_analytics.summary.solve_rate }}%</strong>
-        </article>
-    </section>
+    <div class="hub-stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:1rem;">
+        <div class="hub-stat">
+            <div class="hub-stat__value hub-stat__value--purple">{{ robot_lab_analytics.summary.total_runs }}</div>
+            <div class="hub-stat__label">Total rulari</div>
+        </div>
+        <div class="hub-stat">
+            <div class="hub-stat__value hub-stat__value--green">{{ robot_lab_analytics.summary.solved_runs }}</div>
+            <div class="hub-stat__label">Rezolvate</div>
+        </div>
+        <div class="hub-stat">
+            <div class="hub-stat__value hub-stat__value--amber">{{ robot_lab_analytics.summary.solve_rate }}%</div>
+            <div class="hub-stat__label">Rata de succes</div>
+        </div>
+    </div>
+</section>
 
-    <section class="card">
-        <h3>Top erori</h3>
-        <table class="robotlab-table">
-            <thead>
-                <tr><th>Eroare</th><th>Aparitii</th></tr>
-            </thead>
-            <tbody>
-                {% for item in robot_lab_analytics.top_errors %}
-                <tr>
-                    <td>{{ item.primary_error }}</td>
-                    <td>{{ item.total }}</td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="2">Fara date.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
+<section class="hub-section">
+    <div class="hub-row" style="grid-template-columns: 1fr 1fr;">
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#9888; Top erori</h2>
+            </div>
+            {% if robot_lab_analytics.top_errors %}
+            <table class="hub-table">
+                <thead>
+                    <tr><th>Eroare</th><th>Aparitii</th></tr>
+                </thead>
+                <tbody>
+                    {% for item in robot_lab_analytics.top_errors %}
+                    <tr>
+                        <td><code style="font-size:13px;background:rgba(239,68,68,0.1);padding:2px 6px;border-radius:4px;">{{ item.primary_error }}</code></td>
+                        <td><strong>{{ item.total }}</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="hub-card__empty">Fara date.</p>
+            {% endif %}
+        </div>
 
-    <section class="card">
-        <h3>Performanta pe nivel</h3>
-        <table class="robotlab-table">
-            <thead>
-                <tr><th>Level</th><th>Runs</th><th>Solved</th><th>Failed</th><th>Solve rate</th></tr>
-            </thead>
-            <tbody>
-                {% for item in robot_lab_analytics.per_level %}
-                <tr>
-                    <td>{{ item.level_id }}</td>
-                    <td>{{ item.runs }}</td>
-                    <td>{{ item.solved }}</td>
-                    <td>{{ item.failed }}</td>
-                    <td>{{ item.solve_rate }}%</td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="5">Fara date.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </section>
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#127942; Performanta pe nivel</h2>
+            </div>
+            {% if robot_lab_analytics.per_level %}
+            <table class="hub-table">
+                <thead>
+                    <tr><th>Nivel</th><th>Rulari</th><th>Rez.</th><th>Esuat</th><th>Rata</th></tr>
+                </thead>
+                <tbody>
+                    {% for item in robot_lab_analytics.per_level %}
+                    <tr>
+                        <td><strong>{{ item.level_id }}</strong></td>
+                        <td>{{ item.runs }}</td>
+                        <td style="color:#10B981;font-weight:700;">{{ item.solved }}</td>
+                        <td style="color:#EF4444;font-weight:700;">{{ item.failed }}</td>
+                        <td><strong>{{ item.solve_rate }}%</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="hub-card__empty">Fara date.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
 
-    <section class="card">
-        <h3>Incercari recente esuate</h3>
-        <div class="robotlab-failed-list">
+<section class="hub-section">
+    <div class="hub-card">
+        <div class="hub-card__header">
+            <h2>&#128308; Incercari recente esuate</h2>
+        </div>
+        {% if robot_lab_analytics.recent_failed_runs %}
+        <div class="hub-comment-list">
             {% for run in robot_lab_analytics.recent_failed_runs %}
-            <article class="robotlab-failed-item">
-                <div>
-                    <strong>{{ run.user__username }}</strong>
-                    <span>{{ run.level_id }} · attempt {{ run.attempt_number }}</span>
+            <div class="hub-comment">
+                <div class="hub-comment__avatar" style="font-size:16px;">&#128308;</div>
+                <div class="hub-comment__body">
+                    <div class="hub-comment__header">
+                        <span class="hub-comment__author">&#129489; {{ run.user__username }}</span>
+                        <span class="hub-comment__time">{{ run.level_id }} · incercarea {{ run.attempt_number }}</span>
+                    </div>
+                    <p class="hub-comment__text">{{ run.error_type }}{% if run.primary_error %} / {{ run.primary_error }}{% endif %}</p>
                 </div>
-                <p>{{ run.error_type }}{% if run.primary_error %} / {{ run.primary_error }}{% endif %}</p>
-            </article>
-            {% empty %}
-            <p>Nu exista incercari esuate in filtrul curent.</p>
+            </div>
             {% endfor %}
         </div>
-    </section>
+        {% else %}
+        <p class="hub-card__empty">Nu exista incercari esuate in filtrul curent.</p>
+        {% endif %}
+    </div>
 </section>
 {% endblock %}
-

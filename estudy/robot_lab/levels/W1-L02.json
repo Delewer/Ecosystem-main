@@ -16,13 +16,21 @@
   "mode": "junior",
   "ui_stage": "buttons_code",
   "recommended_age": "8-10",
-  "allowed_api": [
-    "up",
-    "down",
-    "left",
-    "right",
-    "at_goal"
-  ],
+  "world": 1,
+  "world_theme": "garden",
+  "optimal_steps": 6,
+  "star_conditions": {
+    "one": "reach_goal",
+    "two": "steps_lte_10",
+    "three": "steps_lte_optimal"
+  },
+  "collectibles": [],
+  "intro_dialog": "ZIPP: Acum poti vedea si codul! Fiecare buton scrie o linie Python.",
+  "success_dialog": "ZIPP: Excelent! Ai scris primul tau program Python!",
+  "fail_dialog": "ZIPP: Aproape! Verifica ordinea comenzilor.",
+  "background_theme": "garden",
+  "music_theme": "upbeat_garden",
+  "allowed_api": ["up", "down", "left", "right", "at_goal"],
   "legend": {
     "#": "perete",
     ".": "spatiu",
@@ -30,11 +38,13 @@
     "T": "terminal"
   },
   "grid": [
-    "########",
-    "#S...#.#",
-    "#....#.#",
-    "#..T...#",
-    "########"
+    "###########",
+    "#S........#",
+    "#.###.....#",
+    "#.#.......#",
+    "#.#.###.#.#",
+    "#.....#.T.#",
+    "###########"
   ],
   "starter_code": ""
 }

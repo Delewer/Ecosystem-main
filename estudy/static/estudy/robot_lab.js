@@ -22,27 +22,27 @@
     const STAGE_CONFIG = {
         buttons: {
             showBuilder: true,
-            readOnly: true,
-            codeLabel: "Cod construit automat",
-            emptyConsole: "Apasa sagetile ca sa construiesti ruta, apoi ruleaza.",
+            readOnly: false,
+            codeLabel: "Programul tau",
+            emptyConsole: "Apasa butoanele din joc sau scrie direct in editor, apoi ruleaza.",
         },
         buttons_code: {
             showBuilder: true,
-            readOnly: true,
-            codeLabel: "Cod generat",
-            emptyConsole: "Construieste ruta cu butoane si observa cum apare codul Python.",
-        },
-        fill_gaps: {
-            showBuilder: false,
-            readOnly: false,
-            codeLabel: "Completeaza linia lipsa",
-            emptyConsole: "Completeaza comanda lipsa direct in editor, apoi ruleaza programul.",
-        },
-        code: {
-            showBuilder: false,
             readOnly: false,
             codeLabel: "Programul tau",
-            emptyConsole: "Scrie singur programul, apoi apasa Ruleaza codul.",
+            emptyConsole: "Construieste ruta cu butoane sau scrie singur codul, apoi ruleaza.",
+        },
+        fill_gaps: {
+            showBuilder: true,
+            readOnly: false,
+            codeLabel: "Completeaza linia lipsa",
+            emptyConsole: "Completeaza comanda lipsa sau foloseste butoanele, apoi ruleaza programul.",
+        },
+        code: {
+            showBuilder: true,
+            readOnly: false,
+            codeLabel: "Programul tau",
+            emptyConsole: "Scrie singur programul sau foloseste butoanele rapide, apoi apasa Ruleaza codul.",
         },
     };
 
@@ -124,6 +124,7 @@
     const codeInput = root.querySelector("[data-code-input]");
     const codeLabel = root.querySelector("[data-code-label]");
     const runBtn = root.querySelector("[data-run-btn]");
+    const runStepBtn = root.querySelector("[data-run-step-btn]");
     const resetCodeBtn = root.querySelector("[data-reset-code]");
     const clearCodeButtons = Array.from(root.querySelectorAll("[data-clear-code]"));
     const statusNode = root.querySelector("[data-run-status]");
@@ -197,8 +198,9 @@
         robot: null,
     };
 
-    const builderState = {
-        lines: [],
+    const runnerState = {
+        preparedCode: "",
+        lastResult: null,
     };
 
     const getCsrfToken = () => {
@@ -506,14 +508,6 @@
         });
     };
 
-    const syncCodeFromBuilder = () => {
-        if (!codeInput) {
-            return;
-        }
-        codeInput.value = builderState.lines.join("\n");
-        renderProgramList(builderState.lines);
-    };
-
     const syncProgramFromCode = () => {
         const lines = normalizeLines(codeInput?.value || "");
         renderProgramList(lines);
@@ -539,12 +533,6 @@
 
     const appendCommand = (command) => {
         const line = `${command}()`;
-        if (uiStage === "buttons" || uiStage === "buttons_code") {
-            builderState.lines.push(line);
-            syncCodeFromBuilder();
-            return;
-        }
-
         if (uiStage === "fill_gaps" && codeInput) {
             if (codeInput.value.includes("___")) {
                 codeInput.value = codeInput.value.replace("___", line);
@@ -563,13 +551,11 @@
         if (!codeInput) {
             return;
         }
-        if (uiStage === "buttons" || uiStage === "buttons_code") {
-            builderState.lines = [];
-            syncCodeFromBuilder();
-        } else {
-            codeInput.value = "";
-            syncProgramFromCode();
-        }
+        runnerState.preparedCode = "";
+        runnerState.lastResult = null;
+        resetPlayback();
+        codeInput.value = "";
+        syncProgramFromCode();
         renderConsole(["Program golit. Construieste o solutie noua si ruleaza din nou."]);
         setStatus("Program golit.", "idle");
     };
@@ -578,15 +564,27 @@
         if (!codeInput) {
             return;
         }
-        if (uiStage === "buttons" || uiStage === "buttons_code") {
-            builderState.lines = normalizeLines(starterCode);
-            syncCodeFromBuilder();
-        } else {
-            codeInput.value = starterCode;
-            syncProgramFromCode();
-        }
+        runnerState.preparedCode = "";
+        runnerState.lastResult = null;
+        resetPlayback();
+        codeInput.value = starterCode;
+        syncProgramFromCode();
         renderConsole([stageConfig.emptyConsole]);
         setStatus("Cod resetat.", "idle");
+    };
+
+    const ensureProgramExists = () => {
+        const lines = normalizeLines(codeInput?.value || "");
+        if (lines.length) {
+            return true;
+        }
+        resetPlayback();
+        renderConsole([
+            "Programul este gol.",
+            "Adauga macar o comanda din butoane sau scrie un pas in editor.",
+        ]);
+        setStatus("Adauga cel putin o comanda.", "warning");
+        return false;
     };
 
     const buildFallbackConsole = (data) => {
@@ -607,18 +605,98 @@
         return lines;
     };
 
-    const runCode = async () => {
+    const buildSteppedConsole = (data, targetIndex) => {
+        const trace = Array.isArray(data?.execution_trace) ? data.execution_trace : [];
+        if (!trace.length || targetIndex < 0) {
+            return [stageConfig.emptyConsole];
+        }
+
+        const safeIndex = Math.min(targetIndex, trace.length - 1);
+        const lines = ["Program pornit..."];
+        for (let index = 0; index <= safeIndex; index += 1) {
+            const entry = trace[index] || {};
+            const step = Number(entry.step || index + 1);
+            const action = entry.action ? `${entry.action}()` : "actiune";
+            lines.push(`Pasul ${step}: ${action}`);
+            if (entry.error) {
+                lines.push(`Eroare la pasul ${step}: ${entry.error}`);
+                return lines;
+            }
+        }
+
+        if (safeIndex >= trace.length - 1) {
+            if (data?.solved) {
+                lines.push(`Misiune finalizata in ${Number(data.steps_used || trace.length)} pasi.`);
+            } else if (data?.primary_error) {
+                lines.push(String(data.primary_error));
+            } else {
+                lines.push("Program terminat.");
+            }
+        }
+
+        return lines;
+    };
+
+    const getStepStatus = (data, currentIndex) => {
+        const trace = Array.isArray(data?.execution_trace) ? data.execution_trace : [];
+        if (!trace.length || currentIndex < 0) {
+            return {
+                text: data?.status_message || "Nu exista pasi executabili.",
+                kind: data?.status_kind || "warning",
+            };
+        }
+
+        const safeIndex = Math.min(currentIndex, trace.length - 1);
+        const entry = trace[safeIndex] || {};
+        if (entry.error) {
+            return {
+                text: `Program oprit la pasul ${Number(entry.step || safeIndex + 1)}.`,
+                kind: "error",
+            };
+        }
+
+        if (safeIndex >= trace.length - 1) {
+            if (data?.solved) {
+                return {
+                    text: data?.status_message || `Misiune finalizata in ${Number(data.steps_used || trace.length)} pasi.`,
+                    kind: data?.status_kind || "success",
+                };
+            }
+            return {
+                text: data?.status_message || "Program terminat.",
+                kind: data?.status_kind || "warning",
+            };
+        }
+
+        return {
+            text: `Execut pasul ${safeIndex + 1} din ${trace.length}.`,
+            kind: "busy",
+        };
+    };
+
+    const setRunButtonsDisabled = (disabled) => {
+        [runBtn, runStepBtn].forEach((button) => {
+            if (!button) {
+                return;
+            }
+            if (disabled) {
+                button.setAttribute("disabled", "disabled");
+            } else {
+                button.removeAttribute("disabled");
+            }
+        });
+    };
+
+    const requestRun = async ({ preludeLines, busyText }) => {
         if (!runUrl || !levelId || !codeInput) {
-            return;
+            return null;
         }
 
         stopPlayback();
-        setStatus("Rulez misiunea...", "busy");
-        renderConsole(["Program pornit...", "Simulare in curs..."]);
+        setStatus(busyText || "Rulez misiunea...", "busy");
+        renderConsole(preludeLines || ["Program pornit...", "Simulare in curs..."]);
 
-        if (runBtn) {
-            runBtn.setAttribute("disabled", "disabled");
-        }
+        setRunButtonsDisabled(true);
 
         try {
             const response = await fetch(runUrl, {
@@ -638,30 +716,100 @@
                 throw new Error(data.error || data.detail || "Rularea a esuat");
             }
 
+            runnerState.preparedCode = codeInput.value || "";
+            runnerState.lastResult = data;
             playback.trace = Array.isArray(data.execution_trace) ? data.execution_trace : [];
             playback.index = -1;
             renderTrace();
-            applyTraceIndex(playback.trace.length ? 0 : -1);
             setMentor(data.mentor || {});
-            renderConsole(Array.isArray(data.console_output) ? data.console_output : buildFallbackConsole(data));
-
-            const solved = Boolean(data.solved);
-            const kind = data.status_kind || (solved ? "success" : data.error_type === "logic" ? "warning" : "error");
-            const statusText =
-                data.status_message ||
-                (solved
-                    ? `Misiune finalizata in ${Number(data.steps_used || 0)} pasi.`
-                    : "Misiunea nu este completa. Verifica consola si indiciile.");
-            setStatus(statusText, kind);
+            return data;
         } catch (error) {
             const message = `Eroare: ${error.message}`;
             setStatus(message, "error");
             renderConsole(["Programul s-a oprit inainte de executie.", message]);
+            runnerState.preparedCode = "";
+            runnerState.lastResult = null;
+            playback.trace = [];
+            playback.index = -1;
+            renderTrace();
+            applyTraceIndex(-1);
+            return null;
         } finally {
-            if (runBtn) {
-                runBtn.removeAttribute("disabled");
-            }
+            setRunButtonsDisabled(false);
         }
+    };
+
+    const runCode = async () => {
+        if (!ensureProgramExists()) {
+            return;
+        }
+        const data = await requestRun({
+            preludeLines: ["Program pornit...", "Simulare in curs..."],
+            busyText: "Rulez misiunea...",
+        });
+        if (!data) {
+            return;
+        }
+
+        const finalIndex = playback.trace.length ? playback.trace.length - 1 : -1;
+        applyTraceIndex(finalIndex);
+        renderConsole(Array.isArray(data.console_output) ? data.console_output : buildFallbackConsole(data));
+
+        const solved = Boolean(data.solved);
+        const kind = data.status_kind || (solved ? "success" : data.error_type === "logic" ? "warning" : "error");
+        const statusText =
+            data.status_message ||
+            (solved
+                ? `Misiune finalizata in ${Number(data.steps_used || 0)} pasi.`
+                : "Misiunea nu este completa. Verifica consola si indiciile.");
+        setStatus(statusText, kind);
+    };
+
+    const runSingleStep = async () => {
+        if (!codeInput) {
+            return;
+        }
+        if (!ensureProgramExists()) {
+            return;
+        }
+
+        const currentCode = codeInput.value || "";
+        const needsFreshTrace =
+            !runnerState.lastResult ||
+            runnerState.preparedCode !== currentCode ||
+            !playback.trace.length;
+
+        let data = runnerState.lastResult;
+        if (needsFreshTrace) {
+            data = await requestRun({
+                preludeLines: ["Pregatesc executia pas cu pas...", "Analizez traseul robotului..."],
+                busyText: "Pregatesc executia pe pasi...",
+            });
+            if (!data) {
+                return;
+            }
+            if (!playback.trace.length) {
+                applyTraceIndex(-1);
+                renderConsole(Array.isArray(data.console_output) ? data.console_output : buildFallbackConsole(data));
+                const emptyStatus = getStepStatus(data, -1);
+                setStatus(emptyStatus.text, emptyStatus.kind);
+                return;
+            }
+            applyTraceIndex(0);
+            renderConsole(buildSteppedConsole(data, 0));
+            const firstStatus = getStepStatus(data, 0);
+            setStatus(firstStatus.text, firstStatus.kind);
+            return;
+        }
+
+        const nextIndex =
+            playback.index >= playback.trace.length - 1
+                ? 0
+                : Math.min(playback.index + 1, playback.trace.length - 1);
+        applyTraceIndex(nextIndex);
+        renderConsole(buildSteppedConsole(data, nextIndex));
+        const nextStatus = getStepStatus(data, nextIndex);
+        setStatus(nextStatus.text, nextStatus.kind);
     };
 
     const createCommandButton = (command) => {
@@ -787,6 +935,10 @@
         runCode();
     });
 
+    runStepBtn?.addEventListener("click", () => {
+        runSingleStep();
+    });
+
     resetCodeBtn?.addEventListener("click", () => {
         resetCode();
     });
@@ -798,14 +950,18 @@
     });
 
     codeInput?.addEventListener("input", () => {
+        runnerState.preparedCode = "";
+        runnerState.lastResult = null;
         if (stageConfig.showBuilder) {
             syncProgramFromCode();
         }
     });
 
     if (uiStage === "buttons" || uiStage === "buttons_code") {
-        builderState.lines = normalizeLines(starterCode);
-        syncCodeFromBuilder();
+        if (codeInput && !codeInput.value.trim() && starterCode) {
+            codeInput.value = starterCode;
+        }
+        syncProgramFromCode();
     } else {
         if (codeInput && !codeInput.value.trim() && starterCode) {
             codeInput.value = starterCode;

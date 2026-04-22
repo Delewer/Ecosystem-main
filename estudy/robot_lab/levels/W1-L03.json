@@ -9,20 +9,28 @@
   },
   "concepts": ["sequencing", "debugging"],
   "difficulty": "easy",
-  "max_steps": 20,
+  "max_steps": 24,
   "time_limit_ms": 800,
   "xp_reward": 30,
   "start_dir": "E",
   "mode": "code",
   "ui_stage": "fill_gaps",
   "recommended_age": "11-13",
-  "allowed_api": [
-    "up",
-    "down",
-    "left",
-    "right",
-    "at_goal"
-  ],
+  "world": 1,
+  "world_theme": "garden",
+  "optimal_steps": 6,
+  "star_conditions": {
+    "one": "reach_goal",
+    "two": "steps_lte_10",
+    "three": "steps_lte_optimal"
+  },
+  "collectibles": [],
+  "intro_dialog": "ZIPP: Acum scrii tu codul! Completeaza linia lipsa.",
+  "success_dialog": "ZIPP: Perfect! Python intelege comenzile tale!",
+  "fail_dialog": "ZIPP: Verifica linia cu ___. Ce directie lipseste?",
+  "background_theme": "garden",
+  "music_theme": "upbeat_garden",
+  "allowed_api": ["up", "down", "left", "right", "at_goal"],
   "legend": {
     "#": "perete",
     ".": "spatiu",
@@ -30,10 +38,13 @@
     "T": "terminal"
   },
   "grid": [
-    "########",
-    "#S...#.#",
-    "#...T..#",
-    "########"
+    "###########",
+    "#S..#.....#",
+    "#...#.###.#",
+    "#...#.....#",
+    "#.........#",
+    "#..####.T.#",
+    "###########"
   ],
-  "starter_code": "right()\nright()\n___\nright()"
+  "starter_code": "right()\nright()\n___\ndown()\ndown()\nright()"
 }
