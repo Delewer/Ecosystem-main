@@ -1,0 +1,111 @@
+/* hud.css — HUD styling, star animations, timer warning flash */
+
+.rr-hud {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 16px;
+    background: var(--rr-surface);
+    border-bottom: 1px solid var(--rr-border);
+    font-size: 14px;
+    z-index: 20;
+}
+
+.rr-hud__menu {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid var(--rr-border);
+    border-radius: 6px;
+    color: var(--rr-text);
+    cursor: pointer;
+}
+
+.rr-hud__title {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--rr-accent, #22C55E);
+    letter-spacing: 0.02em;
+}
+
+.rr-hud__level {
+    font-weight: 600;
+    color: var(--rr-text);
+}
+
+.rr-hud__stars {
+    display: flex;
+    gap: 2px;
+}
+
+.rr-hud__star {
+    width: 18px;
+    height: 18px;
+    color: var(--rr-text-dim);
+    transition: color 0.3s, transform 0.3s;
+}
+.rr-hud__star.is-earned {
+    color: #FBBF24;
+}
+.rr-hud__star.is-earned.is-new {
+    animation: rr-star-pop 0.5s ease-out;
+}
+@keyframes rr-star-pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.rr-hud__separator {
+    width: 1px;
+    height: 20px;
+    background: var(--rr-border);
+}
+
+.rr-hud__stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--rr-text-dim);
+}
+.rr-hud__stat-value {
+    font-weight: 700;
+    color: var(--rr-text);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Timer warning */
+.rr-hud__timer.is-warning {
+    animation: rr-timer-flash 0.5s ease-in-out 6;
+}
+.rr-hud__timer.is-warning .rr-hud__stat-value {
+    color: #EF4444;
+}
+@keyframes rr-timer-flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+.rr-hud__spacer {
+    flex: 1;
+}
+
+.rr-hud__sound {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid var(--rr-border);
+    border-radius: 6px;
+    color: var(--rr-text-dim);
+    cursor: pointer;
+}
+.rr-hud__sound:hover {
+    color: var(--rr-text);
+}

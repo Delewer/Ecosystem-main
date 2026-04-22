@@ -1,0 +1,213 @@
+/* game.css — Base layout and world theme CSS variables for ROBO RESCUE */
+
+:root {
+    /* Garden (World 1) */
+    --rr-garden-bg: #064E3B;
+    --rr-garden-wall: #166534;
+    --rr-garden-floor: #0D4B3A;
+    --rr-garden-accent: #22C55E;
+    --rr-garden-glow: rgba(34, 197, 94, 0.3);
+
+    /* Ice (World 2) */
+    --rr-ice-bg: #0C2D48;
+    --rr-ice-wall: #1E4D6E;
+    --rr-ice-floor: #1A3A55;
+    --rr-ice-accent: #60A5FA;
+    --rr-ice-glow: rgba(96, 165, 250, 0.3);
+
+    /* Volcano (World 3) */
+    --rr-volcano-bg: #451A03;
+    --rr-volcano-wall: #78350F;
+    --rr-volcano-floor: #3D1503;
+    --rr-volcano-accent: #F97316;
+    --rr-volcano-glow: rgba(249, 115, 22, 0.3);
+
+    /* Space (World 4) */
+    --rr-space-bg: #0F0A2A;
+    --rr-space-wall: #1E1B4B;
+    --rr-space-floor: #150F3A;
+    --rr-space-accent: #8B5CF6;
+    --rr-space-glow: rgba(139, 92, 246, 0.3);
+
+    /* Core (World 5) */
+    --rr-core-bg: #1C1917;
+    --rr-core-wall: #292524;
+    --rr-core-floor: #1A1716;
+    --rr-core-accent: #EF4444;
+    --rr-core-glow: rgba(239, 68, 68, 0.3);
+
+    /* Shared */
+    --rr-tile-size: 60px;
+    --rr-tile-gap: 1px;
+    --rr-transition-speed: 0.35s;
+    --rr-panel-bg: #0F172A;
+    --rr-text: #E2E8F0;
+    --rr-text-dim: #94A3B8;
+    --rr-border: #334155;
+    --rr-surface: #1E293B;
+    --rr-radius: 12px;
+}
+
+/* Theme class applied to game root */
+.rr-theme--garden { --rr-bg: var(--rr-garden-bg); --rr-wall: var(--rr-garden-wall); --rr-floor: var(--rr-garden-floor); --rr-accent: var(--rr-garden-accent); --rr-glow: var(--rr-garden-glow); }
+.rr-theme--ice { --rr-bg: var(--rr-ice-bg); --rr-wall: var(--rr-ice-wall); --rr-floor: var(--rr-ice-floor); --rr-accent: var(--rr-ice-accent); --rr-glow: var(--rr-ice-glow); }
+.rr-theme--volcano { --rr-bg: var(--rr-volcano-bg); --rr-wall: var(--rr-volcano-wall); --rr-floor: var(--rr-volcano-floor); --rr-accent: var(--rr-volcano-accent); --rr-glow: var(--rr-volcano-glow); }
+.rr-theme--space { --rr-bg: var(--rr-space-bg); --rr-wall: var(--rr-space-wall); --rr-floor: var(--rr-space-floor); --rr-accent: var(--rr-space-accent); --rr-glow: var(--rr-space-glow); }
+.rr-theme--core { --rr-bg: var(--rr-core-bg); --rr-wall: var(--rr-core-wall); --rr-floor: var(--rr-core-floor); --rr-accent: var(--rr-core-accent); --rr-glow: var(--rr-core-glow); }
+
+/* Game container */
+.rr-game {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--rr-bg, var(--rr-garden-bg));
+    color: var(--rr-text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    overflow: hidden;
+}
+
+.rr-game__main {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 0;
+    flex: 1;
+    min-height: 0;
+}
+
+.rr-game__maze-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.rr-game__sidebar {
+    display: flex;
+    flex-direction: column;
+    background: var(--rr-surface);
+    border-left: 1px solid var(--rr-border);
+    overflow-y: auto;
+}
+
+.rr-game__sidebar-section {
+    padding: 16px;
+    border-bottom: 1px solid var(--rr-border);
+}
+
+.rr-game__sidebar-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--rr-text-dim);
+    margin: 0 0 8px 0;
+}
+
+.rr-game__controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--rr-surface);
+    border-top: 1px solid var(--rr-border);
+}
+
+/* Buttons */
+.rr-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 1px solid var(--rr-border);
+    border-radius: 8px;
+    background: var(--rr-surface);
+    color: var(--rr-text);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.rr-btn:hover { background: var(--rr-border); }
+.rr-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.rr-btn--primary {
+    background: var(--rr-accent, #22C55E);
+    border-color: var(--rr-accent, #22C55E);
+    color: #000;
+}
+.rr-btn--primary:hover { opacity: 0.9; }
+
+.rr-btn__icon {
+    width: 18px;
+    height: 18px;
+}
+
+/* Speed selector */
+.rr-speed-selector {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--rr-text-dim);
+}
+.rr-speed-selector button {
+    padding: 4px 8px;
+    background: none;
+    border: 1px solid var(--rr-border);
+    border-radius: 4px;
+    color: var(--rr-text-dim);
+    cursor: pointer;
+    font-size: 12px;
+}
+.rr-speed-selector button.is-active {
+    background: var(--rr-accent);
+    border-color: var(--rr-accent);
+    color: #000;
+}
+
+/* Dialog / speech bubble */
+.rr-dialog {
+    background: var(--rr-surface);
+    border: 1px solid var(--rr-accent, var(--rr-border));
+    border-radius: var(--rr-radius);
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    position: relative;
+}
+.rr-dialog::before {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid var(--rr-accent, var(--rr-border));
+}
+
+/* Tablet layout */
+@media (max-width: 1023px) {
+    :root { --rr-tile-size: 48px; }
+
+    .rr-game__main {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto;
+    }
+
+    .rr-game__sidebar {
+        border-left: none;
+        border-top: 1px solid var(--rr-border);
+        max-height: 45vh;
+    }
+}
+
+/* Mobile hooks */
+@media (max-width: 767px) {
+    :root { --rr-tile-size: 36px; }
+}

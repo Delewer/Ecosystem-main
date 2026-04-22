@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60">
+  <!-- ZIPP: Default green round robot -->
+  <g class="robot-skin robot-skin--zipp">
+    <!-- Antenna -->
+    <g class="robot__antenna">
+      <line x1="30" y1="5" x2="30" y2="14" stroke="#4ADE80" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="30" cy="4" r="3" fill="#22C55E"/>
+    </g>
+    <!-- Head -->
+    <rect class="robot__head" x="12" y="14" width="36" height="24" rx="8" fill="#1E293B" stroke="#22C55E" stroke-width="1.5"/>
+    <!-- Eyes -->
+    <g class="robot__eyes">
+      <ellipse cx="22" cy="25" rx="5" ry="5.5" fill="#22C55E" class="robot__eye robot__eye--left"/>
+      <ellipse cx="38" cy="25" rx="5" ry="5.5" fill="#22C55E" class="robot__eye robot__eye--right"/>
+      <circle cx="23.5" cy="23.5" r="1.5" fill="#fff" opacity="0.8"/>
+      <circle cx="39.5" cy="23.5" r="1.5" fill="#fff" opacity="0.8"/>
+    </g>
+    <!-- Mouth -->
+    <rect class="robot__mouth" x="22" y="33" width="16" height="2.5" rx="1.2" fill="#4ADE80"/>
+    <!-- Body -->
+    <rect class="robot__body" x="15" y="40" width="30" height="16" rx="5" fill="#1E293B" stroke="#22C55E" stroke-width="1.5"/>
+    <!-- Core light -->
+    <circle cx="30" cy="48" r="3" fill="#22C55E" opacity="0.7" class="robot__core"/>
+  </g>
+</svg>

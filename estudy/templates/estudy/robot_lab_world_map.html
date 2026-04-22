@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Robo Rescue - Harta Lumilor{% endblock %}
+{% block body_class %}workspace-body rr-page{% endblock %}
+{% block workspace_banner %}{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'estudy/robot_lab/css/game.css' %}?v=2">
+<link rel="stylesheet" href="{% static 'estudy/robot_lab/css/world_map.css' %}?v=20260419a">
+<style>
+.rr-wm-layout { display:flex; flex-direction:column; min-height:calc(100vh - 80px); background:var(--rr-space-bg,#0F0A2A); position:relative; }
+.rr-wm-skin-bar {
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    padding:14px 20px;
+    background: linear-gradient(180deg, rgba(15,23,42,0) 0%, rgba(15,23,42,0.85) 55%, rgba(2,6,23,0.95) 100%);
+    border-top: 1px solid rgba(148,163,184,0.18);
+    backdrop-filter: blur(10px);
+    position: relative;
+    z-index: 5;
+}
+.rr-wm-skin-bar__label { font-size:11px; color:#94A3B8; text-transform:uppercase; letter-spacing:0.12em; font-weight:700; }
+#rr-active-skin-name {
+    background: linear-gradient(135deg, #22C55E, #3B82F6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+}
+.rr-wm-skin-bar__btn {
+    padding:8px 18px; border:1px solid rgba(148,163,184,0.3); border-radius:999px;
+    background: rgba(30,41,59,0.6); color:#E2E8F0; font-size:13px; font-weight:700; cursor:pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.rr-wm-skin-bar__btn:hover {
+    background: rgba(30,41,59,0.9);
+    border-color: #22C55E;
+    color: #22C55E;
+    box-shadow: 0 0 16px rgba(34,197,94,0.25);
+}
+.rr-skin-overlay { position:fixed; inset:0; z-index:300; background:rgba(0,0,0,0.85); backdrop-filter: blur(6px); display:flex; align-items:center; justify-content:center; }
+.rr-skin-overlay__inner { background: linear-gradient(180deg, #0F172A, #020617); border:1px solid rgba(148,163,184,0.2); border-radius:18px; padding:28px; max-width:500px; width:90%; box-shadow: 0 24px 64px rgba(0,0,0,0.5); }
+.rr-skin-overlay__close { margin-top:18px; text-align:center; }
+.rr-skin-overlay__close button { padding:10px 24px; border:1px solid rgba(148,163,184,0.3); border-radius:10px; background:rgba(30,41,59,0.7); color:#E2E8F0; font-weight:700; cursor:pointer; font-family: inherit; transition: all 0.2s; }
+.rr-skin-overlay__close button:hover { background: #1E293B; border-color: #22C55E; color: #22C55E; }
+</style>
+{% endblock %}
+
+{% block page_content %}
+{% include "estudy/includes/rr_svg_symbols.html" %}
+
+<div class="rr-wm-layout">
+    <div id="rr-world-map-root" style="flex:1;"></div>
+    <div class="rr-wm-skin-bar">
+        <span class="rr-wm-skin-bar__label">Robot activ:</span>
+        <span id="rr-active-skin-name" style="font-weight:700;color:#22C55E;">{{ active_skin|default:'zipp'|upper }}</span>
+        <button class="rr-wm-skin-bar__btn" id="rr-open-skins">Schimba robotul</button>
+    </div>
+</div>
+
+<script id="rr-worlds-data" type="application/json">{{ worlds_json|safe }}</script>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script src="{% static 'estudy/robot_lab/engine/audio.js' %}?v=2" defer></script>
+<script src="{% static 'estudy/robot_lab/ui/world_map.js' %}?v=20260419a" defer></script>
+<script src="{% static 'estudy/robot_lab/ui/cutscene.js' %}?v=2" defer></script>
+<script src="{% static 'estudy/robot_lab/ui/skin_selector.js' %}?v=2" defer></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', function() {
+    var root = document.getElementById('rr-world-map-root');
+    var dataEl = document.getElementById('rr-worlds-data');
+    var worlds = [];
+    try { worlds = JSON.parse(dataEl.textContent || '[]'); } catch(e) {}
+
+    new RRWorldMap.WorldMap(root, {
+        worlds: worlds,
+        onWorldSelect: function(world) {
+            if (window.RRAudio) RRAudio.play('click');
+        },
+        onLevelSelect: function(levelId) {
+            window.location.href = '/estudy/robot-lab/game/' + levelId + '/';
+        }
+    });
+
+    // Skin selector
+    var skinsBtn = document.getElementById('rr-open-skins');
+    var skinNameEl = document.getElementById('rr-active-skin-name');
+    var skinsApiUrl = '{% url "estudy:robot_lab_skins_api" %}';
+    var skinSelectApiUrl = '{% url "estudy:robot_lab_skin_select_api" %}';
+
+    function getCsrf() {
+        var raw = document.cookie || '';
+        var parts = raw.split(';');
+        for (var i = 0; i < parts.length; i++) {
+            var item = parts[i].trim();
+            if (item.startsWith('csrftoken=')) return decodeURIComponent(item.slice(10));
+        }
+        return '';
+    }
+
+    if (skinsBtn) {
+        skinsBtn.addEventListener('click', async function() {
+            try {
+                var resp = await fetch(skinsApiUrl);
+                var data = await resp.json();
+                var skins = data.skins || [];
+
+                var overlay = document.createElement('div');
+                overlay.className = 'rr-skin-overlay';
+                var inner = document.createElement('div');
+                inner.className = 'rr-skin-overlay__inner';
+                overlay.appendChild(inner);
+
+                var selectorContainer = document.createElement('div');
+                inner.appendChild(selectorContainer);
+
+                new RRSkinSelector.SkinSelector(selectorContainer, {
+                    skins: skins,
+                    activeSkin: (skinNameEl ? skinNameEl.textContent.toLowerCase() : 'zipp'),
+                    onSelect: async function(key) {
+                        try {
+                            await fetch(skinSelectApiUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
+                                body: JSON.stringify({ skin_key: key })
+                            });
+                            if (skinNameEl) skinNameEl.textContent = key.toUpperCase();
+                        } catch(e) {}
+                    }
+                });
+
+                var closeWrap = document.createElement('div');
+                closeWrap.className = 'rr-skin-overlay__close';
+                closeWrap.innerHTML = '<button>Inchide</button>';
+                closeWrap.querySelector('button').addEventListener('click', function() {
+                    overlay.remove();
+                });
+                inner.appendChild(closeWrap);
+
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === overlay) overlay.remove();
+                });
+
+                document.body.appendChild(overlay);
+            } catch(e) {}
+        });
+    }
+});
+</script>
+{% endblock %}

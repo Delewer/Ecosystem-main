@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="60" height="60">
+  <!-- BLAZE: Red angular robot -->
+  <g class="robot-skin robot-skin--blaze">
+    <g class="robot__antenna">
+      <line x1="30" y1="3" x2="30" y2="12" stroke="#F87171" stroke-width="2" stroke-linecap="round"/>
+      <polygon points="30,0 27,6 33,6" fill="#EF4444"/>
+    </g>
+    <polygon class="robot__head" points="10,14 50,14 46,38 14,38" fill="#1E293B" stroke="#EF4444" stroke-width="1.5"/>
+    <g class="robot__eyes">
+      <polygon points="19,22 27,22 25,30 21,30" fill="#EF4444" class="robot__eye robot__eye--left"/>
+      <polygon points="33,22 41,22 39,30 35,30" fill="#EF4444" class="robot__eye robot__eye--right"/>
+      <circle cx="23" cy="24" r="1.5" fill="#fff" opacity="0.8"/>
+      <circle cx="37" cy="24" r="1.5" fill="#fff" opacity="0.8"/>
+    </g>
+    <rect class="robot__mouth" x="22" y="32" width="16" height="2" rx="1" fill="#F87171"/>
+    <polygon class="robot__body" points="13,40 47,40 44,56 16,56" fill="#1E293B" stroke="#EF4444" stroke-width="1.5"/>
+    <circle cx="30" cy="48" r="3" fill="#EF4444" opacity="0.7" class="robot__core"/>
+  </g>
+</svg>

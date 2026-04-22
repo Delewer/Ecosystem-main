@@ -1,0 +1,442 @@
+{% load static %}
+<section
+    class="robotlab-page robotlab-play robotlab-play--single{% if embedded %} robotlab-play--embedded robotlab-play--storybook{% else %} robotlab-play--full{% endif %}"
+    data-robotlab-play
+    data-level-id="{{ level_id|default:level.id }}"
+    data-run-url="{% url 'estudy:robot_lab_run_api' %}"
+>
+    {% if embedded %}
+    <section class="card robotlab-unified-card">
+        <header class="robotlab-unified-header">
+            <div class="robotlab-unified-header__copy">
+                <span class="robotlab-eyebrow">Robot Lab - {{ level.id }}</span>
+                <h3>{{ level.title }}</h3>
+                <p>{{ level.goal_text }}</p>
+            </div>
+            <div class="robotlab-level-nav robotlab-level-nav--play robotlab-unified-header__nav">
+                {% if level.play_url %}
+                <a class="btn btn--ghost btn--small" href="{{ level.play_url }}">Deschide Robot Lab</a>
+                {% endif %}
+                {% if level.hub_url %}
+                <a class="btn btn--ghost btn--small" href="{{ level.hub_url }}">Toate misiunile</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <div class="robotlab-unified-meta">
+            <article class="robotlab-unified-note">
+                <span class="robotlab-eyebrow">Rucsacul misiunii</span>
+                <h4>Ce facem acum</h4>
+                <p>{{ level.description|default:level.ui_stage_description|default:"Citeste cerinta si ajuta robotul sa ajunga la terminal." }}</p>
+            </article>
+            <article class="robotlab-unified-note">
+                <span class="robotlab-eyebrow">Comenzi permise</span>
+                <h4>Lucreaza cu pasi mici</h4>
+                <div class="robotlab-level-chips">
+                    <span class="chip">{{ level.mode_label }}</span>
+                    <span class="chip">{{ level.ui_stage_label }}</span>
+                    <span class="chip">Varsta {{ level.recommended_age }}</span>
+                    {% if level.max_steps %}
+                    <span class="chip">Pasi maximi: {{ level.max_steps }}</span>
+                    {% endif %}
+                    {% if level.xp_reward %}
+                    <span class="chip">XP +{{ level.xp_reward }}</span>
+                    {% endif %}
+                    {% for command in level.allowed_api %}
+                    <span class="chip">{{ command }}()</span>
+                    {% endfor %}
+                </div>
+            </article>
+            {% if robot_lab_age_recommendation and robot_lab_age_recommendation.has_profile_age %}
+            <article class="robotlab-unified-note">
+                <span class="robotlab-eyebrow">Recomandare dupa profil</span>
+                <h4>{{ robot_lab_age_recommendation.track_label }}</h4>
+                <p>{{ robot_lab_age_recommendation.description }}</p>
+                <p><strong>profil {{ robot_lab_age_recommendation.age }} ani</strong></p>
+                {% if robot_lab_age_recommendation.mismatch_note %}
+                <p>{{ robot_lab_age_recommendation.mismatch_note }}</p>
+                {% endif %}
+            </article>
+            {% endif %}
+        </div>
+
+        <section class="robotlab-unified-stage">
+            <div class="robotlab-unified-section-head robotlab-unified-stage__head">
+                <div>
+                    <span class="robotlab-eyebrow">Harta misiunii</span>
+                    <h4>Ajuta-l pe Robo sa ajunga la terminal</h4>
+                </div>
+                <p>{{ level.ui_stage_description }}</p>
+            </div>
+
+            <div class="robotlab-unified-stage__task">
+                <strong>Sarcina</strong>
+                <p>{{ level.goal_text }}</p>
+            </div>
+
+            <div class="robotlab-grid-shell robotlab-grid-shell--single">
+                <div class="robotlab-grid" data-robot-grid></div>
+            </div>
+
+            <div class="robotlab-unified-stage__footer">
+                <div class="robotlab-playback">
+                    <button type="button" class="btn btn--ghost btn--small" data-playback-step>Pas +1</button>
+                    <button type="button" class="btn btn--ghost btn--small" data-playback-play>Reda</button>
+                    <button type="button" class="btn btn--ghost btn--small" data-playback-pause>Pauza</button>
+                    <button type="button" class="btn btn--ghost btn--small" data-playback-reset>La start</button>
+                </div>
+                <p>Regula simpla: ruleaza codul, vezi traseul si schimba doar pasul care nu merge.</p>
+            </div>
+        </section>
+
+        <section class="robotlab-unified-code">
+            <div class="robotlab-unified-section-head">
+                <div>
+                    <span class="robotlab-eyebrow">Construieste programul</span>
+                    <h4>Scrie codul in acelasi bloc</h4>
+                </div>
+                <p>Apasa pe butoane sau scrie direct in editor, apoi verifica imediat rezultatul.</p>
+            </div>
+
+            <div class="robotlab-builder" data-builder-panel hidden>
+                <div class="robotlab-builder__columns">
+                    <section class="robotlab-builder-card">
+                        <p class="robotlab-builder-card__label">Pad cu directii</p>
+                        <div class="robotlab-direction-pad" data-direction-pad></div>
+                        <div class="robotlab-command-toolbar" data-extra-commands></div>
+                    </section>
+                    <section class="robotlab-builder-card">
+                        <div class="robotlab-program-card__head">
+                            <strong>Comenzi adunate</strong>
+                            <span>Cod generat automat</span>
+                        </div>
+                        <ol class="robotlab-program-list" data-program-list>
+                            <li>Adauga comenzi din butoane.</li>
+                        </ol>
+                    </section>
+                </div>
+            </div>
+
+            <label class="robotlab-field">
+                <span data-code-label>Programul tau</span>
+                <textarea data-code-input rows="10">{{ level.starter_code }}</textarea>
+            </label>
+
+            <div class="robotlab-unified-controls">
+                <label class="robotlab-checkbox">
+                    <input type="checkbox" data-request-solution>
+                    <span>Vreau si un exemplu de solutie</span>
+                </label>
+
+                <section class="robotlab-console-card robotlab-console-card--single">
+                    <div class="robotlab-console-card__bar">
+                        <div class="robotlab-console-card__head">
+                            <span class="robotlab-eyebrow">Consola misiunii</span>
+                            <h4>Feedback imediat</h4>
+                        </div>
+                        <div class="robotlab-console-card__actions">
+                            <button type="button" class="btn btn--primary" data-run-btn>Executa codul</button>
+                            <button type="button" class="btn btn--ghost btn--small" data-run-step-btn>Executa o linie</button>
+                            <button type="button" class="btn btn--ghost btn--small" data-reset-code>Reseteaza</button>
+                            <button type="button" class="btn btn--ghost btn--small" data-clear-code>Goleste</button>
+                        </div>
+                    </div>
+
+                    <div class="robotlab-status-wrap">
+                        <span class="robotlab-status-wrap__label">Stare misiune</span>
+                        <p class="robotlab-status" data-run-status>Pregatit.</p>
+                    </div>
+
+                    <ol class="robotlab-console-list" data-console-list>
+                        <li>Program pregatit. Apasa Executa codul.</li>
+                    </ol>
+                </section>
+            </div>
+        </section>
+
+        <section class="robotlab-unified-help">
+            <div class="robotlab-unified-section-head">
+                <div>
+                    <span class="robotlab-eyebrow">Ajutor</span>
+                    <h4>Tot ce ai nevoie este aici</h4>
+                </div>
+                <p>Deschide un indiciu sau vezi pasii executiei fara sa parasesti ecranul.</p>
+            </div>
+
+            <div class="robotlab-embed-hints robotlab-embed-hints--single">
+                <button type="button" class="btn btn--ghost btn--small robotlab-hint-btn" data-hint-open data-hint-type="what">
+                    Ce s-a intamplat?
+                </button>
+                <button type="button" class="btn btn--ghost btn--small robotlab-hint-btn" data-hint-open data-hint-type="mistake">
+                    Explicatie
+                </button>
+                <button type="button" class="btn btn--ghost btn--small robotlab-hint-btn" data-hint-open data-hint-type="hint1">
+                    Indiciu 1
+                </button>
+                <button type="button" class="btn btn--ghost btn--small robotlab-hint-btn" data-hint-open data-hint-type="hint2">
+                    Indiciu 2
+                </button>
+                <button type="button" class="btn btn--ghost btn--small robotlab-hint-btn" data-hint-open data-hint-type="focus">
+                    Concept cheie
+                </button>
+                <button type="button" class="btn btn--ghost btn--small robotlab-hint-btn" data-hint-open data-hint-type="solution">
+                    Solutie exemplu
+                </button>
+            </div>
+
+            <details class="robotlab-trace-details">
+                <summary>Vezi pasii executiei</summary>
+                <section class="robotlab-trace-card robotlab-trace-card--single">
+                    <div class="robotlab-trace-card__head">
+                        <span class="robotlab-eyebrow">Jurnalul rularii</span>
+                        <h4>Trace executie</h4>
+                    </div>
+                    <ol class="robotlab-trace" data-trace-list>
+                        <li>Ruleaza codul ca sa vezi pasii robotului.</li>
+                    </ol>
+                </section>
+            </details>
+        </section>
+    </section>
+    {% else %}
+    <section class="card robotlab-unified-card robotlab-unified-card--window">
+        <header class="robotlab-window-topbar">
+            <div class="robotlab-window-topbar__copy">
+                <span class="robotlab-eyebrow">Robot Lab - {{ level.id }}</span>
+                <h3>{{ level.title }}</h3>
+                <p>{{ level.goal_text }}</p>
+            </div>
+            <div class="robotlab-level-nav robotlab-level-nav--play robotlab-window-topbar__nav">
+                <a class="btn btn--ghost btn--small" href="{% url 'estudy:robot_lab_hub' %}">Niveluri</a>
+                {% if prev_level_id %}
+                <a class="btn btn--ghost btn--small" href="{% url 'estudy:robot_lab_play' level_id=prev_level_id %}">Inapoi</a>
+                {% endif %}
+                {% if next_level_id and next_level_unlocked %}
+                <a class="btn btn--ghost btn--small" href="{% url 'estudy:robot_lab_play' level_id=next_level_id %}">Urmator</a>
+                {% endif %}
+            </div>
+        </header>
+
+        <div class="robotlab-window-meta">
+            <article class="robotlab-window-note">
+                <span class="robotlab-eyebrow">Rucsacul misiunii</span>
+                <h4>Ce facem acum</h4>
+                <p>{{ level.description|default:level.ui_stage_description|default:"Citeste cerinta si ajuta robotul sa ajunga la terminal." }}</p>
+            </article>
+            <article class="robotlab-window-note">
+                <span class="robotlab-eyebrow">Comenzi permise</span>
+                <h4>Lucreaza cu pasi mici</h4>
+                <div class="robotlab-level-chips">
+                    <span class="chip">{{ level.mode_label }}</span>
+                    <span class="chip">{{ level.ui_stage_label }}</span>
+                    <span class="chip">Varsta {{ level.recommended_age }}</span>
+                    {% if level.max_steps %}
+                    <span class="chip">Pasi maximi: {{ level.max_steps }}</span>
+                    {% endif %}
+                    {% if level.xp_reward %}
+                    <span class="chip">XP +{{ level.xp_reward }}</span>
+                    {% endif %}
+                    {% for command in level.allowed_api %}
+                    <span class="chip">{{ command }}()</span>
+                    {% endfor %}
+                </div>
+            </article>
+            {% if robot_lab_age_recommendation and robot_lab_age_recommendation.has_profile_age %}
+            <article class="robotlab-window-note robotlab-window-note--profile">
+                <span class="robotlab-eyebrow">Recomandare dupa profil</span>
+                <h4>{{ robot_lab_age_recommendation.track_label }}</h4>
+                <p>{{ robot_lab_age_recommendation.description }}</p>
+                <p><strong>profil {{ robot_lab_age_recommendation.age }} ani</strong></p>
+                {% if robot_lab_age_recommendation.mismatch_note %}
+                <p>{{ robot_lab_age_recommendation.mismatch_note }}</p>
+                {% endif %}
+            </article>
+            {% endif %}
+        </div>
+
+        <div class="robotlab-mission-window">
+            <section class="robotlab-mission-stage">
+                <div class="robotlab-mission-stage__head">
+                    <div>
+                        <span class="robotlab-eyebrow">Harta misiunii</span>
+                        <h4>Ajuta-l pe Robo sa ajunga la terminal</h4>
+                    </div>
+                    <p>{{ level.ui_stage_description }}</p>
+                </div>
+
+                <div class="robotlab-mission-stage__task">
+                    <strong>Sarcina</strong>
+                    <p>{{ level.goal_text }}</p>
+                </div>
+
+                <div class="robotlab-grid-shell robotlab-grid-shell--single">
+                    <div class="robotlab-grid" data-robot-grid></div>
+                </div>
+
+                <div class="robotlab-mission-stage__dock">
+                    <section class="robotlab-mission-builder" data-builder-panel hidden>
+                        <div class="robotlab-mission-builder__head">
+                            <span class="robotlab-eyebrow">Butoane in joc</span>
+                            <p>Apasa o comanda si ea apare imediat in editor.</p>
+                        </div>
+                        <div class="robotlab-mission-builder__body">
+                            <div class="robotlab-direction-pad" data-direction-pad></div>
+                            <div class="robotlab-mission-builder__extras">
+                                <span class="robotlab-builder-card__label">Comenzi rapide</span>
+                                <div class="robotlab-command-toolbar" data-extra-commands></div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="robotlab-mission-stage__playback">
+                        <button type="button" class="btn btn--ghost btn--small" data-playback-step>Pas +1</button>
+                        <button type="button" class="btn btn--ghost btn--small" data-playback-play>Reda</button>
+                        <button type="button" class="btn btn--ghost btn--small" data-playback-pause>Pauza</button>
+                        <button type="button" class="btn btn--ghost btn--small" data-playback-reset>La start</button>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="robotlab-mission-sidebar">
+                <section class="robotlab-mission-editor">
+                    <div class="robotlab-unified-section-head">
+                        <div>
+                            <span class="robotlab-eyebrow">Construieste programul</span>
+                            <h4>Scrie codul si ruleaza imediat</h4>
+                        </div>
+                        <p>Editorul si butoanele lucreaza impreuna, in acelasi ecran.</p>
+                    </div>
+
+                    <div class="robotlab-mission-editor__stack">
+                        <section class="robotlab-builder-card robotlab-builder-card--list">
+                            <div class="robotlab-program-card__head">
+                                <strong>Comenzi adunate</strong>
+                                <span>Se actualizeaza automat</span>
+                            </div>
+                            <ol class="robotlab-program-list" data-program-list>
+                                <li>Adauga comenzi din butoane sau scrie direct in editor.</li>
+                            </ol>
+                        </section>
+
+                        <label class="robotlab-field">
+                            <span data-code-label>Programul tau</span>
+                            <textarea data-code-input rows="12">{{ level.starter_code }}</textarea>
+                        </label>
+                    </div>
+                </section>
+
+                <section class="robotlab-console-card robotlab-console-card--single">
+                    <div class="robotlab-console-card__bar">
+                        <div class="robotlab-console-card__head">
+                            <span class="robotlab-eyebrow">Consola misiunii</span>
+                            <h4>Feedback imediat</h4>
+                        </div>
+                        <div class="robotlab-console-card__actions">
+                            <button type="button" class="btn btn--primary" data-run-btn>Ruleaza codul</button>
+                            <button type="button" class="btn btn--ghost btn--small" data-run-step-btn>Ruleaza o linie</button>
+                            <button type="button" class="btn btn--ghost btn--small" data-reset-code>Reseteaza</button>
+                            <button type="button" class="btn btn--ghost btn--small" data-clear-code>Goleste</button>
+                        </div>
+                    </div>
+
+                    <label class="robotlab-checkbox">
+                        <input type="checkbox" data-request-solution>
+                        <span>Vreau si un exemplu de solutie</span>
+                    </label>
+
+                    <div class="robotlab-status-wrap">
+                        <span class="robotlab-status-wrap__label">Stare misiune</span>
+                        <p class="robotlab-status" data-run-status>Pregatit.</p>
+                    </div>
+
+                    <ol class="robotlab-console-list" data-console-list>
+                        <li>Program pregatit. Apasa Ruleaza codul.</li>
+                    </ol>
+                </section>
+
+                <section class="robotlab-side-help">
+                    <div class="robotlab-unified-section-head">
+                        <div>
+                            <span class="robotlab-eyebrow">Ajutor</span>
+                            <h4>Tot ce ai nevoie este aici</h4>
+                        </div>
+                        <p>Vezi indiciile si pasii executiei fara sa iesi din joc.</p>
+                    </div>
+
+                    <div class="robotlab-embed-hints robotlab-embed-hints--single">
+                        <button type="button" class="btn btn--ghost btn--small robotlab-hint-btn" data-hint-open data-hint-type="what">
+                            Ce s-a intamplat?
+                        </button>
+                        <button type="button" class="btn btn--ghost btn--small robotlab-hint-btn" data-hint-open data-hint-type="mistake">
+                            Explicatie
+                        </button>
+                        <button type="button" class="btn btn--ghost btn--small robotlab-hint-btn" data-hint-open data-hint-type="hint1">
+                            Indiciu 1
+                        </button>
+                        <button type="button" class="btn btn--ghost btn--small robotlab-hint-btn" data-hint-open data-hint-type="hint2">
+                            Indiciu 2
+                        </button>
+                        <button type="button" class="btn btn--ghost btn--small robotlab-hint-btn" data-hint-open data-hint-type="focus">
+                            Concept cheie
+                        </button>
+                        <button type="button" class="btn btn--ghost btn--small robotlab-hint-btn" data-hint-open data-hint-type="encourage">
+                            Incurajare
+                        </button>
+                        <button type="button" class="btn btn--ghost btn--small robotlab-hint-btn" data-hint-open data-hint-type="solution">
+                            Solutie exemplu
+                        </button>
+                    </div>
+
+                    <details class="robotlab-trace-details">
+                        <summary>Vezi pasii executiei</summary>
+                        <section class="robotlab-trace-card robotlab-trace-card--single">
+                            <div class="robotlab-trace-card__head">
+                                <span class="robotlab-eyebrow">Jurnalul rularii</span>
+                                <h4>Trace executie</h4>
+                            </div>
+                            <ol class="robotlab-trace" data-trace-list>
+                                <li>Ruleaza codul ca sa vezi pasii robotului.</li>
+                            </ol>
+                        </section>
+                    </details>
+                </section>
+            </aside>
+        </div>
+    </section>
+    {% endif %}
+
+    <div class="robo-mentor-container" data-robo-mentor-mount></div>
+
+    <div class="robotlab-turtle-panel" data-turtle-panel hidden>
+        <p class="robotlab-turtle-panel__title">Turtle Graphics</p>
+        <canvas id="turtle-canvas" width="400" height="400"></canvas>
+    </div>
+
+    <div class="robotlab-mentor-store" hidden>
+        <p data-mentor-what>-</p>
+        <p data-mentor-mistake>-</p>
+        <p data-mentor-h1>-</p>
+        <p data-mentor-h2>-</p>
+        <p data-mentor-focus>-</p>
+        <p data-mentor-encourage>-</p>
+        <article data-mentor-solution-wrap hidden>
+            <pre data-mentor-solution></pre>
+        </article>
+    </div>
+
+    <div class="robotlab-modal" data-hint-modal hidden>
+        <button type="button" class="robotlab-modal__backdrop" data-hint-modal-close aria-label="Inchide"></button>
+        <article class="robotlab-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="robotlab-hint-title">
+            <button type="button" class="robotlab-modal__close" data-hint-modal-close aria-label="Inchide">
+                x
+            </button>
+            <p class="robotlab-modal__eyebrow">RoboMentor</p>
+            <h3 id="robotlab-hint-title" data-hint-modal-title>Indiciu</h3>
+            <pre class="robotlab-modal__content" data-hint-modal-content>
+Ruleaza codul pentru a primi feedback personalizat.
+            </pre>
+        </article>
+    </div>
+</section>
+
+<script type="application/json" id="robot-lab-level-data">{{ level_json|safe }}</script>

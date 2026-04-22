@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Harta lumii · UnITex{% endblock %}
+
+{% block page_content %}
+<section class="world-map">
+    <h1 class="world-map__title">&#127758; Harta aventurii tale</h1>
+    <p class="world-map__subtitle">Urmeaza traseul, completeaza lectiile si deblocheaza noi teritorii.</p>
+
+    {% for entry in paths %}
+    <div class="world-map__path-group">
+        <h2 class="world-map__path-name">&#128205; {{ entry.path.title }}</h2>
+        <div class="world-map__nodes">
+            {% for node in entry.nodes %}
+                {% if not forloop.first %}
+                    <div class="world-map__connector{% if node.state == 'completed' %} world-map__connector--done{% endif %}">
+                        <div class="world-map__connector-line"></div>
+                    </div>
+                {% endif %}
+
+                {% if node.state == 'locked' %}
+                <div class="world-map__node world-map__node--{{ node.state }}">
+                {% else %}
+                <a href="{% url 'estudy:lesson_detail' slug=node.slug %}" class="world-map__node world-map__node--{{ node.state }}">
+                {% endif %}
+
+                    <div class="world-map__circle">
+                        {% if node.state == 'completed' %}
+                            &#9989;
+                        {% elif node.state == 'locked' %}
+                            &#128274;
+                        {% else %}
+                            {{ node.order }}
+                        {% endif %}
+                    </div>
+                    <span class="world-map__label">{{ node.lesson.title }}</span>
+                    <span class="world-map__xp">&#9889; +{{ node.xp_reward }} XP</span>
+                    <span class="world-map__difficulty world-map__difficulty--{{ node.difficulty }}">{{ node.difficulty }}</span>
+
+                {% if node.state == 'locked' %}
+                </div>
+                {% else %}
+                </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-muted">Niciun traseu de invatare nu a fost configurat inca.</p>
+    {% endfor %}
+</section>
+{% endblock %}

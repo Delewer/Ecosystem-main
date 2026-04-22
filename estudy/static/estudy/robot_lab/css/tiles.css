@@ -1,0 +1,147 @@
+/* tiles.css — All tile types with world-specific variants */
+
+.rr-grid {
+    display: inline-grid;
+    gap: var(--rr-tile-gap, 1px);
+    border: 2px solid var(--rr-border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--rr-border);
+}
+
+.rr-tile {
+    width: var(--rr-tile-size, 60px);
+    height: var(--rr-tile-size, 60px);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+/* Base tile types */
+.rr-tile--wall { background: var(--rr-wall, #166534); }
+.rr-tile--floor { background: var(--rr-floor, #0D4B3A); }
+.rr-tile--start { background: var(--rr-floor, #0D4B3A); box-shadow: inset 0 0 8px var(--rr-glow, rgba(34,197,94,0.3)); }
+.rr-tile--goal { background: var(--rr-floor, #0D4B3A); }
+.rr-tile--terminal { background: var(--rr-floor, #0D4B3A); }
+
+/* Goal pulse */
+.rr-tile--goal::after,
+.rr-tile--terminal::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border-radius: 4px;
+    border: 2px solid var(--rr-accent, #22C55E);
+    animation: rr-goal-pulse 2s ease-in-out infinite;
+}
+@keyframes rr-goal-pulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Items */
+.rr-tile--battery { background: var(--rr-floor); }
+.rr-tile--key { background: var(--rr-floor); }
+.rr-tile--door { background: #57534E; }
+.rr-tile--hazard { background: var(--rr-floor); }
+
+/* Ice tile */
+.rr-tile--ice {
+    background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 50%, #93C5FD 100%);
+    opacity: 0.85;
+}
+.rr-theme--ice .rr-tile--ice {
+    animation: rr-ice-shimmer 3s ease-in-out infinite alternate;
+}
+@keyframes rr-ice-shimmer {
+    0% { opacity: 0.75; }
+    100% { opacity: 0.95; }
+}
+
+/* Heater tile */
+.rr-tile--heater {
+    background: var(--rr-floor);
+    box-shadow: inset 0 0 12px rgba(249, 115, 22, 0.4);
+}
+
+/* Lava tile */
+.rr-tile--lava {
+    background: linear-gradient(135deg, #DC2626 0%, #F97316 50%, #EF4444 100%);
+    animation: rr-lava-glow 2s ease-in-out infinite;
+}
+.rr-tile--lava.is-safe {
+    opacity: 0.4;
+    animation: none;
+}
+@keyframes rr-lava-glow {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* Coolant pickup */
+.rr-tile--coolant {
+    background: var(--rr-floor);
+}
+
+/* Portal tile */
+.rr-tile--portal {
+    background: var(--rr-floor);
+}
+.rr-tile--portal::after {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border-radius: 50%;
+    border: 2px solid #A78BFA;
+    animation: rr-portal-spin 3s linear infinite;
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
+}
+@keyframes rr-portal-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Gravity pad */
+.rr-tile--gravity {
+    background: var(--rr-floor);
+    box-shadow: inset 0 0 12px rgba(139, 92, 246, 0.3);
+}
+
+/* Tile SVG icon overlay */
+.rr-tile__icon {
+    width: 60%;
+    height: 60%;
+    position: relative;
+    z-index: 1;
+}
+
+/* World-specific wall variants */
+.rr-theme--garden .rr-tile--wall {
+    background: linear-gradient(180deg, #166534 0%, #14532D 100%);
+    box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+}
+.rr-theme--ice .rr-tile--wall {
+    background: linear-gradient(180deg, #BAE6FD 0%, #7DD3FC 100%);
+    box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.15);
+}
+.rr-theme--volcano .rr-tile--wall {
+    background: linear-gradient(180deg, #44403C 0%, #292524 100%);
+    box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+}
+.rr-theme--space .rr-tile--wall {
+    background: linear-gradient(180deg, #312E81 0%, #1E1B4B 100%);
+    box-shadow: inset 0 0 6px rgba(139, 92, 246, 0.15);
+}
+.rr-theme--core .rr-tile--wall {
+    background: linear-gradient(180deg, #44403C 0%, #1C1917 100%);
+    box-shadow: inset 0 0 6px rgba(239, 68, 68, 0.1);
+}
+
+/* World-specific floor variants */
+.rr-theme--garden .rr-tile--floor { box-shadow: inset 0 0 4px rgba(34, 197, 94, 0.08); }
+.rr-theme--ice .rr-tile--floor { background: #0F2B40; }
+.rr-theme--volcano .rr-tile--floor { box-shadow: inset 0 0 4px rgba(249, 115, 22, 0.08); }
+.rr-theme--space .rr-tile--floor { box-shadow: inset 0 0 4px rgba(139, 92, 246, 0.08); }
+.rr-theme--core .rr-tile--floor { box-shadow: inset 0 0 4px rgba(239, 68, 68, 0.08); }

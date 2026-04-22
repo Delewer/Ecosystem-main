@@ -1,0 +1,55 @@
+{
+  "id": "W2-L01",
+  "title": "Start alunecos",
+  "description": "Bine ai venit in Pestera de Gheata! Pardoseala de gheata te face sa aluneci pana lovesti un perete.",
+  "goal_text": "Ajungi la tinta G alunecand pe gheata.",
+  "goal": {
+    "type": "reach_goal",
+    "target_tile": "G"
+  },
+  "concepts": ["loops"],
+  "difficulty": "easy",
+  "max_steps": 30,
+  "time_limit_ms": 800,
+  "xp_reward": 30,
+  "start_dir": "E",
+  "mode": "code",
+  "ui_stage": "code",
+  "recommended_age": "11-13",
+  "world": 2,
+  "world_theme": "ice",
+  "optimal_steps": 6,
+  "star_conditions": {
+    "one": "reach_goal",
+    "two": "steps_lte_10",
+    "three": "steps_lte_optimal"
+  },
+  "collectibles": [
+    {"tile": "B", "label": "Baterie", "icon": "⚡", "points": 10}
+  ],
+  "intro_dialog": "ZIPP: Brrr! Totul e acoperit de gheata. Atentie la alunecare!",
+  "success_dialog": "ZIPP: Am reusit! Gheata nu ma opreste!",
+  "fail_dialog": "ZIPP: Am alunecat prea departe... sa incercam altfel!",
+  "background_theme": "ice",
+  "music_theme": "calm_ice",
+  "allowed_api": ["up", "down", "left", "right", "at_goal", "front_is_clear"],
+  "legend": {
+    "#": "perete de gheata",
+    "~": "gheata (aluneci)",
+    "=": "incalzitor (opreste alunecarea)",
+    ".": "spatiu normal",
+    "S": "start",
+    "G": "tinta"
+  },
+  "grid": [
+    "##########",
+    "#S~~.~~#.#",
+    "#.##=..~.#",
+    "#~~..~~..#",
+    "#.#=..#~.#",
+    "#~~..=.~G#",
+    "#........#",
+    "##########"
+  ],
+  "starter_code": "# Ajungi la tinta pe gheata!\n# Pe ~ aluneci pana lovesti un perete.\n# Pe = te opresti.\n\nfor i in range(3):\n    right()\n"
+}

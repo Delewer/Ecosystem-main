@@ -1,0 +1,562 @@
+/* world_map.css — Immersive space world map with stars, orbits, animations */
+
+/* === Main container === */
+.rr-world-map {
+    min-height: 100vh;
+    background: #0A0A1A;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #E2E8F0;
+    font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Star field background */
+.rr-world-map::before,
+.rr-world-map::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+.rr-world-map::before {
+    background:
+        radial-gradient(1px 1px at 10% 15%, #FFF, transparent),
+        radial-gradient(1px 1px at 25% 45%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1.5px 1.5px at 50% 10%, #FFF, transparent),
+        radial-gradient(1px 1px at 75% 30%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 90% 70%, #FFF, transparent),
+        radial-gradient(1.5px 1.5px at 15% 80%, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 60% 85%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 35% 60%, #FFF, transparent),
+        radial-gradient(1px 1px at 80% 50%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1.5px 1.5px at 45% 35%, rgba(255,255,255,0.9), transparent),
+        radial-gradient(1px 1px at 5% 55%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 95% 15%, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 70% 75%, #FFF, transparent),
+        radial-gradient(1.5px 1.5px at 20% 25%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 55% 55%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 85% 90%, rgba(255,255,255,0.7), transparent);
+    animation: rr-twinkle 4s ease-in-out infinite alternate;
+}
+.rr-world-map::after {
+    background:
+        radial-gradient(1px 1px at 18% 35%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 42% 72%, #FFF, transparent),
+        radial-gradient(1px 1px at 68% 18%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 82% 42%, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 33% 88%, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1.5px 1.5px at 8% 68%, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 58% 48%, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 92% 58%, #FFF, transparent),
+        radial-gradient(1px 1px at 28% 12%, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1.5px 1.5px at 72% 92%, rgba(255,255,255,0.8), transparent);
+    animation: rr-twinkle 5s 1s ease-in-out infinite alternate;
+}
+@keyframes rr-twinkle {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+/* === Header === */
+.rr-world-map__header {
+    padding: 28px 0 8px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.rr-world-map__title {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    background: linear-gradient(135deg, #22C55E, #3B82F6, #A855F7, #EC4899);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rr-title-shift 6s ease-in-out infinite;
+}
+@keyframes rr-title-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.rr-world-map__subtitle {
+    font-size: 15px;
+    color: #94A3B8;
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+/* Header summary chips (total stars, worlds cleared, overall progress) */
+.rr-world-map__summary {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+    padding: 0 12px;
+}
+.rr-wm-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(30, 41, 59, 0.55);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    backdrop-filter: blur(6px);
+    color: #E2E8F0;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+.rr-wm-chip__icon {
+    width: 14px;
+    height: 14px;
+    color: #FBBF24;
+}
+.rr-wm-chip--bar { padding-right: 10px; }
+.rr-wm-chip__bar {
+    width: 90px;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(148, 163, 184, 0.22);
+    overflow: hidden;
+}
+.rr-wm-chip__bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #22C55E, #3B82F6, #A855F7);
+    background-size: 200% 100%;
+    animation: rr-chip-shift 4s ease-in-out infinite;
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes rr-chip-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+/* === Planet === */
+.rr-world-map__planet {
+    position: relative;
+    width: 700px;
+    max-width: 92vw;
+    aspect-ratio: 1;
+    margin: 16px auto;
+    z-index: 1;
+}
+
+.rr-world-map__planet-bg {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 35% 35%, #1E3A5F 0%, transparent 50%),
+        radial-gradient(circle at 65% 60%, #1A2744 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, #0F172A 0%, #020617 100%);
+    box-shadow:
+        0 0 80px rgba(59, 130, 246, 0.12),
+        0 0 160px rgba(139, 92, 246, 0.06),
+        inset 0 0 50px rgba(0, 0, 0, 0.5),
+        inset -20px -20px 60px rgba(59, 130, 246, 0.04);
+    animation: rr-planet-glow 8s ease-in-out infinite alternate;
+}
+@keyframes rr-planet-glow {
+    0% { box-shadow: 0 0 80px rgba(59,130,246,0.12), 0 0 160px rgba(139,92,246,0.06), inset 0 0 50px rgba(0,0,0,0.5); }
+    100% { box-shadow: 0 0 100px rgba(59,130,246,0.18), 0 0 200px rgba(139,92,246,0.1), inset 0 0 50px rgba(0,0,0,0.5); }
+}
+
+/* Orbit rings */
+.rr-world-map__planet-bg::before,
+.rr-world-map__planet-bg::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    border: 1px dashed rgba(100, 160, 255, 0.08);
+    pointer-events: none;
+}
+.rr-world-map__planet-bg::before {
+    inset: 15%;
+    animation: rr-orbit-spin 60s linear infinite;
+}
+.rr-world-map__planet-bg::after {
+    inset: 30%;
+    animation: rr-orbit-spin 45s linear infinite reverse;
+}
+@keyframes rr-orbit-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* === World bubbles === */
+.rr-world-map__worlds {
+    position: absolute;
+    inset: 0;
+}
+
+.rr-world-bubble {
+    position: absolute;
+    width: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 3;
+}
+.rr-world-bubble:hover {
+    transform: scale(1.15);
+}
+.rr-world-bubble.is-locked {
+    filter: grayscale(0.8) brightness(0.4);
+    cursor: not-allowed;
+}
+.rr-world-bubble.is-locked:hover {
+    transform: scale(1);
+}
+
+/* Float animation for each world */
+.rr-world-bubble[data-world="1"] { top: 18%; left: 34%; animation: rr-float-1 5s ease-in-out infinite; }
+.rr-world-bubble[data-world="2"] { top: 13%; left: 58%; animation: rr-float-2 6s ease-in-out infinite; }
+.rr-world-bubble[data-world="3"] { top: 44%; left: 68%; animation: rr-float-3 5.5s ease-in-out infinite; }
+.rr-world-bubble[data-world="4"] { top: 60%; left: 40%; animation: rr-float-4 6.5s ease-in-out infinite; }
+.rr-world-bubble[data-world="5"] { top: 38%; left: 22%; animation: rr-float-5 5.2s ease-in-out infinite; }
+
+@keyframes rr-float-1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(3px, -6px); } }
+@keyframes rr-float-2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-4px, -5px); } }
+@keyframes rr-float-3 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(5px, -4px); } }
+@keyframes rr-float-4 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-3px, -7px); } }
+@keyframes rr-float-5 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(4px, -5px); } }
+
+/* World icon with glow ring */
+.rr-world-bubble__icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--rr-border, #334155);
+    background: radial-gradient(circle at 40% 40%, #1E3A5F, #0F172A);
+    transition: all 0.3s;
+    position: relative;
+}
+.rr-world-bubble__icon::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: border-color 0.3s;
+    pointer-events: none;
+}
+.rr-world-bubble:not(.is-locked):hover .rr-world-bubble__icon {
+    border-color: var(--rr-accent, #22C55E);
+    box-shadow: 0 0 24px var(--rr-glow, rgba(34, 197, 94, 0.4));
+}
+.rr-world-bubble:not(.is-locked):hover .rr-world-bubble__icon::after {
+    border-color: rgba(34, 197, 94, 0.25);
+}
+
+.rr-world-bubble__icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.rr-world-bubble__name {
+    font-size: 13px;
+    font-weight: 800;
+    text-align: center;
+    white-space: nowrap;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.rr-world-bubble__stars {
+    font-size: 12px;
+    color: #94A3B8;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+.rr-world-bubble__stars svg {
+    width: 13px;
+    height: 13px;
+    color: #FBBF24;
+}
+
+.rr-world-bubble__lock {
+    position: absolute;
+    top: 28px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 28px;
+    height: 28px;
+    color: #CBD5E1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+}
+
+/* Per-world star progress bar inside the bubble */
+.rr-world-bubble__progress {
+    width: 84px;
+    height: 5px;
+    border-radius: 3px;
+    background: rgba(148, 163, 184, 0.25);
+    overflow: hidden;
+    margin-top: 2px;
+}
+.rr-world-bubble__progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FBBF24, #F59E0B);
+    box-shadow: 0 0 8px rgba(251, 191, 36, 0.45);
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Hint shown under locked worlds */
+.rr-world-bubble__hint {
+    font-size: 10px;
+    font-weight: 700;
+    color: #CBD5E1;
+    text-align: center;
+    background: rgba(15, 23, 42, 0.72);
+    padding: 2px 8px;
+    border-radius: 8px;
+    max-width: 110px;
+    line-height: 1.25;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+.rr-world-bubble.is-locked {
+    filter: none;
+    cursor: not-allowed;
+}
+.rr-world-bubble.is-locked .rr-world-bubble__icon {
+    filter: grayscale(0.85) brightness(0.45);
+}
+.rr-world-bubble.is-locked .rr-world-bubble__name,
+.rr-world-bubble.is-locked .rr-world-bubble__stars {
+    opacity: 0.5;
+}
+
+/* World zoom transition */
+.rr-world-map__planet.is-zooming {
+    animation: rr-world-zoom 0.6s ease-in-out forwards;
+}
+@keyframes rr-world-zoom {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(3); opacity: 0; }
+}
+
+/* === Level select overlay === */
+.rr-level-select {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0.97), rgba(0, 0, 0, 0.98));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+    z-index: 100;
+    animation: rr-level-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes rr-level-enter {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.rr-level-select__title {
+    font-size: 28px;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--rr-accent, #22C55E), #3B82F6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.03em;
+}
+
+.rr-level-select__grid {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 90vw;
+}
+
+/* Level nodes */
+.rr-level-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.rr-level-node:hover { transform: scale(1.15); }
+.rr-level-node.is-locked {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+.rr-level-node.is-locked:hover { transform: scale(1); }
+
+.rr-level-node__circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 900;
+    border: 3px solid var(--rr-border, #334155);
+    background: var(--rr-surface, #1E293B);
+    color: var(--rr-text, #E2E8F0);
+    transition: all 0.3s;
+    position: relative;
+}
+.rr-level-node:not(.is-locked) .rr-level-node__circle {
+    border-color: var(--rr-accent, #22C55E);
+    box-shadow: 0 0 16px rgba(34, 197, 94, 0.2);
+}
+.rr-level-node:not(.is-locked):hover .rr-level-node__circle {
+    box-shadow: 0 0 28px rgba(34, 197, 94, 0.35);
+}
+.rr-level-node.is-complete .rr-level-node__circle {
+    background: linear-gradient(135deg, var(--rr-accent, #22C55E), #16A34A);
+    color: #FFF;
+    border-color: var(--rr-accent, #22C55E);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+}
+
+/* Level name */
+.rr-level-node__name {
+    font-size: 11px;
+    font-weight: 700;
+    color: #CBD5E1;
+    text-align: center;
+    max-width: 92px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* XP chip on each level */
+.rr-level-node__xp {
+    font-size: 10px;
+    font-weight: 800;
+    color: #FBBF24;
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    padding: 1px 8px;
+    border-radius: 8px;
+    letter-spacing: 0.02em;
+}
+
+.rr-level-node__stars {
+    display: flex;
+    gap: 2px;
+}
+.rr-level-node__star {
+    width: 16px;
+    height: 16px;
+    color: #334155;
+    transition: color 0.3s, transform 0.3s;
+}
+.rr-level-node__star.is-earned {
+    color: #FBBF24;
+    filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.4));
+}
+
+/* Path connectors between level nodes */
+.rr-level-path {
+    width: 28px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--rr-border, #334155);
+    position: relative;
+}
+.rr-level-path.is-unlocked {
+    background: linear-gradient(90deg, var(--rr-accent, #22C55E), rgba(34, 197, 94, 0.5));
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.2);
+}
+
+/* Animated pulse on unlocked path */
+.rr-level-path.is-unlocked::after {
+    content: '';
+    position: absolute;
+    inset: -2px 0;
+    border-radius: 4px;
+    background: var(--rr-accent, #22C55E);
+    opacity: 0;
+    animation: rr-path-pulse 2s ease-in-out infinite;
+}
+@keyframes rr-path-pulse {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 0.15; }
+}
+
+.rr-level-select__back {
+    padding: 12px 28px;
+    border: 2px solid #334155;
+    border-radius: 12px;
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(8px);
+    color: #E2E8F0;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.rr-level-select__back:hover {
+    background: #1E293B;
+    border-color: var(--rr-accent, #22C55E);
+    color: var(--rr-accent, #22C55E);
+}
+
+/* Shooting star decorations */
+.rr-shooting-star {
+    position: absolute;
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    opacity: 0;
+    z-index: 0;
+    animation: rr-shoot 3s ease-in infinite;
+}
+.rr-shooting-star:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; transform: rotate(-15deg); }
+.rr-shooting-star:nth-child(2) { top: 30%; left: 70%; animation-delay: 4s; transform: rotate(-25deg); }
+.rr-shooting-star:nth-child(3) { top: 60%; left: 40%; animation-delay: 8s; transform: rotate(-10deg); }
+
+@keyframes rr-shoot {
+    0% { opacity: 0; transform: translateX(0) rotate(-15deg); }
+    10% { opacity: 1; }
+    30% { opacity: 0; transform: translateX(200px) rotate(-15deg); }
+    100% { opacity: 0; }
+}
+
+/* === Responsive === */
+@media (max-width: 1023px) {
+    .rr-world-map__planet { width: 520px; }
+    .rr-world-bubble { width: 110px; }
+    .rr-world-bubble__icon { width: 60px; height: 60px; }
+    .rr-level-node__circle { width: 56px; height: 56px; font-size: 20px; }
+}
+
+@media (max-width: 640px) {
+    .rr-world-map__planet { width: 340px; }
+    .rr-world-bubble { width: 90px; }
+    .rr-world-bubble__icon { width: 48px; height: 48px; }
+    .rr-world-bubble__name { font-size: 11px; }
+    .rr-world-map__title { font-size: 24px; }
+    .rr-level-node__circle { width: 48px; height: 48px; font-size: 18px; }
+    .rr-level-select__title { font-size: 22px; }
+    .rr-level-select__grid { gap: 10px; }
+}

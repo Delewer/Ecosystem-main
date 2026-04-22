@@ -1,0 +1,347 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}&#127775; Robo Rescue - {{ level.title }}{% endblock %}
+{% block body_class %}workspace-body rr-page{% endblock %}
+{% block workspace_banner %}{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'estudy/robot_lab/css/game.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'estudy/robot_lab/css/tiles.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'estudy/robot_lab/css/robot.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'estudy/robot_lab/css/blocks.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'estudy/robot_lab/css/hud.css' %}?v=1">
+<style>
+.rr-code-editor { display:flex; background:#0F172A; border:1px solid #334155; border-radius:8px; overflow:hidden; font-family:monospace; font-size:13px; }
+.rr-code-editor__lines { padding:8px 8px 8px 12px; color:#64748B; text-align:right; border-right:1px solid #334155; user-select:none; line-height:1.6; white-space:pre; overflow:hidden; }
+.rr-code-editor__lines span.is-error { color:#EF4444; font-weight:700; }
+.rr-code-editor__input { flex:1; padding:8px 12px; background:transparent; color:#E2E8F0; border:none; resize:none; outline:none; line-height:1.6; min-height:180px; tab-size:4; }
+</style>
+{% endblock %}
+
+{% block page_content %}
+{# Inline SVG symbols #}
+{% include "estudy/includes/rr_svg_symbols.html" %}
+
+<div class="rr-game rr-theme--{{ level.world_theme|default:'garden' }}"
+     data-rr-game
+     data-level-id="{{ level_id }}"
+     data-run-url="{% url 'estudy:robot_lab_run_api' %}"
+     data-active-skin="{{ active_skin|default:'zipp' }}"
+     data-next-level="{{ next_level_id|default:'' }}">
+
+    {# HUD inserted by JS #}
+
+    <div class="rr-game__main">
+        <div class="rr-game__maze-area" data-rr-maze></div>
+
+        <div class="rr-game__sidebar">
+            <div class="rr-game__sidebar-section">
+                <div class="rr-game__sidebar-title">&#128221; Instructiuni</div>
+                <div class="rr-dialog" data-rr-dialog>
+                    {{ level.goal_text|default:"Ajungi la tinta!" }}
+                </div>
+            </div>
+
+            <div class="rr-game__sidebar-section" data-rr-editor-area>
+                <div class="rr-game__sidebar-title">&#128187; Program</div>
+                {# Block editor or code editor injected by JS based on ui_stage #}
+            </div>
+
+            <div class="rr-game__sidebar-section">
+                <div class="rr-game__sidebar-title">&#128424; Consola</div>
+                <ul data-rr-console style="list-style:none;padding:0;margin:0;font-size:12px;color:#94A3B8;max-height:120px;overflow-y:auto;">
+                    <li>Apasa Ruleaza pentru a porni programul.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="rr-game__controls">
+        <button class="rr-btn rr-btn--primary" data-rr-run>
+            <svg class="rr-btn__icon"><use href="#icon-run"/></svg> Ruleaza
+        </button>
+        <button class="rr-btn" data-rr-step>
+            <svg class="rr-btn__icon"><use href="#icon-step"/></svg> Pas
+        </button>
+        <button class="rr-btn" data-rr-reset>
+            <svg class="rr-btn__icon"><use href="#icon-reset"/></svg> Reset
+        </button>
+        <button class="rr-btn" data-rr-hint>
+            <svg class="rr-btn__icon"><use href="#icon-hint"/></svg> Indiciu
+        </button>
+        <div class="rr-speed-selector">
+            <button data-rr-speed="0.5x">0.5x</button>
+            <button data-rr-speed="1x" class="is-active">1x</button>
+            <button data-rr-speed="2x">2x</button>
+            <button data-rr-speed="3x">3x</button>
+        </div>
+    </div>
+</div>
+
+{# Level complete overlay (hidden by default) #}
+<div data-rr-complete style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.85);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+    <h2 style="font-size:28px;font-weight:800;color:#22C55E;" data-rr-complete-title>&#127881; Nivel complet!</h2>
+    <div data-rr-complete-stars style="display:flex;gap:8px;font-size:36px;color:#FBBF24;"></div>
+    <p style="color:#94A3B8;font-size:14px;" data-rr-complete-msg></p>
+    <div style="display:flex;gap:12px;margin-top:16px;">
+        <button class="rr-btn" data-rr-complete-replay>Joaca din nou</button>
+        <button class="rr-btn rr-btn--primary" data-rr-complete-next>Nivelul urmator →</button>
+        <button class="rr-btn" data-rr-complete-map>Harta lumilor</button>
+    </div>
+</div>
+
+<script id="rr-level-data" type="application/json">{{ level_json|safe }}</script>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+{# Engine #}
+<script src="{% static 'estudy/robot_lab/engine/world.js' %}?v=1" defer></script>
+<script src="{% static 'estudy/robot_lab/engine/robot.js' %}?v=1" defer></script>
+<script src="{% static 'estudy/robot_lab/engine/renderer.js' %}?v=1" defer></script>
+<script src="{% static 'estudy/robot_lab/engine/executor.js' %}?v=1" defer></script>
+<script src="{% static 'estudy/robot_lab/engine/audio.js' %}?v=1" defer></script>
+<script src="{% static 'estudy/robot_lab/engine/particles.js' %}?v=1" defer></script>
+{# UI #}
+<script src="{% static 'estudy/robot_lab/ui/hud.js' %}?v=1" defer></script>
+<script src="{% static 'estudy/robot_lab/ui/block_editor.js' %}?v=1" defer></script>
+<script src="{% static 'estudy/robot_lab/ui/code_editor.js' %}?v=1" defer></script>
+<script src="{% static 'estudy/robot_lab/ui/cutscene.js' %}?v=1" defer></script>
+
+<script defer>
+document.addEventListener('DOMContentLoaded', function() {
+    'use strict';
+
+    var gameRoot = document.querySelector('[data-rr-game]');
+    if (!gameRoot) return;
+
+    var levelDataEl = document.getElementById('rr-level-data');
+    var level = {};
+    try { level = JSON.parse(levelDataEl.textContent || '{}'); } catch(e) {}
+
+    var runUrl = gameRoot.dataset.runUrl || '';
+    var levelId = gameRoot.dataset.levelId || level.id || '';
+    var activeSkin = gameRoot.dataset.activeSkin || 'zipp';
+    var nextLevelId = gameRoot.dataset.nextLevel || '';
+
+    // Init world
+    var world = new RRWorld.World(level);
+
+    // Init robot
+    var robot = new RRRobot.Robot({
+        row: world.startPos.r,
+        col: world.startPos.c,
+        dir: world.startDir,
+        skin: activeSkin
+    });
+
+    // Init renderer
+    var mazeArea = gameRoot.querySelector('[data-rr-maze]');
+    var renderer = new RRRenderer.Renderer(mazeArea);
+    renderer.mount(world);
+    renderer.updateRobot(robot);
+
+    // Init particles
+    RRParticles.mount(mazeArea);
+
+    // Init HUD
+    var worldNames = { 1: 'Gradina', 2: 'Pestera de Gheata', 3: 'Vulcanul', 4: 'Statia Spatiala', 5: 'Nucleul Final' };
+    RRHUD.mount(gameRoot, {
+        worldName: worldNames[level.world] || 'Robot Lab',
+        levelTitle: level.title || levelId,
+        onMenuClick: function() { window.location.href = '/estudy/robot-lab/worlds/'; },
+        onSoundToggle: function() {
+            var muted = RRAudio.toggleMute();
+            RRHUD.setSoundIcon(muted);
+        }
+    });
+
+    // Init editor (block or code based on ui_stage)
+    var editorArea = gameRoot.querySelector('[data-rr-editor-area]');
+    var codeValue = level.starter_code || '';
+    var blockEditor = null;
+    var codeEditor = null;
+    var uiStage = level.ui_stage || 'code';
+
+    if (uiStage === 'buttons' || uiStage === 'buttons_code') {
+        blockEditor = new RRBlockEditor.BlockEditor(editorArea, {
+            allowedApi: level.allowed_api || [],
+            onSequenceChange: function(code) { codeValue = code; }
+        });
+    } else {
+        codeEditor = new RRCodeEditor.CodeEditor(editorArea, {
+            starterCode: codeValue,
+            readOnly: false,
+            onCodeChange: function(code) { codeValue = code; }
+        });
+    }
+
+    // Console
+    var consoleEl = gameRoot.querySelector('[data-rr-console]');
+    function setConsole(lines) {
+        if (!consoleEl) return;
+        consoleEl.innerHTML = '';
+        (lines || []).forEach(function(line) {
+            var li = document.createElement('li');
+            li.textContent = line;
+            consoleEl.appendChild(li);
+        });
+    }
+
+    // Executor
+    var executor = new RRExecutor.Executor({
+        world: world,
+        robot: robot,
+        renderer: renderer,
+        audio: RRAudio,
+        particles: RRParticles,
+        onStep: function(index, entry) {
+            RRHUD.setSteps(index + 1);
+            if (blockEditor) blockEditor.highlightIndex(index);
+        },
+        onComplete: function(result) {
+            RRHUD.stopTimer();
+            if (result.solved) {
+                robot.setState('success', 800);
+                renderer.updateRobot(robot);
+                RRAudio.play('victory');
+                RRParticles.emit('confetti', robot.row, robot.col);
+                setTimeout(function() { RRParticles.emit('fullscreen_confetti'); }, 400);
+            }
+        }
+    });
+
+    // CSRF
+    function getCsrf() {
+        var raw = document.cookie || '';
+        var parts = raw.split(';');
+        for (var i = 0; i < parts.length; i++) {
+            var item = parts[i].trim();
+            if (item.startsWith('csrftoken=')) return decodeURIComponent(item.slice(10));
+        }
+        return '';
+    }
+
+    // Run
+    var running = false;
+    async function runCode() {
+        if (running || !runUrl || !levelId) return;
+        running = true;
+        RRAudio.resume();
+        RRHUD.startTimer();
+        setConsole(['Program pornit...', 'Simulare in curs...']);
+
+        try {
+            var resp = await fetch(runUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
+                body: JSON.stringify({ level_id: levelId, student_code: codeValue })
+            });
+            var data = await resp.json();
+            if (!resp.ok) throw new Error(data.error || 'Eroare');
+
+            var trace = data.execution_trace || [];
+            executor.loadTrace(trace);
+            executor.runAll();
+
+            setConsole(data.console_output || ['Program terminat.']);
+
+            if (data.solved) {
+                setTimeout(function() { showComplete(data); }, 1200);
+            }
+        } catch (err) {
+            setConsole(['Eroare: ' + err.message]);
+            RRAudio.play('error');
+        } finally {
+            running = false;
+        }
+    }
+
+    // Step
+    function stepCode() {
+        executor.stepOnce();
+    }
+
+    // Reset
+    function resetAll() {
+        executor.reset();
+        RRHUD.resetTimer();
+        RRHUD.setSteps(0);
+        RRHUD.setStars(0);
+        setConsole(['Robotul s-a intors la start.']);
+        if (blockEditor) blockEditor.highlightIndex(-1);
+    }
+
+    // Complete overlay
+    function showComplete(data) {
+        var overlay = document.querySelector('[data-rr-complete]');
+        if (!overlay) return;
+        overlay.style.display = 'flex';
+
+        var stars = data.stars_earned || 0;
+        var title = overlay.querySelector('[data-rr-complete-title]');
+        var starsEl = overlay.querySelector('[data-rr-complete-stars]');
+        var msg = overlay.querySelector('[data-rr-complete-msg]');
+
+        if (title) title.textContent = level.success_dialog || 'Nivel complet!';
+        if (starsEl) {
+            starsEl.innerHTML = '';
+            for (var s = 1; s <= 3; s++) {
+                var star = document.createElement('span');
+                star.textContent = s <= stars ? '★' : '☆';
+                star.style.opacity = s <= stars ? '1' : '0.3';
+                starsEl.appendChild(star);
+            }
+        }
+        if (msg) msg.textContent = 'Pasi: ' + (data.steps_used || 0) + ' | XP: +' + (data.xp_granted || 0);
+
+        // Update HUD stars
+        RRHUD.setStars(stars);
+
+        // Check for world unlock cutscene
+        var worldUnlockMap = { 'W1-L06': 'world_2_unlock', 'W2-L06': 'world_3_unlock', 'W3-L06': 'world_4_unlock', 'W4-L06': 'world_5_unlock' };
+        var cutsceneKey = worldUnlockMap[levelId];
+        if (cutsceneKey && window.RRCutscene) {
+            RRCutscene.play(cutsceneKey);
+        }
+
+        overlay.querySelector('[data-rr-complete-replay]')?.addEventListener('click', function() {
+            overlay.style.display = 'none';
+            resetAll();
+        });
+        overlay.querySelector('[data-rr-complete-next]')?.addEventListener('click', function() {
+            if (nextLevelId) window.location.href = '/estudy/robot-lab/game/' + nextLevelId + '/';
+        });
+        overlay.querySelector('[data-rr-complete-map]')?.addEventListener('click', function() {
+            window.location.href = '/estudy/robot-lab/worlds/';
+        });
+    }
+
+    // Speed buttons
+    gameRoot.querySelectorAll('[data-rr-speed]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            gameRoot.querySelectorAll('[data-rr-speed]').forEach(function(b) { b.classList.remove('is-active'); });
+            btn.classList.add('is-active');
+            executor.setSpeed(btn.dataset.rrSpeed);
+        });
+    });
+
+    // Control buttons
+    gameRoot.querySelector('[data-rr-run]')?.addEventListener('click', runCode);
+    gameRoot.querySelector('[data-rr-step]')?.addEventListener('click', stepCode);
+    gameRoot.querySelector('[data-rr-reset]')?.addEventListener('click', resetAll);
+    gameRoot.querySelector('[data-rr-hint]')?.addEventListener('click', function() {
+        var dialog = gameRoot.querySelector('[data-rr-dialog]');
+        if (dialog) dialog.textContent = level.fail_dialog || 'Incearca o alta abordare!';
+        RRAudio.play('click');
+    });
+
+    // Show intro cutscene for world 1, level 1
+    if (level.id === 'W1-L01' && window.RRCutscene) {
+        RRCutscene.play('intro');
+    }
+});
+</script>
+{% endblock %}

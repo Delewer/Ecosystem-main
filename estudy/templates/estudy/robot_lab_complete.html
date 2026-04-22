@@ -1,0 +1,50 @@
+{# robot_lab_complete.html — Level complete overlay (included in game template) #}
+{# This is an includable partial for the level complete screen #}
+{% load static %}
+
+<div class="rr-complete-overlay" data-rr-complete-overlay style="display:none;">
+    <div class="rr-complete-overlay__bg"></div>
+    <div class="rr-complete-overlay__content">
+        <h2 class="rr-complete-overlay__title" data-rr-complete-title>
+            &#127881; Nivel complet!
+        </h2>
+
+        <div class="rr-complete-overlay__stars" data-rr-complete-stars>
+            <svg class="rr-hud__star is-earned" style="width:48px;height:48px;color:#FBBF24"><use href="#icon-star"/></svg>
+            <svg class="rr-hud__star" style="width:48px;height:48px;color:#475569"><use href="#icon-star-empty"/></svg>
+            <svg class="rr-hud__star" style="width:48px;height:48px;color:#475569"><use href="#icon-star-empty"/></svg>
+        </div>
+
+        <p class="rr-complete-overlay__msg" data-rr-complete-msg>
+            &#11088; Bravo! Ai terminat nivelul.
+        </p>
+
+        <div class="rr-complete-overlay__xp" data-rr-complete-xp>
+            +0 XP
+        </div>
+
+        <div class="rr-complete-overlay__skin" data-rr-complete-skin hidden>
+            <p>Ai deblocat un nou robot!</p>
+            <div data-rr-complete-skin-preview></div>
+        </div>
+
+        <div class="rr-complete-overlay__actions">
+            <button class="rr-btn" data-rr-complete-replay>
+                <svg class="rr-btn__icon"><use href="#icon-reset"/></svg>
+                Joaca din nou
+            </button>
+            <button class="rr-btn rr-btn--primary" data-rr-complete-next>
+                Nivelul urmator →
+            </button>
+            <button class="rr-btn" data-rr-complete-map>
+                Harta lumilor
+            </button>
+        </div>
+
+        <div class="rr-complete-overlay__share">
+            <button class="rr-btn" data-rr-complete-share>
+                Distribuie rezultatul
+            </button>
+        </div>
+    </div>
+</div>
