@@ -22,7 +22,7 @@ def merge_duplicate_coding_quest_subjects(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("estudy", "0047_curate_python_lessons"),
+        ("estudy", "0059_curate_python_lessons"),
     ]
 
     operations = [

@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("estudy", "0048_merge_duplicate_coding_quest_subjects"),
+        ("estudy", "0048_seed_web_and_math_lessons"),
     ]
 
     operations = [

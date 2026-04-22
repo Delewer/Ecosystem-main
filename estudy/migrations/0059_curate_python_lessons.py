@@ -1710,7 +1710,7 @@ def curate_python_lessons(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("estudy", "0046_robotlablevelprogress_robotlabrun"),
+        ("estudy", "0058_seed_python_extras"),
     ]
 
     operations = [
