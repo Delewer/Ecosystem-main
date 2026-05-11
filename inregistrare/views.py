@@ -37,9 +37,13 @@ def _get_safe_redirect(request):
     return None
 
 
+def _default_auth_redirect():
+    return "estudy:dashboard"
+
+
 def register(request):
     if request.user.is_authenticated:
-        return redirect("index")
+        return redirect(_default_auth_redirect())
 
     redirect_to = _get_safe_redirect(request)
 
@@ -49,7 +53,7 @@ def register(request):
             user = form.save()
             auth_login(request, user)
             messages.success(request, "Cont creat cu succes. Bine ai venit la UNITEX!")
-            return redirect(redirect_to or "index")
+            return redirect(redirect_to or _default_auth_redirect())
     else:
         form = InregistrareFormular()
 
@@ -60,7 +64,7 @@ def register(request):
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect("index")
+        return redirect(_default_auth_redirect())
 
     redirect_to = _get_safe_redirect(request)
 
@@ -69,7 +73,7 @@ def login_view(request):
         if form.is_valid():
             auth_login(request, form.get_user())
             messages.success(request, "Te-ai autentificat cu succes.")
-            return redirect(redirect_to or "index")
+            return redirect(redirect_to or _default_auth_redirect())
     else:
         form = LoginFormular()
 

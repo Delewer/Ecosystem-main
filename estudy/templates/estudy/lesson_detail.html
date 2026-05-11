@@ -54,6 +54,14 @@
         {% endif %}
     </div>
 
+    {% if onboarding_lesson_started %}
+    <div class="ls-onboarding-start" data-onboarding-started>
+        <span class="ls-onboarding-start__label">Start Python</span>
+        <strong>{{ lesson.title }}</strong>
+        <span>Deschide lectia, parcurge pasii si progresul ramane salvat.</span>
+    </div>
+    {% endif %}
+
     {# Achievement badges container (populated by JS) #}
     <div class="ls-achievements" data-ls-achievements hidden></div>
 
@@ -682,38 +690,6 @@
                         <button class="ls-btn ls-btn--primary ls-btn--small" type="submit">&#10003; Salveaza check-in</button>
                     </form>
 
-                    {# Feature 7: Reflection prompts #}
-                    {% if reflection_prompts %}
-                    <div class="ls-card ls-reflection" style="text-align:left;margin-bottom:24px;">
-                        <h3 class="ls-card__title">&#128173; Ce ai simtit?</h3>
-                        {% for rp in reflection_prompts %}
-                        <div class="ls-reflection-prompt" data-ls-reflection>
-                            <p class="ls-reflection-prompt__text">{{ rp.prompt }}</p>
-                            {% if rp.format == "scale" %}
-                            <div class="ls-reflection-scale" data-ls-reflection-scale>
-                                {% for label in rp.scale_labels %}
-                                <button class="ls-reflection-scale__btn" data-scale-val="{{ forloop.counter }}">{{ label }}</button>
-                                {% empty %}
-                                <button class="ls-reflection-scale__btn" data-scale-val="1">&#128542;</button>
-                                <button class="ls-reflection-scale__btn" data-scale-val="2">&#128528;</button>
-                                <button class="ls-reflection-scale__btn" data-scale-val="3">&#128578;</button>
-                                <button class="ls-reflection-scale__btn" data-scale-val="4">&#128513;</button>
-                                <button class="ls-reflection-scale__btn" data-scale-val="5">&#129321;</button>
-                                {% endfor %}
-                            </div>
-                            {% elif rp.format == "draw" %}
-                            <div class="ls-reflection-draw">
-                                <canvas class="ls-reflection-canvas" data-ls-canvas width="400" height="200"></canvas>
-                                <button class="ls-btn ls-btn--ghost ls-btn--small" data-ls-canvas-clear>&#128465; Sterge</button>
-                            </div>
-                            {% else %}
-                            <textarea class="ls-reflection-input" data-ls-reflection-input rows="3" placeholder="Scrie aici gandurile tale..."></textarea>
-                            {% endif %}
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-
                     {% if lesson_recap_questions %}
                     <div class="ls-card" style="text-align:left;margin-bottom:24px;">
                         <h3 class="ls-card__title">&#128173; Gandeste-te la...</h3>
@@ -737,6 +713,9 @@
                             &#10003; Gata! Marcheaza ca terminata
                         </button>
                     </div>
+                    <p class="ls-complete__saved" data-ls-complete-saved hidden>
+                        Progres salvat. Lectia apare acum in statistici.
+                    </p>
 
                     <div class="ls-nav-btns">
                         {% if next_lesson and not next_locked %}

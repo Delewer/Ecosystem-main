@@ -44,7 +44,9 @@ class RegistrationTests(TestCase):
             },
         )
 
-        self.assertRedirects(response, reverse("index"))
+        self.assertRedirects(
+            response, reverse("estudy:dashboard"), fetch_redirect_response=False
+        )
         user = User.objects.get(username="ana")
         profile = Profile.objects.get(user=user)
 
@@ -53,6 +55,21 @@ class RegistrationTests(TestCase):
         self.assertTrue(profile.accepted_terms)
         self.assertEqual(profile.accepted_terms_version, "v1")
         self.assertIsNotNone(profile.accepted_terms_at)
+
+    def test_login_redirects_to_dashboard_by_default(self):
+        User.objects.create_user(username="ana", password="ParolaSigura123!")
+
+        response = self.client.post(
+            reverse("login"),
+            {
+                "username": "ana",
+                "password": "ParolaSigura123!",
+            },
+        )
+
+        self.assertRedirects(
+            response, reverse("estudy:dashboard"), fetch_redirect_response=False
+        )
 
 
 class ProfileTests(TestCase):
