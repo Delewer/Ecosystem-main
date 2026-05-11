@@ -99,10 +99,10 @@ ROLE_PARENT = UserProfile.ROLE_PARENT
 MODULE_LESSON_ALIASES = {}
 DIGITAL_LITERACY_MODULE_SLUG = "modul-1-alfabetizare-digitala"
 PYTHON_TRACK_SUBJECT_NAMES = (
+    "Python",
     "Coding Quest",
     "Programare in Python",
     "Programare în Python",
-    "Python",
 )
 LEADERBOARD_LIMIT = 20
 
@@ -468,6 +468,43 @@ def _resolve_subject_entry_slug(
     return subject_lessons[0].slug if subject_lessons else None
 
 
+def _resolve_subject_entry_lesson(
+    subject_names: tuple[str, ...], user=None
+) -> Lesson | None:
+    slug = _resolve_subject_entry_slug(subject_names, user)
+    if not slug:
+        return None
+    return Lesson.objects.select_related("subject").filter(slug=slug).first()
+
+
+def _lesson_detail_url(slug: str | None, *, source: str | None = None) -> str:
+    if not slug:
+        return ""
+    url = reverse("estudy:lesson_detail", kwargs={"slug": slug})
+    if source:
+        return f"{url}?from={source}"
+    return url
+
+
+def _build_student_onboarding_journey(user) -> dict:
+    first_lesson = _resolve_subject_entry_lesson(PYTHON_TRACK_SUBJECT_NAMES, user)
+    first_lesson_url = (
+        _lesson_detail_url(first_lesson.slug, source="onboarding")
+        if first_lesson
+        else ""
+    )
+    return {
+        "first_lesson": first_lesson,
+        "first_lesson_url": first_lesson_url,
+        "steps": [
+            {"label": "Cont creat", "state": "done"},
+            {"label": "Dashboard", "state": "active"},
+            {"label": "Prima lectie Python", "state": "next"},
+            {"label": "Progres salvat", "state": "next"},
+        ],
+    }
+
+
 @login_required
 def dashboard_router(request):
     profile = get_profile(request.user)
@@ -488,6 +525,7 @@ def student_dashboard(request):
         get_todays_challenge,
     )
     from .services.dashboard import build_student_dashboard
+    from .services.onboarding import onboarding_progress, start_onboarding
 
     payload = build_student_dashboard(request.user)
     # fetch notifications and leaderboard that are specific to request context
@@ -508,8 +546,19 @@ def student_dashboard(request):
 
     profile = get_profile(request.user)
     replay = request.GET.get("replay") == "1"
-    payload["show_onboarding"] = replay or profile.onboarding_completed_at is None
+    is_first_run = profile.onboarding_completed_at is None
+    if is_first_run and not replay:
+        start_onboarding(request.user)
+    onboarding_journey = _build_student_onboarding_journey(request.user)
+
+    payload["show_onboarding"] = replay or is_first_run
     payload["onboarding_replay"] = replay
+    payload["onboarding_progress"] = onboarding_progress(request.user)
+    payload["onboarding_journey"] = (
+        onboarding_journey if replay or is_first_run else None
+    )
+    payload["onboarding_first_lesson"] = onboarding_journey["first_lesson"]
+    payload["onboarding_first_lesson_url"] = onboarding_journey["first_lesson_url"]
 
     return render(
         request, "estudy/dashboard_student.html", with_progress(payload, request.user)
@@ -1306,6 +1355,12 @@ def lesson_detail(request, slug):
         )
 
         payload = prepare_lesson_detail(request.user, slug)
+        if request.GET.get("from") == "onboarding":
+            progress, _ = LessonProgress.objects.get_or_create(
+                user=request.user, lesson=payload["lesson"]
+            )
+            payload["progress"] = progress
+            payload["onboarding_lesson_started"] = True
         payload["robot_lab_preview"] = (
             _build_robot_lab_lesson_preview(
                 request.user, prefer_code_mode=bool(payload.get("show_full_code_lab"))

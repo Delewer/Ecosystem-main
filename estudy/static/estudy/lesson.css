@@ -91,6 +91,33 @@ body.lesson-page .workspace-main.container {
     background: var(--lk-orange-light); color: #B45309;
     font-weight: 800; font-size: 14px;
 }
+.ls-onboarding-start {
+    margin: 18px auto 0;
+    width: min(820px, calc(100% - 40px));
+    display: grid;
+    gap: 4px;
+    padding: 14px 18px;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    border-radius: 8px;
+    background: rgba(59, 130, 246, 0.08);
+    color: var(--lk-text);
+}
+.ls-onboarding-start__label {
+    color: var(--lk-blue);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.ls-onboarding-start strong {
+    color: var(--lk-text);
+    font-size: 18px;
+}
+.ls-onboarding-start span:last-child {
+    color: var(--lk-text-dim);
+    font-size: 14px;
+    font-weight: 700;
+}
 
 /* === Steps === */
 .lesson-steps { flex: 1; position: relative; overflow: hidden; }
@@ -464,6 +491,12 @@ body.lesson-page .workspace-main.container {
 }
 .ls-complete__title { font-size: 32px; font-weight: 900; margin: 0 0 6px; color: var(--lk-purple); }
 .ls-complete__sub { font-size: 16px; color: var(--lk-text-dim); margin-bottom: 24px; line-height: 1.6; }
+.ls-complete__saved {
+    margin: -8px 0 22px;
+    color: #047857;
+    font-size: 14px;
+    font-weight: 800;
+}
 .ls-rewards { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
 .ls-reward {
     display: flex; flex-direction: column; align-items: center; gap: 4px;

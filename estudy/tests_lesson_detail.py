@@ -121,7 +121,7 @@ class LessonDetailServiceTests(TestCase):
         self.assertIn("Am nevoie de ajutor", visible_text)
         self.assertNotRegex(visible_text, r"[\u0400-\u04FF]")
 
-    def test_lesson_detail_template_does_not_render_cyrillic_reflection_text(self):
+    def test_lesson_detail_template_uses_single_checkin_block(self):
         self.l1.reflection_prompts.all().delete()
         LessonReflectionPrompt.objects.create(
             lesson=self.l1,
@@ -138,7 +138,8 @@ class LessonDetailServiceTests(TestCase):
         body = response.content.decode()
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Cum te-ai simtit dupa lectie?", body)
+        self.assertIn("Check-in rapid", body)
+        self.assertNotIn("Cum te-ai simtit dupa lectie?", body)
         self.assertNotRegex(body, r"[\u0400-\u04FF]")
 
     def test_junior_python_track_uses_visual_mode_without_robot_lab(self):

@@ -107,6 +107,8 @@ class DashboardHardeningSmokeTests(TestCase):
         self.assertContains(response, "Am nevoie de ajutor")
         self.assertContains(response, "Prea usor")
         self.assertContains(response, "Prea greu")
+        self.assertNotContains(response, "Ce ai simtit?")
+        self.assertNotContains(response, "Scrie aici gandurile tale")
 
     def test_teacher_dashboard_contains_support_payload_and_block(self):
         self.client.login(username="hardening_teacher", password=USER_PASSWORD)
@@ -130,6 +132,77 @@ class DashboardHardeningSmokeTests(TestCase):
         self.assertIn("weekly_summaries", response.context)
         self.assertContains(response, "Saptamana aceasta")
         self.assertContains(response, "discutie scurta")
+
+
+class StudentOnboardingJourneyTests(TestCase):
+    def setUp(self):
+        self.student = User.objects.create_user(
+            username="onboarding_student", password=USER_PASSWORD
+        )
+        self.python_subject = Subject.objects.create(name="Python")
+        self.python_lesson = Lesson.objects.create(
+            subject=self.python_subject,
+            title="Python Start",
+            content="content",
+            date=timezone.localdate(),
+            age_bracket=Lesson.AGE_11_13,
+        )
+        self.other_subject = Subject.objects.create(name="Biologie")
+        self.other_lesson = Lesson.objects.create(
+            subject=self.other_subject,
+            title="Biologie Start",
+            content="content",
+            date=timezone.localdate(),
+            age_bracket=Lesson.AGE_11_13,
+        )
+
+    def test_student_dashboard_bootstraps_first_python_path(self):
+        self.client.login(username="onboarding_student", password=USER_PASSWORD)
+
+        response = self.client.get(reverse("estudy:student_dashboard"))
+
+        self.assertEqual(response.status_code, 200)
+        self.student.userprofile.refresh_from_db()
+        self.assertTrue(self.student.userprofile.first_mission_assigned)
+        self.assertTrue(response.context["show_onboarding"])
+        self.assertEqual(
+            response.context["onboarding_first_lesson"], self.python_lesson
+        )
+        self.assertEqual(
+            response.context["onboarding_first_lesson_url"],
+            reverse("estudy:lesson_detail", kwargs={"slug": self.python_lesson.slug})
+            + "?from=onboarding",
+        )
+        self.assertContains(response, "data-onboarding-journey")
+        self.assertContains(response, "Prima lectie Python")
+        self.assertContains(response, "data-first-lesson-url=")
+        self.assertContains(response, "Incepe Python")
+
+    def test_onboarding_lesson_start_creates_unfinished_progress(self):
+        self.client.login(username="onboarding_student", password=USER_PASSWORD)
+
+        response = self.client.get(
+            reverse("estudy:lesson_detail", kwargs={"slug": self.python_lesson.slug})
+            + "?from=onboarding"
+        )
+
+        self.assertEqual(response.status_code, 200)
+        progress = LessonProgress.objects.get(
+            user=self.student, lesson=self.python_lesson
+        )
+        self.assertFalse(progress.completed)
+        self.assertContains(response, "data-onboarding-started")
+        self.assertContains(
+            response, "Progres salvat. Lectia apare acum in statistici."
+        )
+
+    def test_lesson_completion_script_does_not_toggle_completed_lesson_off(self):
+        js_path = Path(__file__).resolve().parent / "static" / "estudy" / "lesson.js"
+        js = js_path.read_text(encoding="utf-8")
+
+        self.assertIn("let lessonCompleted = initialLessonCompleted;", js)
+        self.assertIn("if (lessonCompleted) {", js)
+        self.assertIn("data-ls-complete-saved", js)
 
 
 class NotificationTextHardeningTests(TestCase):

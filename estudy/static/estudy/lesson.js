@@ -14,6 +14,7 @@
     let currentStep = 0;
     let earnedXp = 0;
     let completedSteps = new Set();
+    let lessonCompleted = initialLessonCompleted;
 
     const cheerMessages = [
         'Super! 🎉', 'Excelent! 🌟', 'Bravo! 💪', 'Minunat! ✨',
@@ -178,6 +179,21 @@
             { transform: 'translateY(0) scale(1)', opacity: 1 },
             { transform: 'translateY(-20px) scale(0.8)', opacity: 0 },
         ], { duration: 1800, easing: 'ease-out' }).onfinish = () => toast.remove();
+    }
+
+    function updateCompletionSaved(completed, button) {
+        const status = root.querySelector('[data-ls-complete-saved]');
+        if (status) {
+            status.hidden = !completed;
+        }
+        if (button && completed) {
+            button.disabled = true;
+            button.innerHTML = '&#10003; Progres salvat';
+        }
+        root.dataset.lessonCompleted = completed ? 'true' : 'false';
+    }
+    if (lessonCompleted) {
+        updateCompletionSaved(true, root.querySelector('[data-ls-complete]'));
     }
 
     function nextStep() {
@@ -396,13 +412,23 @@
         emitEmojiRain();
         LessonAudio.complete();
 
+        if (lessonCompleted) {
+            updateCompletionSaved(true, completeBtn);
+            return;
+        }
+
         const csrfToken = getCsrf();
         if (csrfToken) {
             fetch('/estudy/lessons/' + slug + '/toggle/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrfToken },
                 body: 'seconds=0',
-            }).catch(() => {});
+            }).then(resp => resp.json())
+                .then(data => {
+                    lessonCompleted = Boolean(data.completed);
+                    updateCompletionSaved(lessonCompleted, completeBtn);
+                })
+                .catch(() => {});
         }
     });
 

@@ -69,7 +69,7 @@ class WorkspaceAuthNavigationSmokeTests(TestCase):
             with self.subTest(url=form_url):
                 response = self.client.get(form_url)
                 self.assertEqual(response.status_code, 302)
-                self.assertEqual(response["Location"], reverse("index"))
+                self.assertEqual(response["Location"], reverse("estudy:dashboard"))
 
 
 class FrontendTextSmokeTests(SimpleTestCase):

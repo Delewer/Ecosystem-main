@@ -48,6 +48,45 @@
     </div>
 </section>
 
+{% if onboarding_journey %}
+<section class="hub-card hub-onboarding-path" data-onboarding-journey>
+    <div class="hub-onboarding-path__head">
+        <div>
+            <span class="hub-onboarding-path__eyebrow">Start rapid</span>
+            <h2>Prima ta ruta in UNITEX</h2>
+        </div>
+        {% if onboarding_progress %}
+        <span class="hub-onboarding-path__progress">{{ onboarding_progress.percent }}%</span>
+        {% endif %}
+    </div>
+    <div class="hub-onboarding-path__steps">
+        {% for step in onboarding_journey.steps %}
+        <span class="hub-onboarding-path__step hub-onboarding-path__step--{{ step.state }}">
+            <span class="hub-onboarding-path__dot"></span>
+            {{ step.label }}
+        </span>
+        {% endfor %}
+    </div>
+    <div class="hub-onboarding-path__lesson">
+        <div>
+            <span class="hub-onboarding-path__label">Urmatorul pas</span>
+            <strong>
+                {% if onboarding_first_lesson %}
+                {{ onboarding_first_lesson.title }}
+                {% else %}
+                Alege prima lectie din planul de azi
+                {% endif %}
+            </strong>
+        </div>
+        {% if onboarding_first_lesson_url %}
+        <a class="hub-btn hub-btn--primary" href="{{ onboarding_first_lesson_url }}">Incepe Python</a>
+        {% else %}
+        <a class="hub-btn hub-btn--primary" href="{% url 'estudy:lessons_list' %}">Deschide lectiile</a>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
 {# ============================================================= #}
 {# PRIMARY CTA — Continue where you left off                     #}
 {# ============================================================= #}
@@ -343,7 +382,7 @@
      data-complete-url="{% url 'estudy:mark_onboarding_complete' %}"
      data-csrf="{{ csrf_token }}"
      data-replay="{% if onboarding_replay %}1{% else %}0{% endif %}"
-     {% if primary_recommendation and primary_recommendation.lesson.slug %}data-first-lesson-url="{% url 'estudy:lesson_detail' slug=primary_recommendation.lesson.slug %}"{% endif %}>
+     {% if onboarding_first_lesson_url %}data-first-lesson-url="{{ onboarding_first_lesson_url }}"{% endif %}>
     <div class="onb-modal">
         <div class="onb-step is-active" data-onb-step="0">
             <div class="onb-step__emoji">&#129302;</div>
@@ -389,7 +428,11 @@
             <div class="onb-step__emoji">&#127942;</div>
             <h2 class="onb-step__title">Esti pregatit!</h2>
             <p class="onb-step__desc">
+                {% if onboarding_first_lesson %}
+                Te trimit direct la prima ta lectie Python: {{ onboarding_first_lesson.title }}.
+                {% else %}
                 Te trimit direct la prima ta lectie.
+                {% endif %}
                 Daca ai nevoie de ajutor, cauta butonul de indicii in lectii.
             </p>
         </div>
@@ -409,6 +452,86 @@
 </div>
 
 <style>
+.hub-onboarding-path {
+    margin: 18px 0;
+    display: grid;
+    gap: 16px;
+}
+.hub-onboarding-path__head,
+.hub-onboarding-path__lesson {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+.hub-onboarding-path__head h2 {
+    margin: 2px 0 0;
+    font-size: 22px;
+}
+.hub-onboarding-path__eyebrow,
+.hub-onboarding-path__label {
+    display: block;
+    color: var(--color-muted, #64748B);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.hub-onboarding-path__progress {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(16, 185, 129, 0.14);
+    color: var(--color-success, #059669);
+    font-size: 16px;
+    font-weight: 900;
+}
+.hub-onboarding-path__steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+.hub-onboarding-path__step {
+    min-height: 44px;
+    border: 1px solid var(--color-border-soft, #E2E8F0);
+    border-radius: 8px;
+    padding: 9px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-text-muted, #64748B);
+    font-size: 13px;
+    font-weight: 800;
+}
+.hub-onboarding-path__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-border-soft, #CBD5E1);
+    flex: 0 0 auto;
+}
+.hub-onboarding-path__step--done .hub-onboarding-path__dot {
+    background: var(--color-success, #10B981);
+}
+.hub-onboarding-path__step--active {
+    border-color: rgba(59, 130, 246, 0.35);
+    color: var(--color-heading, #1E293B);
+    background: rgba(59, 130, 246, 0.08);
+}
+.hub-onboarding-path__step--active .hub-onboarding-path__dot {
+    background: #3B82F6;
+}
+.hub-onboarding-path__lesson {
+    padding-top: 2px;
+}
+.hub-onboarding-path__lesson strong {
+    display: block;
+    margin-top: 2px;
+    font-size: 18px;
+    color: var(--color-heading, #1E293B);
+}
 .onb-overlay {
     position: fixed;
     right: 24px;
@@ -467,6 +590,21 @@ html[data-theme="dark"] .onb-modal { background: #1E293B; }
 .onb-btn--next:hover { box-shadow: 0 4px 16px rgba(124,58,237,0.35); transform: translateY(-1px); }
 
 @media (max-width: 768px) {
+    .hub-onboarding-path__head,
+    .hub-onboarding-path__lesson {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .hub-onboarding-path__steps {
+        grid-template-columns: 1fr 1fr;
+    }
+    .hub-onboarding-path__progress {
+        width: auto;
+        height: auto;
+        border-radius: 8px;
+        padding: 8px 12px;
+        place-items: start;
+    }
     .onb-overlay {
         left: 12px;
         right: 12px;
