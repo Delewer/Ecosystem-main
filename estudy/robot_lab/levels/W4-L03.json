@@ -15,7 +15,7 @@
   "recommended_age": "14-16+",
   "world": 4,
   "world_theme": "space",
-  "optimal_steps": 12,
+  "optimal_steps": 17,
   "star_conditions": {"one": "reach_goal", "two": "steps_lte_18", "three": "steps_lte_optimal"},
   "collectibles": [{"tile": "B", "label": "Baterie", "icon": "⚡", "points": 10}],
   "intro_dialog": "ZIPP: Gravitatia zero! Flotez liber in spatiu!",

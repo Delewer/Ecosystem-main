@@ -15,7 +15,7 @@
   "recommended_age": "14-16+",
   "world": 5,
   "world_theme": "core",
-  "optimal_steps": 26,
+  "optimal_steps": 23,
   "star_conditions": {"one": "reach_goal", "two": "steps_lte_35", "three": "steps_lte_optimal"},
   "collectibles": [{"tile": "B", "label": "Baterie", "icon": "⚡", "points": 10}, {"tile": "K", "label": "Cheie", "icon": "🔑", "points": 15}],
   "intro_dialog": "ZIPP: Ultimul test inainte de nucleu!",

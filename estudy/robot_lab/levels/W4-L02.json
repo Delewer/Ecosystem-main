@@ -26,13 +26,10 @@
   "allowed_api": ["up", "down", "left", "right", "at_goal", "front_is_clear"],
   "legend": {"#": "perete", ".": "spatiu", "S": "start", "G": "tinta"},
   "grid": [
-    "################",
-    "#S.....#.......#",
-    "#.####.#.####..#",
-    "#......#.......#",
-    "#.####.#.####..#",
-    "#......#......G#",
-    "################"
+    "##########",
+    "#S...#####",
+    "####....G#",
+    "##########"
   ],
-  "starter_code": "# Defineste o functie\ndef mergi_dreapta_3():\n    for i in range(3):\n        right()\n\nmergi_dreapta_3()\ndown()\n"
+  "starter_code": "# Defineste o functie\ndef mergi_dreapta_3():\n    for i in range(3):\n        right()\n\nmergi_dreapta_3()\ndown()\n# Cheama functia inca o data, apoi mai fa un pas.\n"
 }

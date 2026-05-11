@@ -18,10 +18,11 @@
   "recommended_age": "8-10",
   "world": 1,
   "world_theme": "garden",
-  "optimal_steps": 6,
+  "optimal_steps": 11,
+  "max_sequence_length": 12,
   "star_conditions": {
     "one": "reach_goal",
-    "two": "steps_lte_10",
+    "two": "steps_lte_14",
     "three": "steps_lte_optimal"
   },
   "collectibles": [],

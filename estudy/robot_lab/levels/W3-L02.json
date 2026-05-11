@@ -15,7 +15,7 @@
   "recommended_age": "11-13",
   "world": 3,
   "world_theme": "volcano",
-  "optimal_steps": 10,
+  "optimal_steps": 13,
   "star_conditions": {"one": "reach_goal", "two": "steps_lte_15", "three": "steps_lte_optimal"},
   "collectibles": [],
   "intro_dialog": "ZIPP: Lava pulseaza! 3 pasi sigur, 3 pasi pericol.",
