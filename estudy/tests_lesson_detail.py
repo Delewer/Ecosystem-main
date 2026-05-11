@@ -1,10 +1,13 @@
+from pathlib import Path
+
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.urls import reverse
 from django.utils import timezone
 
 from inregistrare.models import Profile
 
-from .models import Lesson, LessonProgress, Subject
+from .models import Lesson, LessonProgress, LessonReflectionPrompt, Subject, Test
 from .services.lesson_detail import BlockingLessonRequired, prepare_lesson_detail
 from .services.lesson_guides import LESSON_GUIDES
 
@@ -87,6 +90,56 @@ class LessonDetailServiceTests(TestCase):
         self.assertTrue(payload["lesson_track_items"])
         self.assertNotIn("Основной", " ".join(payload["lesson_track_items"]))
         self.assertNotIn("Текст", payload["lesson_content_text"])
+
+    def test_reflection_prompts_replace_cyrillic_rows_with_romanian_fallback(self):
+        self.l1.reflection_prompts.all().delete()
+        LessonReflectionPrompt.objects.create(
+            lesson=self.l1,
+            prompt="Как ты себя чувствуешь после урока?",
+            format=LessonReflectionPrompt.FORMAT_SCALE,
+            scale_labels=["Нужна помощь", "Я понимаю", "Готов объяснять"],
+            order=0,
+        )
+        LessonReflectionPrompt.objects.create(
+            lesson=self.l1,
+            prompt='Что нового ты открыл о теме "1"?',
+            format=LessonReflectionPrompt.FORMAT_TEXT,
+            order=1,
+        )
+
+        payload = prepare_lesson_detail(self.user, self.l1.slug)
+        visible_text = " ".join(
+            [item["prompt"] for item in payload["reflection_prompts"]]
+            + [
+                label
+                for item in payload["reflection_prompts"]
+                for label in item.get("scale_labels", [])
+            ]
+        )
+
+        self.assertIn("Cum te-ai simtit dupa lectie?", visible_text)
+        self.assertIn("Am nevoie de ajutor", visible_text)
+        self.assertNotRegex(visible_text, r"[\u0400-\u04FF]")
+
+    def test_lesson_detail_template_does_not_render_cyrillic_reflection_text(self):
+        self.l1.reflection_prompts.all().delete()
+        LessonReflectionPrompt.objects.create(
+            lesson=self.l1,
+            prompt="Как ты себя чувствуешь после урока?",
+            format=LessonReflectionPrompt.FORMAT_SCALE,
+            scale_labels=["Нужна помощь", "Я понимаю", "Готов объяснять"],
+            order=0,
+        )
+        self.client.login(username="ld", password="pw")
+
+        response = self.client.get(
+            reverse("estudy:lesson_detail", kwargs={"slug": self.l1.slug})
+        )
+        body = response.content.decode()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Cum te-ai simtit dupa lectie?", body)
+        self.assertNotRegex(body, r"[\u0400-\u04FF]")
 
     def test_junior_python_track_uses_visual_mode_without_robot_lab(self):
         self.subject.name = "Coding Quest"
@@ -258,3 +311,125 @@ class LessonDetailServiceTests(TestCase):
         )
         self.assertIn("semafor", " ".join(payload["lesson_recap_questions"]).lower())
         self.assertIn("scena reala", payload["practice_context"])
+
+    def test_lesson_ambience_uses_track_specific_prompt(self):
+        self.l1.slug = "test-guide-ambience-code"
+        self.l1.age_bracket = Lesson.AGE_11_13
+        self.l1.save(update_fields=["slug", "age_bracket"])
+        LESSON_GUIDES[self.l1.slug] = {
+            "ambience": {
+                "image": "estudy/img/lessons/algorithm-robot-lab.png",
+                "alt": "Robot urmand un traseu.",
+                "eyebrow": "Misiune vizuala",
+                "title": "Traseu in ordine",
+                "caption": "Pasii se executa pe rand.",
+                "junior_prompt": "Alege primul pas.",
+                "code_prompt": "Citeste fiecare placa drept o linie de cod.",
+            }
+        }
+        self.addCleanup(lambda: LESSON_GUIDES.pop(self.l1.slug, None))
+
+        payload = prepare_lesson_detail(self.user, self.l1.slug)
+
+        self.assertEqual(
+            payload["lesson_ambience"]["image"],
+            "estudy/img/lessons/algorithm-robot-lab.png",
+        )
+        self.assertEqual(
+            payload["lesson_ambience"]["prompt"],
+            "Citeste fiecare placa drept o linie de cod.",
+        )
+
+    def test_lesson_ambience_uses_junior_prompt_for_8_10(self):
+        self.l1.slug = "test-guide-ambience-junior"
+        self.l1.age_bracket = Lesson.AGE_8_10
+        self.l1.save(update_fields=["slug", "age_bracket"])
+        LESSON_GUIDES[self.l1.slug] = {
+            "ambience": {
+                "image": "estudy/img/lessons/algorithm-robot-lab.png",
+                "caption": "Pasii se executa pe rand.",
+                "junior_prompt": "Alege primul pas.",
+                "code_prompt": "Citeste fiecare placa drept o linie de cod.",
+            }
+        }
+        self.addCleanup(lambda: LESSON_GUIDES.pop(self.l1.slug, None))
+
+        payload = prepare_lesson_detail(self.user, self.l1.slug)
+
+        self.assertEqual(payload["lesson_ambience"]["prompt"], "Alege primul pas.")
+
+    def test_lesson_mastery_payload_is_sanitized(self):
+        self.l1.slug = "test-guide-mastery-payload"
+        self.l1.save(update_fields=["slug"])
+        LESSON_GUIDES[self.l1.slug] = {
+            "mastery": {
+                "goal": "Pot explica scopul lectiei.",
+                "worked_example_focus": "Urmareste pasul important.",
+                "mistake_repair": [
+                    "Ce ai observat?",
+                    "Ce poti verifica?",
+                    "Care este pasul urmator?",
+                    "Intrebare extra care nu trebuie afisata.",
+                ],
+                "mastery_check": "Explica ideea in doua propozitii.",
+                "next_practice": "Rezolva inca un exemplu scurt.",
+            }
+        }
+        self.addCleanup(lambda: LESSON_GUIDES.pop(self.l1.slug, None))
+
+        payload = prepare_lesson_detail(self.user, self.l1.slug)
+
+        self.assertEqual(
+            payload["lesson_mastery"]["goal"], "Pot explica scopul lectiei."
+        )
+        self.assertEqual(len(payload["lesson_mastery"]["mistake_repair"]), 3)
+        self.assertNotIn(
+            "extra",
+            " ".join(payload["lesson_mastery"]["mistake_repair"]).lower(),
+        )
+
+    def test_lesson_detail_template_renders_mastery_blocks(self):
+        self.l1.slug = "test-guide-mastery-template"
+        self.l1.save(update_fields=["slug"])
+        Test.objects.create(
+            lesson=self.l1,
+            question="Ce verificam?",
+            correct_answer="Pasul corect",
+            wrong_answers=["Alt pas", "Nimic", "Totul"],
+            explanation="Verificam pasul important.",
+        )
+        LESSON_GUIDES[self.l1.slug] = {
+            "mastery": {
+                "goal": "Pot explica scopul lectiei.",
+                "worked_example_focus": "Urmareste pasul important.",
+                "mistake_repair": ["Ce ai observat?", "Ce poti verifica?"],
+                "mastery_check": "Explica ideea in doua propozitii.",
+                "next_practice": "Rezolva inca un exemplu scurt.",
+            }
+        }
+        self.addCleanup(lambda: LESSON_GUIDES.pop(self.l1.slug, None))
+        self.client.login(username="ld", password="pw")
+
+        response = self.client.get(
+            reverse("estudy:lesson_detail", kwargs={"slug": self.l1.slug})
+        )
+        body = response.content.decode()
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Dupa lectie vei putea", body)
+        self.assertIn("Uita-te dupa", body)
+        self.assertIn("Intrebari de reparare", body)
+        self.assertIn("Urmatorul pas", body)
+        self.assertIn("Verificare scurta", body)
+
+    def test_algorithm_ambience_asset_exists(self):
+        asset = (
+            Path(__file__).resolve().parent
+            / "static"
+            / "estudy"
+            / "img"
+            / "lessons"
+            / "algorithm-robot-lab.png"
+        )
+
+        self.assertTrue(asset.exists())

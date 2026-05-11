@@ -15,7 +15,7 @@
   "recommended_age": "14-16+",
   "world": 2,
   "world_theme": "ice",
-  "optimal_steps": 18,
+  "optimal_steps": 19,
   "star_conditions": {"one": "reach_goal", "two": "steps_lte_25", "three": "steps_lte_optimal"},
   "collectibles": [{"tile": "B", "label": "Baterie", "icon": "⚡", "points": 10}],
   "intro_dialog": "ZIPP: Peretii de gheata sunt aproape invizibili!",

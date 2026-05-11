@@ -526,9 +526,36 @@ def mark_onboarding_complete(request):
     return JsonResponse({"ok": True})
 
 
+@require_POST
+@login_required
+def submit_learner_checkin(request, slug):
+    lesson = get_object_or_404(Lesson, slug=slug)
+    from .services.today_learning import record_learner_checkin
+
+    checkin = record_learner_checkin(
+        request.user,
+        lesson,
+        mood=request.POST.get("mood", ""),
+        difficulty=request.POST.get("difficulty", ""),
+        note=request.POST.get("note", ""),
+    )
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return JsonResponse(
+            {
+                "ok": True,
+                "help_requested": checkin.help_requested,
+                "mood": checkin.mood,
+                "difficulty": checkin.difficulty,
+            }
+        )
+    messages.success(request, "Check-in salvat. Planul tau se va adapta.")
+    return redirect("estudy:lesson_detail", slug=lesson.slug)
+
+
 @action_required(ACTION_DASHBOARD_TEACHER)
 def teacher_dashboard(request):
     profile = get_profile(request.user)
+    from .services.today_learning import build_teacher_support_snapshot
 
     # Get lesson analytics overview
     analytics_overview = LessonAnalyticsService.get_lesson_overview_stats(request.user)
@@ -546,6 +573,7 @@ def teacher_dashboard(request):
     recent_ratings = LessonRating.objects.select_related("lesson", "user").order_by(
         "-created_at"
     )[:10]
+    support_snapshot = build_teacher_support_snapshot(request.user)
 
     context = {
         "profile": profile,
@@ -553,6 +581,9 @@ def teacher_dashboard(request):
         "top_lessons": top_lessons,
         "recent_comments": recent_comments,
         "recent_ratings": recent_ratings,
+        "students_needing_help": support_snapshot["students_needing_help"],
+        "weak_topics": support_snapshot["weak_topics"],
+        "checkins": support_snapshot["checkins"],
     }
     return render(
         request, "estudy/dashboard_teacher.html", with_progress(context, request.user)
@@ -639,8 +670,12 @@ def admin_dashboard(request):
 def parent_dashboard(request):
     if ParentChildLink is None:
         raise Http404("Parent-child linking is not available.")
+    from .services.today_learning import build_parent_weekly_summary
+
     links = ParentChildLink.objects.filter(parent=request.user).select_related("child")
     children = [link.child for link in links]
+    weekly_summaries = build_parent_weekly_summary(children)
+    weekly_by_child = {item["child"].id: item for item in weekly_summaries}
     child_progress = []
     for child in children:
         progress = build_overall_progress(child)
@@ -649,12 +684,17 @@ def parent_dashboard(request):
                 "child": child,
                 "progress": progress,
                 "badges": get_badge_summary(child),
+                "weekly": weekly_by_child.get(child.id),
             }
         )
     notifications = Notification.objects.filter(recipient=request.user).order_by(
         "-created_at"
     )[:10]
-    context = {"children": child_progress, "notifications": notifications}
+    context = {
+        "children": child_progress,
+        "notifications": notifications,
+        "weekly_summaries": weekly_summaries,
+    }
     return render(
         request, "estudy/dashboard_parent.html", with_progress(context, request.user)
     )
@@ -687,9 +727,11 @@ def lessons_list(request):
     context["python_mode_label"] = (
         "Junior 8-10 ani"
         if context["learner_age"] is not None and context["learner_age"] <= 10
-        else "Code 11+ ani"
-        if context["learner_age"] is not None
-        else "Junior implicit pana alegi varsta"
+        else (
+            "Code 11+ ani"
+            if context["learner_age"] is not None
+            else "Junior implicit pana alegi varsta"
+        )
     )
 
     # world map data (learning paths)
@@ -781,9 +823,9 @@ def missions_view(request):
         "total": total_missions,
         "completed": completed_missions,
         "open": max(total_missions - completed_missions, 0),
-        "completion_percent": round((completed_missions / total_missions) * 100)
-        if total_missions
-        else 0,
+        "completion_percent": (
+            round((completed_missions / total_missions) * 100) if total_missions else 0
+        ),
         "available_xp": sum(item["reward_points"] for item in flat_missions),
         "earned_xp": sum(
             item["reward_points"] for item in flat_missions if item["completed"]
@@ -1582,6 +1624,7 @@ def robot_lab_game(request, level_id: str):
                 "legend": level.get("legend") or {},
                 "starter_code": level.get("starter_code") or "",
                 "max_steps": int(level.get("max_steps") or 200),
+                "max_sequence_length": int(level.get("max_sequence_length") or 12),
                 "xp_reward": int(level.get("xp_reward") or 0),
                 "allowed_api": level.get("allowed_api") or [],
                 "concepts": level.get("concepts") or [],

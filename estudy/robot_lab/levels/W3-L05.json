@@ -15,7 +15,7 @@
   "recommended_age": "14-16+",
   "world": 3,
   "world_theme": "volcano",
-  "optimal_steps": 20,
+  "optimal_steps": 19,
   "star_conditions": {"one": "reach_goal", "two": "steps_lte_28", "three": "steps_lte_optimal"},
   "collectibles": [{"tile": "C", "label": "Racitor", "icon": "❄", "points": 15}],
   "intro_dialog": "ZIPP: Doua ritmuri diferite de lava!",

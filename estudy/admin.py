@@ -12,6 +12,7 @@ from .models import (
     DiagnosticTest,
     EventLog,
     FeatureFlag,
+    LearnerCheckIn,
     LearningPlan,
     LearningPlanItem,
     Lesson,
@@ -120,6 +121,20 @@ class LearningPlanItemAdmin(admin.ModelAdmin):
     list_display = ("plan", "lesson", "status", "order", "due_date")
     list_filter = ("status",)
     search_fields = ("plan__user__username", "lesson__title")
+
+
+@admin.register(LearnerCheckIn)
+class LearnerCheckInAdmin(admin.ModelAdmin):
+    list_display = (
+        "user",
+        "lesson",
+        "mood",
+        "difficulty",
+        "help_requested",
+        "updated_at",
+    )
+    list_filter = ("mood", "difficulty", "help_requested", "updated_at")
+    search_fields = ("user__username", "lesson__title", "note")
 
 
 @admin.register(LessonHealthScore)

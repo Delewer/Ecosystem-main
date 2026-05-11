@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
@@ -25,7 +26,7 @@ class RegistrationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            "Trebuie să accepți Termenii și condițiile pentru a crea contul.",
+            "Trebuie sa accepti Termenii si conditiile pentru a crea contul.",
         )
         self.assertFalse(User.objects.filter(username="elevnou").exists())
 
@@ -107,3 +108,16 @@ class ProfileTests(TestCase):
 
         cookie_response = self.client.get(reverse("politica_cookie"))
         self.assertContains(cookie_response, "Politica cookie")
+
+    def test_auth_cookie_banner_is_docked_away_from_form(self):
+        css_path = (
+            settings.BASE_DIR / "unitexapp" / "static" / "unitexapp" / "style.css"
+        )
+        css = css_path.read_text(encoding="utf-8")
+
+        self.assertIn(".auth-body .cookie-banner", css)
+        self.assertIn("left: 1rem;", css)
+        self.assertIn("right: auto;", css)
+        self.assertIn("width: min(360px, calc(100% - 2rem));", css)
+        self.assertIn("top: 5.25rem;", css)
+        self.assertIn("bottom: auto;", css)

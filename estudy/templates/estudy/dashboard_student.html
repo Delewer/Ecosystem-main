@@ -74,6 +74,75 @@
 {# ============================================================= #}
 {# ACTIVITY ZONES — Ranked 2x2 grid                              #}
 {# ============================================================= #}
+<section class="hub-card hub-today-plan">
+    <div class="hub-card__header">
+        <div>
+            <h2>&#127919; Planul de azi</h2>
+            <p class="hub-plan-subtitle">
+                {{ age_track.label }} · {{ today_plan.estimated_minutes|default:15 }} min · {{ age_track.summary }}
+            </p>
+        </div>
+    </div>
+    <div class="hub-plan-grid">
+        {% if today_plan.next_lesson.lesson %}
+        <a class="hub-plan-step hub-plan-step--main" href="{{ today_plan.next_lesson.action_url }}">
+            <span class="hub-plan-step__badge">1</span>
+            <span class="hub-plan-step__body">
+                <span class="hub-plan-step__label">Invata</span>
+                <strong>{{ today_plan.next_lesson.lesson.title }}</strong>
+                <small>{{ today_plan.next_lesson.reason }}</small>
+            </span>
+            <span class="hub-plan-step__time">{{ today_plan.next_lesson.estimated_time }} min</span>
+        </a>
+        {% endif %}
+
+        {% if today_plan.review_task %}
+        <a class="hub-plan-step" href="{{ today_plan.review_task.action_url }}">
+            <span class="hub-plan-step__badge">2</span>
+            <span class="hub-plan-step__body">
+                <span class="hub-plan-step__label">Repeta</span>
+                <strong>{{ today_plan.review_task.lesson.title }}</strong>
+                <small>{{ today_plan.review_task.reason }}</small>
+            </span>
+            <span class="hub-plan-step__time">{{ today_plan.review_task.estimated_time }} min</span>
+        </a>
+        {% endif %}
+
+        {% for task in practice_plan|slice:":1" %}
+        <a class="hub-plan-step" href="{{ task.action_url }}">
+            <span class="hub-plan-step__badge">3</span>
+            <span class="hub-plan-step__body">
+                <span class="hub-plan-step__label">{{ task.label }}</span>
+                <strong>{% firstof task.lesson.title task.lesson_title %}</strong>
+                <small>{{ task.reason }}</small>
+            </span>
+            <span class="hub-plan-step__time">{{ task.estimated_time }} min</span>
+        </a>
+        {% empty %}
+        <div class="hub-plan-step">
+            <span class="hub-plan-step__badge">3</span>
+            <span class="hub-plan-step__body">
+                <span class="hub-plan-step__label">Practica</span>
+                <strong>Apare dupa primul test</strong>
+                <small>Rezolva o intrebare ca sa primesti practica personalizata.</small>
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if recent_mistakes %}
+    <div class="hub-mistakes">
+        <div class="hub-mistakes__title">&#128161; De revazut dupa greseli</div>
+        {% for mistake in recent_mistakes %}
+        <a class="hub-mistake" href="{{ mistake.action_url }}">
+            <span>{{ mistake.lesson.title }}</span>
+            <small>Ai ales "{{ mistake.selected_answer }}"; verifica regula si incearca din nou.</small>
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+</section>
+
 <section class="hub-zones hub-zones--ranked">
     <h2 class="hub-section-title">&#127959; Alege aventura ta</h2>
     <div class="hub-zones__grid hub-zones__grid--ranked">
@@ -341,19 +410,26 @@
 
 <style>
 .onb-overlay {
-    position: fixed; inset: 0; z-index: 9999;
-    background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
-    display: flex; align-items: center; justify-content: center;
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 80;
+    width: min(420px, calc(100vw - 32px));
+    background: transparent;
+    display: block;
+    pointer-events: none;
     animation: onb-fade 0.4s ease-out;
 }
 .onb-overlay[hidden] { display: none; }
 @keyframes onb-fade { from { opacity: 0; } to { opacity: 1; } }
 
 .onb-modal {
+    pointer-events: auto;
     background: var(--color-surface, #FFF);
-    border-radius: 24px; padding: 40px 36px 32px;
-    max-width: 460px; width: 92%;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+    border: 1px solid var(--color-border-soft, rgba(148, 163, 184, 0.22));
+    border-radius: 20px; padding: 28px 28px 24px;
+    width: 100%;
+    box-shadow: 0 18px 56px rgba(15,23,42,0.22);
     text-align: center; position: relative;
 }
 html[data-theme="dark"] .onb-modal { background: #1E293B; }
@@ -389,6 +465,21 @@ html[data-theme="dark"] .onb-modal { background: #1E293B; }
     flex: 1; max-width: 200px;
 }
 .onb-btn--next:hover { box-shadow: 0 4px 16px rgba(124,58,237,0.35); transform: translateY(-1px); }
+
+@media (max-width: 768px) {
+    .onb-overlay {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        width: auto;
+    }
+    .onb-modal {
+        max-height: min(82vh, 560px);
+        overflow: auto;
+        padding: 24px 18px 20px;
+    }
+    .onb-step__emoji { font-size: 48px; }
+}
 </style>
 
 <script>

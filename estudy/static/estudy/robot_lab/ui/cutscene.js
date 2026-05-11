@@ -1,28 +1,28 @@
-/* cutscene.js — Simple story panels shown before World 1 and between worlds */
+/* cutscene.js - Simple story panels shown before World 1 and between worlds */
 'use strict';
 
 const RRCutscene = (() => {
     const SCENES = {
         intro: [
-            { text: 'Planeta Zeta-9 e in pericol! Robotii rebeli au stricat reteaua de energie.', bg: '#064E3B' },
-            { text: 'Tu il controlezi pe ZIPP — un mic robot de reparatii trimis sa salveze planeta.', bg: '#0F172A' },
-            { text: 'Traverseaza sectoare periculoase, rezolva puzzle-uri si restaureaza energia!', bg: '#1E293B' },
+            { text: 'Planeta Zeta-9 e in pericol! Robotii rebeli au stricat reteaua de energie.' },
+            { text: 'Tu il controlezi pe ZIPP - un mic robot de reparatii trimis sa salveze planeta.' },
+            { text: 'Traverseaza sectoare periculoase, rezolva puzzle-uri si restaureaza energia!' },
         ],
         world_2_unlock: [
-            { text: 'ZIPP: Gradina e restaurata! Dar urmatorul sector e inghetat complet.', bg: '#0C2D48' },
-            { text: 'ZIPP: Pestera de Gheata ma asteapta. Pardoseala e alunecoasa — am nevoie de bucle!', bg: '#1E3A5F' },
+            { text: 'ZIPP: Gradina e restaurata! Dar urmatorul sector e inghetat complet.' },
+            { text: 'ZIPP: Pestera de Gheata ma asteapta. Pardoseala e alunecoasa - am nevoie de bucle!' },
         ],
         world_3_unlock: [
-            { text: 'ZIPP: Gheata s-a topit! Dar detectez temperaturi extreme in sectorul urmator.', bg: '#451A03' },
-            { text: 'ZIPP: Vulcanul! Lava se activeaza si dezactiveaza — trebuie sa gandesc cu conditii.', bg: '#78350F' },
+            { text: 'ZIPP: Gheata s-a topit! Dar detectez temperaturi extreme in sectorul urmator.' },
+            { text: 'ZIPP: Vulcanul! Lava se activeaza si dezactiveaza - trebuie sa gandesc cu conditii.' },
         ],
         world_4_unlock: [
-            { text: 'ZIPP: Vulcanul e stabil! Semnalul vine din spatiu acum.', bg: '#0F0A2A' },
-            { text: 'ZIPP: Statia Spatiala! Portaluri si gravitatie zero — am nevoie de functii!', bg: '#1E1B4B' },
+            { text: 'ZIPP: Vulcanul e stabil! Semnalul vine din spatiu acum.' },
+            { text: 'ZIPP: Statia Spatiala! Portaluri si gravitatie zero - am nevoie de functii!' },
         ],
         world_5_unlock: [
-            { text: 'ZIPP: Statia e online! Dar nucleul central e inca corupt.', bg: '#1C1917' },
-            { text: 'ZIPP: Nucleul Final! Tot ce am invatat va fi pus la incercare!', bg: '#292524' },
+            { text: 'ZIPP: Statia e online! Dar nucleul central e inca corupt.' },
+            { text: 'ZIPP: Nucleul Final! Tot ce am invatat va fi pus la incercare!' },
         ],
     };
 
@@ -80,7 +80,7 @@ const RRCutscene = (() => {
         const bg = _overlay.querySelector('[data-rr-cutscene-bg]');
         const counter = _overlay.querySelector('[data-rr-cutscene-counter]');
 
-        if (bg) bg.style.background = panel.bg || '#0F172A';
+        if (bg) bg.style.background = panel.bg || '';
         if (counter) counter.textContent = `${index + 1} / ${_panels.length}`;
         if (content) _typeWriter(content, panel.text, 25);
     }
@@ -110,17 +110,19 @@ const RRCutscene = (() => {
             _panelIndex = 0;
 
             _overlay = document.createElement('div');
+            _overlay.className = 'rr-cutscene';
             _overlay.style.cssText = `
                 position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;
                 align-items:center;justify-content:center;gap:24px;
             `;
             _overlay.innerHTML = `
-                <div data-rr-cutscene-bg style="position:absolute;inset:0;transition:background 0.5s;"></div>
-                <div style="position:relative;max-width:600px;padding:32px;text-align:center;z-index:1;">
-                    <p data-rr-cutscene-text style="font-size:20px;line-height:1.6;color:#E2E8F0;min-height:80px;"></p>
-                    <div style="margin-top:16px;font-size:12px;color:#94A3B8;" data-rr-cutscene-counter></div>
-                    <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;">
-                        <button data-rr-cutscene-next class="rr-btn rr-btn--primary">Continua →</button>
+                <div data-rr-cutscene-bg class="rr-cutscene__bg" style="position:absolute;inset:0;transition:background 0.5s;"></div>
+                <div class="rr-cutscene__panel" style="position:relative;max-width:600px;padding:32px;text-align:center;z-index:1;">
+                    <div class="rr-cutscene__robot" aria-hidden="true"></div>
+                    <p data-rr-cutscene-text class="rr-cutscene__text" style="font-size:20px;line-height:1.6;color:#E2E8F0;min-height:80px;"></p>
+                    <div class="rr-cutscene__counter" style="margin-top:16px;font-size:12px;color:#94A3B8;" data-rr-cutscene-counter></div>
+                    <div class="rr-cutscene__actions" style="margin-top:24px;display:flex;gap:12px;justify-content:center;">
+                        <button data-rr-cutscene-next class="rr-btn rr-btn--primary">Continua -></button>
                         <button data-rr-cutscene-skip class="rr-btn">Sari peste</button>
                     </div>
                 </div>

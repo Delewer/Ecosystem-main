@@ -15,7 +15,7 @@
   "recommended_age": "14-16+",
   "world": 4,
   "world_theme": "space",
-  "optimal_steps": 14,
+  "optimal_steps": 17,
   "star_conditions": {"one": "reach_goal", "two": "steps_lte_20", "three": "steps_lte_optimal"},
   "collectibles": [],
   "intro_dialog": "ZIPP: Pot sa dau parametri functiei mele!",

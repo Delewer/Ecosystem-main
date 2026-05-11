@@ -57,9 +57,9 @@ def record_robot_lab_attempt(
         solved=bool(solved),
         hints_used=max(0, int(payload.get("hints_used") or 0)),
         requested_solution=bool(payload.get("student_requested_solution", False)),
-        concept_focus=concept_focus
-        if concept_focus in CONCEPT_TO_FIELD
-        else "debugging",
+        concept_focus=(
+            concept_focus if concept_focus in CONCEPT_TO_FIELD else "debugging"
+        ),
         metadata={
             "goal": payload.get("goal"),
             "concepts": payload.get("concepts") or [],

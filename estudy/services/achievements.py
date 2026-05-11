@@ -1,6 +1,7 @@
 """
-Расширенная система достижений, челленджей и соревнований
+Achievement, challenge, mission, and leaderboard services.
 """
+
 from __future__ import annotations
 
 from datetime import timedelta
@@ -22,13 +23,12 @@ from ..models import (
 
 
 class AchievementEngine:
-    """Движок для проверки и выдачи достижений"""
+    """Check and award learner achievements."""
 
     ACHIEVEMENT_RULES = {
-        # Достижения за скорость
         "speed_demon": {
-            "name": "Демон скорости",
-            "description": "Ответь на 10 тестов с бонусом за скорость",
+            "name": "Demonul vitezei",
+            "description": "Raspunde la 10 teste cu bonus de viteza",
             "icon": "fa-bolt",
             "color": "#f59e0b",
             "check": lambda user: TestAttempt.objects.filter(
@@ -36,25 +36,23 @@ class AchievementEngine:
             ).count()
             >= 10,
         },
-        # Достижения за серии
         "week_warrior": {
-            "name": "Недельный воин",
-            "description": "Учись 7 дней подряд",
+            "name": "Erou de o saptamana",
+            "description": "Invata 7 zile la rand",
             "icon": "fa-fire",
             "color": "#ef4444",
             "check": lambda user: user.userprofile.streak >= 7,
         },
         "month_master": {
-            "name": "Мастер месяца",
-            "description": "Учись 30 дней подряд",
+            "name": "Maestrul lunii",
+            "description": "Invata 30 de zile la rand",
             "icon": "fa-crown",
             "color": "#fbbf24",
             "check": lambda user: user.userprofile.streak >= 30,
         },
-        # Достижения за количество
         "century_club": {
-            "name": "Клуб сотни",
-            "description": "Набери 100 уроков",
+            "name": "Clubul celor 100",
+            "description": "Finalizeaza 100 de lectii",
             "icon": "fa-hundred-points",
             "color": "#8b5cf6",
             "check": lambda user: LessonProgress.objects.filter(
@@ -62,10 +60,9 @@ class AchievementEngine:
             ).count()
             >= 100,
         },
-        # Достижения за разнообразие
         "subject_explorer": {
-            "name": "Исследователь предметов",
-            "description": "Пройди уроки по 5 разным предметам",
+            "name": "Explorator de subiecte",
+            "description": "Finalizeaza lectii din 5 subiecte diferite",
             "icon": "fa-compass",
             "color": "#06b6d4",
             "check": lambda user: LessonProgress.objects.filter(
@@ -76,33 +73,30 @@ class AchievementEngine:
             .count()
             >= 5,
         },
-        # Достижения за помощь сообществу
         "helpful_hero": {
-            "name": "Герой помощи",
-            "description": "Оставь 50 полезных комментариев",
+            "name": "Erou de ajutor",
+            "description": "Lasa 50 de comentarii utile",
             "icon": "fa-hands-helping",
             "color": "#10b981",
             "check": lambda user: user.replies.count() >= 50,
         },
-        # Достижения за совершенство
         "perfectionist": {
-            "name": "Перфекционист",
-            "description": "Ответь правильно на 20 тестов подряд",
+            "name": "Perfectionist",
+            "description": "Raspunde corect la 20 de teste la rand",
             "icon": "fa-star",
             "color": "#eab308",
             "check": lambda user: _check_test_streak(user, 20),
         },
-        # Достижения за время суток
         "night_owl": {
-            "name": "Ночная сова",
-            "description": "Заверши 10 уроков после 22:00",
+            "name": "Invatacel de seara",
+            "description": "Finalizeaza 10 lectii dupa ora 22:00",
             "icon": "fa-moon",
             "color": "#6366f1",
             "check": lambda user: _check_night_lessons(user, 10),
         },
         "early_bird": {
-            "name": "Ранняя птичка",
-            "description": "Заверши 10 уроков до 8:00",
+            "name": "Start devreme",
+            "description": "Finalizeaza 10 lectii inainte de ora 8:00",
             "icon": "fa-sun",
             "color": "#f97316",
             "check": lambda user: _check_morning_lessons(user, 10),
@@ -111,17 +105,14 @@ class AchievementEngine:
 
     @classmethod
     def check_and_award(cls, user) -> List[UserBadge]:
-        """Проверить все достижения и выдать новые"""
+        """Check all achievement rules and award new badges."""
         awarded = []
 
         for slug, rule in cls.ACHIEVEMENT_RULES.items():
-            # Проверяем, есть ли уже этот значок
             if UserBadge.objects.filter(user=user, badge__slug=slug).exists():
                 continue
 
-            # Проверяем условие
             if rule["check"](user):
-                # Создаем или получаем значок
                 badge, _ = Badge.objects.get_or_create(
                     slug=slug,
                     defaults={
@@ -133,12 +124,10 @@ class AchievementEngine:
                     },
                 )
 
-                # Выдаем пользователю
                 user_badge = UserBadge.objects.create(
                     user=user, badge=badge, reason=rule["description"]
                 )
 
-                # Добавляем XP
                 user.userprofile.add_xp(
                     badge.xp_reward, reason=f"Achievement: {badge.name}"
                 )
@@ -149,7 +138,7 @@ class AchievementEngine:
 
 
 def _check_test_streak(user, required: int) -> bool:
-    """Проверка серии правильных ответов"""
+    """Check a streak of correct test answers."""
     recent_attempts = TestAttempt.objects.filter(user=user).order_by("-created_at")[
         :required
     ]
@@ -161,7 +150,7 @@ def _check_test_streak(user, required: int) -> bool:
 
 
 def _check_night_lessons(user, required: int) -> bool:
-    """Проверка ночных уроков"""
+    """Check lessons completed after 22:00."""
     night_completions = LessonProgress.objects.filter(
         user=user, completed=True, completed_at__hour__gte=22
     ).count()
@@ -169,7 +158,7 @@ def _check_night_lessons(user, required: int) -> bool:
 
 
 def _check_morning_lessons(user, required: int) -> bool:
-    """Проверка утренних уроков"""
+    """Check lessons completed before 08:00."""
     morning_completions = LessonProgress.objects.filter(
         user=user, completed=True, completed_at__hour__lt=8
     ).count()
@@ -177,12 +166,11 @@ def _check_morning_lessons(user, required: int) -> bool:
 
 
 class ChallengeManager:
-    """Управление ежедневными и недельными челленджами"""
+    """Manage daily and weekly challenges."""
 
     @staticmethod
     def create_weekly_challenge(week_number: int, year: int) -> DailyChallenge:
-        """Создать недельный челлендж"""
-        # Вычисляем даты
+        """Create a weekly challenge for the requested ISO week."""
         import datetime
 
         jan_4 = datetime.date(year, 1, 4)
@@ -192,8 +180,8 @@ class ChallengeManager:
 
         challenge = DailyChallenge.objects.create(
             code=f"weekly-{year}-{week_number}",
-            title=f"Недельный челлендж {week_number}",
-            description="Заверши 5 уроков за неделю и получи бонус!",
+            title=f"Provocarea saptamanii {week_number}",
+            description="Finalizeaza 5 lectii intr-o saptamana si primeste bonus!",
             points=200,
             start_date=week_start,
             end_date=week_end,
@@ -202,8 +190,7 @@ class ChallengeManager:
 
     @staticmethod
     def check_challenge_completion(user, challenge: DailyChallenge) -> bool:
-        """Проверить выполнение челленджа"""
-        # Пример: для недельного челленджа проверяем 5 уроков
+        """Check whether the user completed a challenge."""
         completed = LessonProgress.objects.filter(
             user=user,
             completed=True,
@@ -215,13 +202,12 @@ class ChallengeManager:
 
     @staticmethod
     def award_challenge(user, challenge: DailyChallenge):
-        """Выдать награду за челлендж"""
+        """Award challenge points once."""
         attempt, created = ChallengeAttempt.objects.get_or_create(
             user=user, challenge=challenge, defaults={"is_successful": True}
         )
 
         if created:
-            # Выдаем очки
             user.userprofile.add_xp(
                 challenge.points, reason=f"Challenge: {challenge.title}"
             )
@@ -230,13 +216,13 @@ class ChallengeManager:
 
     @staticmethod
     def get_active_challenges() -> List[DailyChallenge]:
-        """Получить активные челленджи"""
+        """Return challenges active today."""
         today = timezone.now().date()
         return DailyChallenge.objects.filter(start_date__lte=today, end_date__gte=today)
 
     @staticmethod
     def get_user_challenge_progress(user, challenge: DailyChallenge) -> Dict:
-        """Прогресс пользователя в челлендже"""
+        """Return user progress for a challenge."""
         completed_lessons = LessonProgress.objects.filter(
             user=user,
             completed=True,
@@ -244,7 +230,7 @@ class ChallengeManager:
             completed_at__lte=challenge.end_date,
         ).count()
 
-        target = 5  # Можно сделать динамическим
+        target = 5
         progress_percent = min(100, (completed_lessons / target) * 100)
 
         return {
@@ -258,13 +244,13 @@ class ChallengeManager:
 
 
 class LeaderboardManager:
-    """Управление рейтингами"""
+    """Leaderboard helpers."""
 
     @staticmethod
     def get_global_leaderboard(
         period: str = "all_time", limit: int = 100
     ) -> List[Dict]:
-        """Глобальный рейтинг"""
+        """Return the global leaderboard."""
         if period == "week":
             week_ago = timezone.now() - timedelta(days=7)
             queryset = LessonProgress.objects.filter(
@@ -275,7 +261,7 @@ class LeaderboardManager:
             queryset = LessonProgress.objects.filter(
                 completed=True, completed_at__gte=month_ago
             )
-        else:  # all_time
+        else:
             queryset = LessonProgress.objects.filter(completed=True)
 
         leaders = (
@@ -296,7 +282,7 @@ class LeaderboardManager:
 
     @staticmethod
     def get_classroom_leaderboard(classroom, period: str = "all_time") -> List[Dict]:
-        """Рейтинг класса"""
+        """Return a classroom leaderboard."""
         members = classroom.memberships.values_list("user", flat=True)
 
         if period == "week":
@@ -327,9 +313,8 @@ class LeaderboardManager:
 
     @staticmethod
     def get_user_rank(user, scope: str = "global") -> Optional[int]:
-        """Получить ранг пользователя"""
+        """Return a user's global rank."""
         if scope == "global":
-            # Считаем всех, кто впереди
             user_xp = user.userprofile.xp
             ahead = UserProfile.objects.filter(xp__gt=user_xp).count()
             return ahead + 1
@@ -338,12 +323,12 @@ class LeaderboardManager:
 
 
 def generate_competitive_missions() -> List[Mission]:
-    """Создать соревновательные миссии"""
+    """Create competitive missions."""
     missions_data = [
         {
             "code": "top-10-leaderboard",
-            "title": "Попади в топ-10",
-            "description": "Займи место в топ-10 глобального рейтинга",
+            "title": "Intra in top 10",
+            "description": "Ajunge in top 10 al clasamentului global",
             "frequency": Mission.FREQ_ONCE,
             "target_value": 1,
             "reward_points": 500,
@@ -352,8 +337,8 @@ def generate_competitive_missions() -> List[Mission]:
         },
         {
             "code": "beat-the-class",
-            "title": "Первый в классе",
-            "description": "Стань лучшим в своем классе за неделю",
+            "title": "Primul din clasa",
+            "description": "Fii cel mai bun din clasa ta in aceasta saptamana",
             "frequency": Mission.FREQ_WEEKLY,
             "target_value": 1,
             "reward_points": 300,
@@ -362,8 +347,8 @@ def generate_competitive_missions() -> List[Mission]:
         },
         {
             "code": "speed-champion",
-            "title": "Чемпион скорости",
-            "description": "Получи 5 бонусов за скорость за один день",
+            "title": "Campionul vitezei",
+            "description": "Primeste 5 bonusuri de viteza intr-o zi",
             "frequency": Mission.FREQ_DAILY,
             "target_value": 5,
             "reward_points": 150,

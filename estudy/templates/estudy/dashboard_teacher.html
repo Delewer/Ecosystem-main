@@ -44,6 +44,59 @@
 </section>
 
 <section class="hub-section">
+    <div class="hub-row" style="grid-template-columns: 1.4fr .8fr;">
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#128680; Elevi care au nevoie de ajutor</h2>
+            </div>
+            {% if students_needing_help %}
+            <div class="hub-support-list">
+                {% for item in students_needing_help %}
+                <div class="hub-support-item hub-support-item--{{ item.risk_band }}">
+                    <div class="hub-support-item__main">
+                        <div class="hub-support-item__name">{{ item.display_name }}</div>
+                        <div class="hub-support-item__meta">
+                            {% if item.help_requested %}A cerut ajutor{% else %}Risc {{ item.risk_band }}{% endif %}
+                            {% if item.classrooms %} · {{ item.classrooms|join:", " }}{% endif %}
+                        </div>
+                        {% if item.latest_checkin %}
+                        <div class="hub-support-item__lesson">{{ item.latest_checkin.lesson.title }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="hub-support-item__score">
+                        <strong>{{ item.risk_score|floatformat:0 }}</strong>
+                        <span>risk</span>
+                    </div>
+                    <div class="hub-support-item__action">{{ item.recommendation }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="hub-card__empty">Nu sunt elevi marcati pentru interventie azi.</p>
+            {% endif %}
+        </div>
+
+        <div class="hub-card">
+            <div class="hub-card__header">
+                <h2>&#128161; Teme slabe</h2>
+            </div>
+            {% if weak_topics %}
+            <div class="hub-weak-list">
+                {% for topic in weak_topics %}
+                <div class="hub-weak-item">
+                    <span>{{ topic.test__lesson__title }}</span>
+                    <strong>{{ topic.mistakes }} greseli</strong>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="hub-card__empty">Nu exista greseli recente pentru clasele tale.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<section class="hub-section">
     <div class="hub-row" style="grid-template-columns: 1fr 1fr;">
         <div class="hub-card">
             <div class="hub-card__header">

@@ -32,6 +32,11 @@ urlpatterns = [
         views.toggle_lesson_completion,
         name="toggle_lesson_completion",
     ),
+    path(
+        "lessons/<slug:slug>/check-in/",
+        views.submit_learner_checkin,
+        name="submit_learner_checkin",
+    ),
     path("lessons/<slug:slug>/ai-hint/", views.ai_hint, name="ai_hint"),
     path(
         "tests/<int:test_id>/submit/",

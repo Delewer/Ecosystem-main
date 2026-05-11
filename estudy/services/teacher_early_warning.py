@@ -114,9 +114,11 @@ def build_teacher_early_warning_report(
                 completion_rate=snapshot.completion_rate,
                 avg_score=snapshot.avg_score,
                 streak_days=snapshot.streak_days,
-                last_activity_at=profile.last_activity_at.isoformat()
-                if profile.last_activity_at
-                else None,
+                last_activity_at=(
+                    profile.last_activity_at.isoformat()
+                    if profile.last_activity_at
+                    else None
+                ),
             )
         )
 

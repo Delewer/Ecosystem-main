@@ -3,6 +3,7 @@
 Management command to sync the OpenAPI schema into docs.
 Run with: python manage.py sync_openapi
 """
+
 from django.core.management.base import BaseCommand
 
 from estudy.services.openapi_sync import sync_openapi_schema

@@ -131,9 +131,9 @@ def get_streak_leaderboard(
             "username": entry.user.username,
             "current_streak": entry.current_streak,
             "longest_streak": entry.longest_streak,
-            "avatar_initial": entry.user.username[0].upper()
-            if entry.user.username
-            else "?",
+            "avatar_initial": (
+                entry.user.username[0].upper() if entry.user.username else "?"
+            ),
         }
         for entry in entries
     ]

@@ -1,6 +1,7 @@
 """
 Background tasks (Celery-friendly) for notifications, analytics, and achievements.
 """
+
 from __future__ import annotations
 
 try:  # pragma: no cover - Celery may be optional in some deployments

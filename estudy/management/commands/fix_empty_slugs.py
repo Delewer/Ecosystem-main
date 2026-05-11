@@ -3,6 +3,7 @@
 Management command to fix lessons with empty slugs.
 Run with: python manage.py fix_empty_slugs
 """
+
 from django.core.management.base import BaseCommand
 
 from estudy.models import Lesson

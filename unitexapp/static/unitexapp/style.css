@@ -697,6 +697,38 @@ html[data-theme='dark'] .site-navbar {
     background: rgba(148, 163, 184, 0.2);
 }
 
+.auth-body .cookie-banner {
+    left: 1rem;
+    right: auto;
+    bottom: 1rem;
+    width: min(360px, calc(100% - 2rem));
+    padding: 0.85rem;
+}
+
+.auth-body .cookie-banner__content {
+    gap: 0.7rem;
+}
+
+.auth-body .cookie-banner__content p {
+    margin: 0;
+    font-size: 0.86rem;
+    line-height: 1.45;
+}
+
+.auth-body .cookie-banner__actions {
+    justify-content: flex-start;
+}
+
+.auth-body .cookie-banner__button {
+    padding: 0.62rem 0.9rem;
+}
+
+.workspace-body .cookie-banner {
+    left: 1rem;
+    right: auto;
+    bottom: 1rem;
+}
+
 .map iframe {
     width: 100%;
     border: 0;
@@ -973,6 +1005,26 @@ html[data-theme='dark'] .page-transition-layer {
         right: 1rem;
         bottom: 1rem;
         width: calc(100% - 2rem);
+    }
+
+    .auth-body .cookie-banner {
+        left: 0.75rem;
+        right: 0.75rem;
+        top: 5.25rem;
+        bottom: auto;
+        width: auto;
+        max-height: calc(100vh - 6.25rem);
+        overflow: auto;
+    }
+
+    .workspace-body .cookie-banner {
+        left: 0.75rem;
+        right: 0.75rem;
+        top: 19rem;
+        bottom: auto;
+        width: auto;
+        max-height: calc(100vh - 20rem);
+        overflow: auto;
     }
 }
 

@@ -1,6 +1,7 @@
 """
 Simple caching helpers to centralize cache usage.
 """
+
 from typing import Callable, TypeVar
 
 from django.core.cache import cache

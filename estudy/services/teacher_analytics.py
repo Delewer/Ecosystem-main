@@ -1,6 +1,7 @@
 """
-Продвинутая аналитика для учителей и администраторов
+Teacher and administrator analytics helpers.
 """
+
 from __future__ import annotations
 
 from datetime import timedelta
@@ -23,19 +24,17 @@ from .difficulty_mismatch import build_lesson_difficulty_analysis
 
 
 class TeacherAnalytics:
-    """Аналитика для учителей"""
+    """Analytics for teacher dashboards."""
 
     @staticmethod
     def get_classroom_overview(classroom: Classroom) -> Dict:
-        """Общий обзор класса"""
+        """Return high-level classroom metrics."""
         members = classroom.memberships.all()
         total_students = members.filter(role=ClassroomMembership.ROLE_STUDENT).count()
 
-        # Активность за последнюю неделю
         week_ago = timezone.now() - timedelta(days=7)
         active_students = members.filter(last_activity_at__gte=week_ago).count()
 
-        # Средняя успеваемость класса
         student_ids = members.values_list("user_id", flat=True)
         total_attempts = TestAttempt.objects.filter(user_id__in=student_ids).count()
         correct_attempts = TestAttempt.objects.filter(
@@ -46,11 +45,9 @@ class TeacherAnalytics:
             (correct_attempts / total_attempts * 100) if total_attempts > 0 else 0
         )
 
-        # Статистика по заданиям
         assignments = classroom.assignments.all()
         total_assignments = assignments.count()
 
-        # Средний процент сдачи
         submission_rates = []
         for assignment in assignments:
             submissions = assignment.submissions.count()
@@ -64,9 +61,9 @@ class TeacherAnalytics:
         return {
             "total_students": total_students,
             "active_students": active_students,
-            "activity_rate": (active_students / total_students * 100)
-            if total_students > 0
-            else 0,
+            "activity_rate": (
+                (active_students / total_students * 100) if total_students > 0 else 0
+            ),
             "avg_success_rate": round(avg_success_rate, 1),
             "total_assignments": total_assignments,
             "avg_submission_rate": round(avg_submission_rate, 1),
@@ -75,8 +72,7 @@ class TeacherAnalytics:
 
     @staticmethod
     def get_student_detailed_report(student: User, classroom: Classroom = None) -> Dict:
-        """Детальный отчет по студенту"""
-        # Прогресс по урокам
+        """Return a detailed report for one student."""
         completed_lessons = LessonProgress.objects.filter(
             user=student, completed=True
         ).count()
@@ -86,16 +82,13 @@ class TeacherAnalytics:
             (completed_lessons / total_lessons * 100) if total_lessons > 0 else 0
         )
 
-        # Тесты
         attempts = TestAttempt.objects.filter(user=student)
         total_attempts = attempts.count()
         correct = attempts.filter(is_correct=True).count()
         success_rate = (correct / total_attempts * 100) if total_attempts > 0 else 0
 
-        # Средняя скорость ответа
         avg_time = attempts.aggregate(Avg("time_taken_ms"))["time_taken_ms__avg"] or 0
 
-        # Задания (если класс указан)
         assignments_data = None
         if classroom:
             assignments = ClassAssignment.objects.filter(classroom=classroom)
@@ -115,7 +108,6 @@ class TeacherAnalytics:
                 or 0,
             }
 
-        # Активность
         profile = student.userprofile
         last_activity = profile.last_activity_at
         days_since_active = None
@@ -150,7 +142,7 @@ class TeacherAnalytics:
 
     @staticmethod
     def get_assignment_analytics(assignment: ClassAssignment) -> Dict:
-        """Аналитика по заданию"""
+        """Return analytics for one assignment."""
         submissions = assignment.submissions.all()
         total_students = assignment.classroom.memberships.filter(
             role=ClassroomMembership.ROLE_STUDENT
@@ -161,13 +153,11 @@ class TeacherAnalytics:
             (submitted_count / total_students * 100) if total_students > 0 else 0
         )
 
-        # Оценки
         graded = submissions.filter(score__isnull=False)
         avg_score = graded.aggregate(Avg("score"))["score__avg"] or 0
         max_score = graded.aggregate(Max("score"))["score__max"] or 0
         min_score = graded.aggregate(Min("score"))["score__min"] or 0
 
-        # Распределение оценок
         score_distribution = {
             "excellent": graded.filter(score__gte=90).count(),
             "good": graded.filter(score__gte=70, score__lt=90).count(),
@@ -175,13 +165,11 @@ class TeacherAnalytics:
             "poor": graded.filter(score__lt=50).count(),
         }
 
-        # Статусы
         status_breakdown = {}
         for status, label in AssignmentSubmission.STATUS_CHOICES:
             count = submissions.filter(status=status).count()
             status_breakdown[status] = {"count": count, "label": label}
 
-        # Не сдавшие
         submitted_user_ids = submissions.values_list("student_id", flat=True)
         not_submitted = (
             assignment.classroom.memberships.filter(
@@ -216,7 +204,7 @@ class TeacherAnalytics:
     def identify_struggling_students(
         classroom: Classroom, threshold: float = 50.0
     ) -> List[Dict]:
-        """Выявить студентов с трудностями"""
+        """Identify students who may need support."""
         members = classroom.memberships.filter(role=ClassroomMembership.ROLE_STUDENT)
 
         struggling = []
@@ -224,26 +212,22 @@ class TeacherAnalytics:
         for member in members:
             user = member.user
 
-            # Успеваемость по тестам
             attempts = TestAttempt.objects.filter(user=user)
             total = attempts.count()
 
-            if total < 5:  # Недостаточно данных
+            if total < 5:
                 continue
 
             correct = attempts.filter(is_correct=True).count()
             success_rate = (correct / total * 100) if total > 0 else 0
 
-            # Прогресс по урокам
             completed = LessonProgress.objects.filter(user=user, completed=True).count()
 
-            # Активность
             last_activity = user.userprofile.last_activity_at
             days_inactive = None
             if last_activity:
                 days_inactive = (timezone.now() - last_activity).days
 
-            # Критерии для "struggling"
             is_struggling = (
                 success_rate < threshold
                 or (days_inactive and days_inactive > 7)
@@ -265,14 +249,13 @@ class TeacherAnalytics:
                     }
                 )
 
-        # Сортируем по серьезности проблем
         struggling.sort(key=lambda x: x["success_rate"])
 
         return struggling
 
     @staticmethod
     def get_lesson_difficulty_analysis(lesson: Lesson) -> Dict:
-        """Ранализ сложности урока на основе данных."""
+        """Return lesson difficulty analysis based on usage data."""
         result = build_lesson_difficulty_analysis(lesson)
         if not result.success:
             return {
@@ -286,67 +269,66 @@ class TeacherAnalytics:
 def _identify_concerns(
     success_rate: float, days_inactive: int, completed: int
 ) -> List[str]:
-    """Определить конкретные проблемы студента"""
+    """Return teacher-facing concern labels for one student."""
     concerns = []
 
     if success_rate < 30:
-        concerns.append("Очень низкая успеваемость")
+        concerns.append("Reusita foarte scazuta")
     elif success_rate < 50:
-        concerns.append("Низкая успеваемость")
+        concerns.append("Reusita scazuta")
 
     if days_inactive and days_inactive > 14:
-        concerns.append("Долго не заходил")
+        concerns.append("Nu a intrat de mult timp")
     elif days_inactive and days_inactive > 7:
-        concerns.append("Неактивен больше недели")
+        concerns.append("Inactiv de peste o saptamana")
 
     if completed < 3:
-        concerns.append("Мало завершенных уроков")
+        concerns.append("Putine lectii finalizate")
 
     return concerns
 
 
 class AdminAnalytics:
-    """Аналитика для администраторов"""
+    """Analytics for administrators."""
 
     @staticmethod
     def get_platform_statistics() -> Dict:
-        """Общая статистика платформы"""
+        """Return overall platform statistics."""
         total_users = User.objects.count()
         total_lessons = Lesson.objects.count()
         total_tests = TestAttempt.objects.count()
 
-        # Активные пользователи (за последние 7 дней)
         week_ago = timezone.now() - timedelta(days=7)
         active_users = User.objects.filter(
             userprofile__last_activity_at__gte=week_ago
         ).count()
 
-        # Средняя успеваемость
         total_attempts = TestAttempt.objects.count()
         correct_attempts = TestAttempt.objects.filter(is_correct=True).count()
         platform_success_rate = (
             (correct_attempts / total_attempts * 100) if total_attempts > 0 else 0
         )
 
-        # Завершенные уроки
         total_completions = LessonProgress.objects.filter(completed=True).count()
 
         return {
             "users": {
                 "total": total_users,
                 "active_week": active_users,
-                "activity_rate": round((active_users / total_users * 100), 1)
-                if total_users > 0
-                else 0,
+                "activity_rate": (
+                    round((active_users / total_users * 100), 1)
+                    if total_users > 0
+                    else 0
+                ),
             },
             "content": {
                 "total_lessons": total_lessons,
                 "total_completions": total_completions,
-                "avg_completions_per_lesson": round(
-                    total_completions / total_lessons, 1
-                )
-                if total_lessons > 0
-                else 0,
+                "avg_completions_per_lesson": (
+                    round(total_completions / total_lessons, 1)
+                    if total_lessons > 0
+                    else 0
+                ),
             },
             "performance": {
                 "total_test_attempts": total_tests,
@@ -356,18 +338,15 @@ class AdminAnalytics:
 
     @staticmethod
     def get_growth_metrics(days: int = 30) -> Dict:
-        """Метрики роста платформы"""
+        """Return platform growth metrics for a period."""
         cutoff = timezone.now() - timedelta(days=days)
 
-        # Новые пользователи
         new_users = User.objects.filter(date_joined__gte=cutoff).count()
 
-        # Новые завершения
         new_completions = LessonProgress.objects.filter(
             completed=True, completed_at__gte=cutoff
         ).count()
 
-        # Рост по дням
         daily_growth = []
         for i in range(days):
             day = timezone.now() - timedelta(days=i)
@@ -384,5 +363,5 @@ class AdminAnalytics:
             "period_days": days,
             "new_users": new_users,
             "new_completions": new_completions,
-            "daily_growth": list(reversed(daily_growth)),  # От старых к новым
+            "daily_growth": list(reversed(daily_growth)),
         }

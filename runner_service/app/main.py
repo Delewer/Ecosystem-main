@@ -46,12 +46,16 @@ def _worker(payload: dict[str, Any], queue: mp.Queue) -> None:
     result = run_student_code(
         level_id=str(payload.get("level_id") or ""),
         student_code=str(payload.get("student_code") or ""),
-        level_spec=payload.get("level_spec")
-        if isinstance(payload.get("level_spec"), dict)
-        else {},
-        allowed_api=payload.get("allowed_api")
-        if isinstance(payload.get("allowed_api"), list)
-        else [],
+        level_spec=(
+            payload.get("level_spec")
+            if isinstance(payload.get("level_spec"), dict)
+            else {}
+        ),
+        allowed_api=(
+            payload.get("allowed_api")
+            if isinstance(payload.get("allowed_api"), list)
+            else []
+        ),
         max_steps=max(1, int(payload.get("max_steps") or 200)),
     )
     result["duration_ms"] = int((time.perf_counter() - started) * 1000)
