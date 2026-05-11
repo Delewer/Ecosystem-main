@@ -79,7 +79,7 @@ Versiunea curenta include lectii digitale, dashboard-uri pe roluri, gamification
 - Python 3.10+.
 - `pip` actualizat.
 - Redis optional, doar daca setezi `REDIS_URL`.
-- Nu exista `requirements.txt` in radacina in aceasta versiune; dependintele aplicatiei Django se instaleaza manual sau se pot muta ulterior intr-un fisier dedicat.
+- Dependintele aplicatiei Django sunt listate in `requirements.txt` la radacina.
 
 ## Instalare aplicatie Django
 
@@ -105,7 +105,7 @@ Instaleaza dependintele pentru aplicatia Django:
 
 ```bash
 pip install --upgrade pip
-pip install "Django==4.0.7" "djangorestframework>=3.14,<3.16" "Pillow>=10,<12" "dj-database-url>=2,<3" "django-redis>=5,<6" "sentry-sdk>=2,<3" "PyYAML>=6,<7"
+pip install -r requirements.txt
 ```
 
 Pregateste baza de date:
@@ -154,6 +154,9 @@ Variabile de mediu citite direct de `unitex_school/settings.py`:
 - `ROBOT_RUNNER_TIMEOUT_MS` - timeout pentru apelul catre runner.
 - `ESTUDY_AUDIT_TRAIL_ENABLED` - activeaza/dezactiveaza audit trail.
 - `ESTUDY_AI_COST_*` - provider, model, moneda, rate si estimari pentru costuri AI (cand integrarea AI este folosita).
+- `EMAIL_BACKEND` - backend email Django; implicit console backend daca `EMAIL_HOST` nu este setat.
+- `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL` - configurare SMTP.
+- `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL` - credentiale si expeditor email.
 
 Setari Django utile, dar nelegate direct la environment in aceasta versiune:
 
@@ -164,7 +167,7 @@ Setari Django utile, dar nelegate direct la environment in aceasta versiune:
 - `ESTUDY_SEASONAL_POINTS_PER_LESSON`
 - `ESTUDY_OPENAPI_*`
 
-Nota: setarile email SMTP sunt hardcodate in `unitex_school/settings.py` in aceasta versiune. In productie trebuie mutate in variabile de mediu.
+Nota: credentialele email nu trebuie puse in cod. Configureaza SMTP doar prin variabile de mediu.
 
 ## Robot Lab runner
 
@@ -344,8 +347,6 @@ pre-commit run --all-files
 
 ## Roadmap si datorii cunoscute
 
-- Mutarea dependintelor Django intr-un `requirements.txt` sau `pyproject.toml` la radacina.
-- Mutarea credentialelor SMTP din settings in variabile de mediu.
 - Sandbox de productie mai strict pentru runner: container/gVisor, limite de CPU/memorie si retea blocata.
 - CI complet pentru lint, teste, migrari si verificari de securitate.
 - OpenAPI regenerat automat in CI.

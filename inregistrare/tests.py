@@ -25,7 +25,7 @@ class RegistrationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            "Trebuie să accepți Termenii și condițiile pentru a crea contul.",
+            "Trebuie sa accepti Termenii si conditiile pentru a crea contul.",
         )
         self.assertFalse(User.objects.filter(username="elevnou").exists())
 
