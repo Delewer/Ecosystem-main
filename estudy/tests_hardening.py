@@ -254,3 +254,31 @@ class LessonUiRegressionTests(TestCase):
         self.assertNotIn(
             "document.querySelectorAll('.ls-achievement-toast').length", js
         )
+
+    def test_student_onboarding_is_non_blocking_coach_card(self):
+        template = (
+            Path(__file__).resolve().parent
+            / "templates"
+            / "estudy"
+            / "dashboard_student.html"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("pointer-events: none;", template)
+        self.assertIn("pointer-events: auto;", template)
+        self.assertIn("right: 24px;", template)
+        self.assertIn("bottom: 24px;", template)
+        self.assertNotIn("inset: 0; z-index: 9999", template)
+
+    def test_workspace_cookie_banner_avoids_onboarding_card(self):
+        css = (
+            Path(__file__).resolve().parents[1]
+            / "unitexapp"
+            / "static"
+            / "unitexapp"
+            / "style.css"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn(".workspace-body .cookie-banner", css)
+        self.assertIn("left: 1rem;", css)
+        self.assertIn("right: auto;", css)
+        self.assertIn("top: 19rem;", css)
