@@ -4,6 +4,8 @@ UNITEX este o platforma educationala construita pe Django pentru copii, elevi, p
 
 Versiunea curenta include lectii digitale, dashboard-uri pe roluri, gamification, comunitate, clase, proiecte, analytics, suport pentru recomandari pe reguli si Robot Lab v2 cu lumi, skin-uri si runner separat pentru executia codului Python.
 
+Ultima validare a acestui README: mai 2026 (aliniat cu codul din repository).
+
 ## Ce include versiunea curenta
 
 ### Platforma web
@@ -23,17 +25,15 @@ Versiunea curenta include lectii digitale, dashboard-uri pe roluri, gamification
 - Lectii seeduite prin migrari si comanda `seed_demo_data`.
 - Metadate pentru varsta, dificultate, XP, obiective, takeaways, practica, reflectie si media.
 
-### Adaptivitate curenta si infrastructura AI-ready
+### Adaptivitate curenta pe reguli
 
-- Practica personalizata, recomandari si scoring bazate in principal pe reguli/euristici.
+- Practica personalizata, recomandari si scoring bazate pe reguli/euristici.
 - Insight summaries, risk scoring si early warning pentru profesori prin logica de aplicatie si analytics.
-- Guard de context si mecanisme de siguranta pentru raspunsuri asistate.
-- Tracking de cost pentru scenarii AI (prompt/completion, estimari token) disponibil la nivel de infrastructura.
-- Integrarea cu un model AI extern este partiala si configurabila, nu un flux AI complet activat implicit in toata platforma.
+- Comportamentul platformei este determinist in fluxurile educationale principale, fara integrare AI activa in aceasta versiune.
 
 ### Robot Lab v2
 
-- 30 de niveluri JSON in `estudy/robot_lab/levels`: 5 lumi x 6 niveluri.
+- 31 fisiere JSON in `estudy/robot_lab/levels` (30 niveluri jucabile + index de niveluri).
 - Lumi: Gradina, Pestera de Gheata, Vulcanul, Statia Spatiala si Nucleul Final.
 - Moduri UI: butoane vizuale, butoane + cod, cod ghidat si cod complet.
 - Progres pe nivel, stele, XP, skill profile si istoric de incercari.
@@ -65,7 +65,7 @@ Versiunea curenta include lectii digitale, dashboard-uri pe roluri, gamification
 
 ## Tehnologii
 
-- Backend principal: Django 4.0.7.
+- Backend principal: Django 5.0.7.
 - API: Django REST Framework + TokenAuthentication.
 - Baza de date implicita: SQLite.
 - Baza de date optionala: orice `DATABASE_URL` acceptat de `dj-database-url`.
@@ -139,12 +139,19 @@ DJANGO_DEBUG=True
 DJANGO_SECRET_KEY=change-me
 ALLOWED_HOSTS=127.0.0.1,localhost
 CSRF_TRUSTED_ORIGINS=http://127.0.0.1:8000,http://localhost:8000
+# override optional (default in cod: UTC + en-us)
 TIME_ZONE=Europe/Chisinau
 LANGUAGE_CODE=ro
 ```
 
 Variabile de mediu citite direct de `unitex_school/settings.py`:
 
+- `DJANGO_SECRET_KEY` - cheia secreta Django.
+- `DJANGO_DEBUG` - activeaza/dezactiveaza debug mode.
+- `ALLOWED_HOSTS` - host-uri permise (lista separata prin virgula).
+- `CSRF_TRUSTED_ORIGINS` - origini de incredere CSRF (lista separata prin virgula).
+- `LANGUAGE_CODE` - limba implicita (default: `en-us`).
+- `TIME_ZONE` - fus orar implicit (default: `UTC`).
 - `DATABASE_URL` - override pentru baza de date.
 - `REDIS_URL` - activeaza cache Redis.
 - `SENTRY_DSN` - activeaza Sentry.
@@ -153,7 +160,6 @@ Variabile de mediu citite direct de `unitex_school/settings.py`:
 - `ROBOT_RUNNER_TOKEN` - bearer token comun intre Django si runner.
 - `ROBOT_RUNNER_TIMEOUT_MS` - timeout pentru apelul catre runner.
 - `ESTUDY_AUDIT_TRAIL_ENABLED` - activeaza/dezactiveaza audit trail.
-- `ESTUDY_AI_COST_*` - provider, model, moneda, rate si estimari pentru costuri AI (cand integrarea AI este folosita).
 - `EMAIL_BACKEND` - backend email Django; implicit console backend daca `EMAIL_HOST` nu este setat.
 - `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USE_TLS`, `EMAIL_USE_SSL` - configurare SMTP.
 - `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, `DEFAULT_FROM_EMAIL` - credentiale si expeditor email.
@@ -162,10 +168,11 @@ Setari Django utile, dar nelegate direct la environment in aceasta versiune:
 
 - `ESTUDY_RATE_LIMIT_ENABLED`
 - `ESTUDY_IDEMPOTENCY_ENABLED`
-- `ESTUDY_FEATURE_FLAGS`
 - `ESTUDY_XP_DECAY_*`
 - `ESTUDY_SEASONAL_POINTS_PER_LESSON`
 - `ESTUDY_OPENAPI_*`
+
+Nota: `ESTUDY_FEATURE_FLAGS` este suportat in cod ca mapping in `settings`, dar nu este citit direct din variabile de mediu in forma bruta; daca vrei flags din env, trebuie mapat explicit in `settings.py`.
 
 Nota: credentialele email nu trebuie puse in cod. Configureaza SMTP doar prin variabile de mediu.
 
@@ -213,7 +220,7 @@ Endpoint-uri runner:
 
 ## Feature flags
 
-Feature flags pot fi definite in baza de date prin modelul `FeatureFlag` sau in settings prin `ESTUDY_FEATURE_FLAGS`.
+Feature flags sunt evaluate in ordinea: baza de date (`FeatureFlag`) -> `ESTUDY_FEATURE_FLAGS` din `settings` -> fallback la valoarea implicita din cod.
 
 Flag-uri folosite in cod:
 
@@ -364,3 +371,13 @@ Inainte de productie:
 - configureaza `ROBOT_RUNNER_TOKEN`;
 - muta credentialele email in variabile de mediu;
 - ruleaza migrarile si testele inainte de deploy.
+
+## Observatii tehnice validate in cod
+
+- Rate limiting este activ atat prin middleware custom, cat si prin throttle DRF.
+- Idempotency middleware este activ doar pentru metode `POST` si prefixele:
+	- `/estudy/tests/`
+	- `/estudy/projects/`
+	- `/estudy/api/run-code/`
+- `ESTUDY_CODE_RUNNER_ENABLED` urmeaza valoarea `DJANGO_DEBUG`; in debug exista fallback local pentru executia de cod.
+- Runner-ul extern foloseste timeout implicit `ROBOT_RUNNER_TIMEOUT_MS=3000`.
