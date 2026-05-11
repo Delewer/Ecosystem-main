@@ -33,6 +33,18 @@
                 </div>
                 <span class="hub-child-card__bar-label">{{ entry.progress.completed }}/{{ entry.progress.total }} lectii</span>
             </div>
+            {% if entry.weekly %}
+            <div class="hub-weekly-summary">
+                <div class="hub-weekly-summary__row">
+                    <span>Saptamana aceasta</span>
+                    <strong>{{ entry.weekly.completed_count }} lectii · {{ entry.weekly.mistake_count }} greseli</strong>
+                </div>
+                {% if entry.weekly.help_checkins %}
+                <div class="hub-weekly-summary__alert">A cerut ajutor la {{ entry.weekly.help_checkins.0.lesson.title }}.</div>
+                {% endif %}
+                <p>{{ entry.weekly.discussion_prompt }}</p>
+            </div>
+            {% endif %}
             <div class="hub-child-card__badges">
                 {% for badge in entry.badges.highlighted %}
                 <span class="hub-child-badge" style="background: {{ badge.badge.color }}22; color: {{ badge.badge.color }};">
@@ -83,7 +95,7 @@
             <div style="text-align:center;padding:1rem 0;">
                 <div style="font-size:48px;margin-bottom:8px;">&#128170;</div>
                 <p style="font-size:14px;font-weight:600;color:var(--color-text-muted,#64748B);margin:0;line-height:1.6;">
-                    Folosirea platformei 3 zile la rand deblocheaza notificari catre parinti si insigne speciale precum „Family Hero".
+                    Cel mai util sprijin este o discutie scurta dupa lectie: ce a inteles, ce a fost greu si ce exemplu poate explica singur.
                 </p>
             </div>
         </div>

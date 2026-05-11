@@ -41,7 +41,8 @@ class MistakeExplanationsTests(TestCase):
 
         self.assertTrue(result.success)
         self.assertEqual(
-            result.data["explanation"], f"{TEST_EXPLANATION} Your answer: B."
+            result.data["explanation"],
+            f"{TEST_EXPLANATION} Ai ales: B. Verifica de ce nu se potriveste cu cerinta.",
         )
 
     def test_test_explanation_fallback(self):
@@ -54,7 +55,7 @@ class MistakeExplanationsTests(TestCase):
 
         self.assertTrue(result.success)
         self.assertIn("Remember the core concept.", result.data["explanation"])
-        self.assertIn("Correct answer", result.data["explanation"])
+        self.assertIn("Compara cerinta", result.data["explanation"])
 
     def test_code_explanation_from_error(self):
         result = build_code_mistake_explanation(
@@ -68,7 +69,7 @@ class MistakeExplanationsTests(TestCase):
         )
 
         self.assertTrue(result.success)
-        self.assertIn("Syntax issue", result.data["explanation"])
+        self.assertIn("Problema de sintaxa", result.data["explanation"])
 
     def test_code_explanation_from_failed_test(self):
         result = build_code_mistake_explanation(

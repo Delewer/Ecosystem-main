@@ -8,22 +8,30 @@ MAX_CONTEXT_LENGTH = 240
 MAX_CODE_SNIPPET = 160
 MIN_CODE_SNIPPET = 0
 
-DEFAULT_TEST_EXPLANATION = "Review the lesson concept and try again."
-DEFAULT_CODE_EXPLANATION = "Compare expected output with your output and adjust."
-DEFAULT_RUNTIME_EXPLANATION = "A runtime error occurred. Check the traceback."
+DEFAULT_TEST_EXPLANATION = "Reia ideea din lectie si incearca din nou."
+DEFAULT_CODE_EXPLANATION = (
+    "Compara rezultatul asteptat cu rezultatul tau si ajusteaza pasii."
+)
+DEFAULT_RUNTIME_EXPLANATION = "A aparut o eroare la rulare. Verifica mesajul de eroare."
 
 NO_MISTAKE_WARNING = "no_mistake"
 NO_CONTEXT_WARNING = "no_context"
 
 ERROR_HINTS = [
-    ("syntaxerror", "Syntax issue: check brackets, colons, and quotes."),
-    ("nameerror", "Undefined name: make sure variables are defined."),
-    ("typeerror", "Type mismatch: check the types used in operations."),
-    ("indentationerror", "Indentation issue: align blocks consistently."),
-    ("indexerror", "Index out of range: verify list or string indices."),
-    ("keyerror", "Missing key: confirm the dictionary key exists."),
-    ("valueerror", "Invalid value: check conversions and input format."),
-    ("timeout", "Code took too long: check loops and recursion."),
+    (
+        "syntaxerror",
+        "Problema de sintaxa: verifica paranteze, doua puncte si ghilimele.",
+    ),
+    (
+        "nameerror",
+        "Nume nedefinit: verifica daca variabilele exista inainte sa le folosesti.",
+    ),
+    ("typeerror", "Tipuri nepotrivite: verifica valorile folosite in operatie."),
+    ("indentationerror", "Problema de indentare: aliniaza blocurile de cod."),
+    ("indexerror", "Index in afara listei: verifica pozitia folosita."),
+    ("keyerror", "Cheie lipsa: confirma ca exista cheia din dictionar."),
+    ("valueerror", "Valoare invalida: verifica transformarile si inputul."),
+    ("timeout", "Codul a rulat prea mult: verifica buclele si recursia."),
 ]
 
 
@@ -65,14 +73,14 @@ def build_test_mistake_explanation(
     else:
         context = _lesson_context(test)
         if context:
-            explanation = f"{context} Correct answer: {test.correct_answer}."
+            explanation = f"{context} Compara cerinta cu regula din lectie."
             source = "lesson_context"
         else:
             explanation = DEFAULT_TEST_EXPLANATION
             source = "default"
 
     if selected_answer:
-        explanation = f"{explanation} Your answer: {selected_answer}."
+        explanation = f"{explanation} Ai ales: {selected_answer}. Verifica de ce nu se potriveste cu cerinta."
 
     warnings = []
     if source == "default":
@@ -135,7 +143,7 @@ def build_code_mistake_explanation(
                 data={"explanation": explanation, "source": "stderr"}
             )
 
-        explanation = f"Expected output '{expected}', but got '{actual}'. {DEFAULT_CODE_EXPLANATION}"
+        explanation = f"Se astepta rezultatul '{expected}', dar codul a dat '{actual}'. {DEFAULT_CODE_EXPLANATION}"
         return BaseServiceResult.ok(
             data={"explanation": explanation, "source": "test_failure"}
         )

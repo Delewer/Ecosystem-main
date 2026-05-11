@@ -95,9 +95,11 @@ def serialize_robot_lab_levels_with_progress(user: User) -> list[dict[str, Any]]
                 "concept_labels": entry.get("concept_labels")
                 or entry.get("concepts")
                 or [],
-                "best_steps": int(progress.best_steps)
-                if progress and progress.best_steps
-                else None,
+                "best_steps": (
+                    int(progress.best_steps)
+                    if progress and progress.best_steps
+                    else None
+                ),
                 "attempts_count": int(progress.attempts_count) if progress else 0,
             }
         )
@@ -130,8 +132,9 @@ def _compute_stars(
     if not solved:
         return 0
     conditions = level_spec.get("star_conditions") or {}
-    stars = 0
-    # Star 1: just solve
+    stars = 1
+    # Star 1: just solve. Some levels use activate_terminal/deliver_item goals,
+    # but the first star should still mean "mission completed".
     one = conditions.get("one", "reach_goal")
     if one == "reach_goal" and solved:
         stars = 1

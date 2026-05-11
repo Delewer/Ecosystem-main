@@ -7,13 +7,14 @@
 {% block extra_css %}
 {{ block.super }}
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'estudy/lesson.css' %}?v=20260422a">
+<link rel="stylesheet" href="{% static 'estudy/lesson.css' %}?v=20260508d">
 {% endblock %}
 
 {% block page_content %}
 <div class="lesson"
      data-lesson
      data-lesson-slug="{{ lesson.slug }}"
+     data-lesson-completed="{% if progress and progress.completed %}true{% else %}false{% endif %}"
      data-xp-reward="{{ lesson.xp_reward|default:50 }}">
 
     {# === HUD === #}
@@ -92,7 +93,7 @@
         {# ================================================================ #}
         {# STEP 0 — Welcome                                                 #}
         {# ================================================================ #}
-        <section class="lesson-step" data-step="welcome">
+        <section class="lesson-step" data-step="welcome" data-mission-label="Start" data-mission-title="Pregateste misiunea">
             <div class="lesson-step__inner">
                 <div class="ls-mentor">
                     <div class="ls-mentor__avatar">&#129302;</div>
@@ -109,6 +110,51 @@
                     <div class="ls-welcome__subject">{{ lesson.subject.title|default:"Lectie" }}</div>
                     <h1 class="ls-welcome__title">{{ lesson.title }}</h1>
                     <p class="ls-welcome__desc">{{ lesson_intro_text }}</p>
+
+                    {% if lesson_mastery.goal %}
+                    <div class="ls-mastery-goal">
+                        <span class="ls-mastery-goal__label">Dupa lectie vei putea</span>
+                        <strong class="ls-mastery-goal__text">{{ lesson_mastery.goal }}</strong>
+                    </div>
+                    {% endif %}
+
+                    <div class="ls-mission-route" aria-label="Traseul lectiei">
+                        <div class="ls-mission-route__item">
+                            <span class="ls-mission-route__num">1</span>
+                            <strong>Priveste</strong>
+                            <small>Intelege ideea cu un exemplu scurt.</small>
+                        </div>
+                        {% if practice or code_exercises %}
+                        <div class="ls-mission-route__item">
+                            <span class="ls-mission-route__num">2</span>
+                            <strong>Incearca</strong>
+                            <small>Rezolva o provocare pe loc.</small>
+                        </div>
+                        {% endif %}
+                        {% if quiz_test %}
+                        <div class="ls-mission-route__item">
+                            <span class="ls-mission-route__num">3</span>
+                            <strong>Verifica</strong>
+                            <small>Raspunde si repara greseala daca apare.</small>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if lesson_ambience %}
+                    <figure class="ls-ambience">
+                        <img class="ls-ambience__image" src="{% static lesson_ambience.image %}" alt="{{ lesson_ambience.alt }}" loading="eager">
+                        <figcaption class="ls-ambience__body">
+                            <span class="ls-ambience__eyebrow">{{ lesson_ambience.eyebrow }}</span>
+                            <strong class="ls-ambience__title">{{ lesson_ambience.title }}</strong>
+                            {% if lesson_ambience.caption %}
+                            <span class="ls-ambience__caption">{{ lesson_ambience.caption }}</span>
+                            {% endif %}
+                            {% if lesson_ambience.prompt %}
+                            <span class="ls-ambience__prompt">{{ lesson_ambience.prompt }}</span>
+                            {% endif %}
+                        </figcaption>
+                    </figure>
+                    {% endif %}
 
                     <div class="ls-welcome__stats">
                         <div class="ls-stat">
@@ -164,7 +210,7 @@
         {# ================================================================ #}
         {# STEP 1 — Theory                                                  #}
         {# ================================================================ #}
-        <section class="lesson-step" data-step="learn">
+        <section class="lesson-step" data-step="learn" data-mission-label="Misiunea 1" data-mission-title="Invata ideea">
             <div class="lesson-step__inner">
                 <div class="ls-mentor">
                     <div class="ls-mentor__avatar">&#128218;</div>
@@ -231,6 +277,16 @@
                 </div>
                 {% endif %}
 
+                {% if theory_question_prompts %}
+                <div class="ls-micro-action">
+                    <span class="ls-micro-action__icon">?</span>
+                    <div>
+                        <strong>Mini-pas de gandire</strong>
+                        <p>{{ theory_question_prompts.0 }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
                 {% if lesson_vocabulary %}
                 <div class="ls-card">
                     <h3 class="ls-card__title">&#128220; Cuvinte noi</h3>
@@ -289,7 +345,7 @@
         {# ================================================================ #}
         {# STEP 2 — Examples                                                #}
         {# ================================================================ #}
-        <section class="lesson-step" data-step="examples">
+        <section class="lesson-step" data-step="examples" data-mission-label="Misiunea 2" data-mission-title="Vezi modelul">
             <div class="lesson-step__inner">
                 <div class="ls-mentor">
                     <div class="ls-mentor__avatar">&#128187;</div>
@@ -307,6 +363,21 @@
                     {{ lesson_examples_text }}
                 </p>
                 {% endif %}
+
+                {% if lesson_mastery.worked_example_focus %}
+                <div class="ls-mastery-focus">
+                    <span class="ls-mastery-focus__label">Uita-te dupa</span>
+                    <span class="ls-mastery-focus__text">{{ lesson_mastery.worked_example_focus }}</span>
+                </div>
+                {% endif %}
+
+                <div class="ls-micro-action ls-micro-action--example">
+                    <span class="ls-micro-action__icon">!</span>
+                    <div>
+                        <strong>Incearca acum</strong>
+                        <p>{% if is_junior_track %}Alege primul pas pe care l-ar face Robo si spune de ce.{% else %}Schimba un detaliu din exemplu si prezice ce se intampla inainte sa rulezi codul.{% endif %}</p>
+                    </div>
+                </div>
 
                 {% if lesson_example_cards %}
                 <div class="ls-examples">
@@ -356,7 +427,7 @@
         {# STEP 3 — Practice (drag-and-drop)                                #}
         {# ================================================================ #}
         {% if practice %}
-        <section class="lesson-step" data-step="practice">
+        <section class="lesson-step" data-step="practice" data-mission-label="Misiunea 3" data-mission-title="Exerseaza">
             <div class="lesson-step__inner">
                 <div class="ls-mentor">
                     <div class="ls-mentor__avatar">&#127912;</div>
@@ -366,6 +437,7 @@
                 </div>
 
                 <h2 class="ls-card__title" style="text-align:center;font-size:22px;">{{ practice_section_title }}</h2>
+                <p class="ls-step-brief">{{ practice_section_description }}</p>
 
                 {% if practice.data %}
                 <div data-ls-practice>
@@ -420,7 +492,7 @@
         {# STEP — Inline Code Playground (Feature 2)                        #}
         {# ================================================================ #}
         {% if code_exercises %}
-        <section class="lesson-step" data-step="code">
+        <section class="lesson-step" data-step="code" data-mission-label="Misiunea 3" data-mission-title="Scrie cod">
             <div class="lesson-step__inner">
                 <div class="ls-mentor">
                     <div class="ls-mentor__avatar">&#128187;</div>
@@ -481,7 +553,7 @@
         {# STEP — Quiz                                                      #}
         {# ================================================================ #}
         {% if quiz_test %}
-        <section class="lesson-step" data-step="quiz">
+        <section class="lesson-step" data-step="quiz" data-mission-label="Misiunea finala" data-mission-title="Verifica si repara">
             <div class="lesson-step__inner">
                 <div class="ls-mentor">
                     <div class="ls-mentor__avatar">&#129504;</div>
@@ -521,6 +593,16 @@
                                 {% if lesson_theory_points %}
                                 <br><strong>Aminteste-ti:</strong> {{ lesson_theory_points.0 }}
                                 {% endif %}
+                                {% if lesson_mastery.mistake_repair %}
+                                <div class="ls-mastery-repair">
+                                    <strong>Intrebari de reparare:</strong>
+                                    <ol>
+                                        {% for question in lesson_mastery.mistake_repair %}
+                                        <li>{{ question }}</li>
+                                        {% endfor %}
+                                    </ol>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                         <button class="ls-btn ls-btn--ghost ls-btn--small" data-ls-quiz-retry-btn style="margin-top:10px;">&#128260; Incearca din nou</button>
@@ -538,7 +620,7 @@
         {# ================================================================ #}
         {# STEP — Summary / Completion                                      #}
         {# ================================================================ #}
-        <section class="lesson-step" data-step="summary">
+        <section class="lesson-step" data-step="summary" data-mission-label="Finish" data-mission-title="Recapitulare">
             <div class="lesson-step__inner">
                 <div class="ls-complete">
                     <div class="ls-complete__badge">&#127942;</div>
@@ -549,6 +631,13 @@
                         Acum stii: {{ lesson_theory_points.0 }}.
                         {% endif %}
                     </p>
+
+                    {% if lesson_mastery.next_practice %}
+                    <div class="ls-mastery-next">
+                        <span class="ls-mastery-next__label">Urmatorul pas</span>
+                        <strong class="ls-mastery-next__text">{{ lesson_mastery.next_practice }}</strong>
+                    </div>
+                    {% endif %}
 
                     <div class="ls-rewards">
                         <div class="ls-reward">
@@ -562,6 +651,36 @@
                             <span class="ls-reward__lbl">Lectii</span>
                         </div>
                     </div>
+
+                    <form class="ls-checkin" method="post" action="{% url 'estudy:submit_learner_checkin' slug=lesson.slug %}">
+                        {% csrf_token %}
+                        <h3 class="ls-card__title">&#128172; Check-in rapid</h3>
+                        <p class="ls-checkin__hint">Spune cum a mers lectia ca sa primesti un plan mai potrivit.</p>
+                        <div class="ls-checkin__grid">
+                            <label class="ls-checkin__choice">
+                                <input type="radio" name="mood" value="understood" checked>
+                                <span>Am inteles</span>
+                            </label>
+                            <label class="ls-checkin__choice">
+                                <input type="radio" name="mood" value="needs_help">
+                                <span>Am nevoie de ajutor</span>
+                            </label>
+                            <label class="ls-checkin__choice">
+                                <input type="radio" name="difficulty" value="too_easy">
+                                <span>Prea usor</span>
+                            </label>
+                            <label class="ls-checkin__choice">
+                                <input type="radio" name="difficulty" value="just_right" checked>
+                                <span>Potrivit</span>
+                            </label>
+                            <label class="ls-checkin__choice">
+                                <input type="radio" name="difficulty" value="too_hard">
+                                <span>Prea greu</span>
+                            </label>
+                        </div>
+                        <textarea class="ls-checkin__note" name="note" rows="2" maxlength="1000" placeholder="Optional: ce pas vrei sa reiei?"></textarea>
+                        <button class="ls-btn ls-btn--primary ls-btn--small" type="submit">&#10003; Salveaza check-in</button>
+                    </form>
 
                     {# Feature 7: Reflection prompts #}
                     {% if reflection_prompts %}
@@ -606,6 +725,13 @@
                     </div>
                     {% endif %}
 
+                    {% if lesson_mastery.mastery_check %}
+                    <div class="ls-card" style="text-align:left;margin-bottom:24px;">
+                        <h3 class="ls-card__title">&#127919; Verificare scurta</h3>
+                        <p style="margin:0;font-size:15px;line-height:1.6;font-weight:600;">{{ lesson_mastery.mastery_check }}</p>
+                    </div>
+                    {% endif %}
+
                     <div class="ls-nav-btns">
                         <button class="ls-btn ls-btn--success ls-btn--large" data-ls-complete data-ls-action="next">
                             &#10003; Gata! Marcheaza ca terminata
@@ -637,5 +763,5 @@
 
 {% block extra_js %}
 {{ block.super }}
-<script src="{% static 'estudy/lesson.js' %}?v=20260411b" defer></script>
+<script src="{% static 'estudy/lesson.js' %}?v=20260508d" defer></script>
 {% endblock %}

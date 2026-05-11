@@ -45,6 +45,7 @@ class SocraticFollowupTests(TestCase):
         self.assertTrue(questions)
         self.assertLessEqual(len(questions), MAX_QUESTIONS)
         self.assertIn(SELECTED_ANSWER, questions[0])
+        self.assertIn("Ce te-a facut", questions[0])
 
     def test_code_followups_from_error(self):
         result = build_code_socratic_followups(
@@ -87,3 +88,4 @@ class SocraticFollowupTests(TestCase):
         self.assertTrue(questions)
         self.assertIn(EXPECTED_OUTPUT, questions[0])
         self.assertIn(ACTUAL_OUTPUT, questions[0])
+        self.assertIn("Ce ar trebui", questions[0])

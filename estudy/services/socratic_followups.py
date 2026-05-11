@@ -11,23 +11,23 @@ MAX_SNIPPET_LENGTH = 120
 NO_MISTAKE_WARNING = "no_mistake"
 
 TEST_QUESTIONS = [
-    "What concept from the lesson does this question test?",
-    "What in the prompt led you to choose your answer?",
-    "How would you justify the correct answer in one sentence?",
-    "Can you restate the rule in your own words?",
-    "What example would help you verify the rule?",
+    "Ce idee din lectie verifica aceasta intrebare?",
+    "Ce cuvant din cerinta te-a ghidat spre raspuns?",
+    "Cum ai explica regula cu propriile cuvinte?",
+    "Ce exemplu te-ar ajuta sa verifici regula?",
+    "Ce ai verifica inainte sa alegi din nou?",
 ]
 
 CODE_ERROR_QUESTIONS = [
-    "Which line triggers the error message?",
-    "What does the error say about the expected type or syntax?",
-    "Which value should you inspect with a print statement?",
+    "Ce linie porneste mesajul de eroare?",
+    "Ce spune eroarea despre tip, sintaxa sau nume?",
+    "Ce valoare poti verifica folosind print?",
 ]
 
 CODE_TEST_QUESTIONS = [
-    "What do you expect the code to output for this input?",
-    "Where does the actual output first diverge from the expected output?",
-    "Which step in your logic might be missing or incorrect?",
+    "Ce rezultat astepti pentru acest input?",
+    "Unde se desparte rezultatul tau de rezultatul asteptat?",
+    "Ce pas din logica poate lipsi sau poate fi gresit?",
 ]
 
 
@@ -64,10 +64,10 @@ def build_test_socratic_followups(
     if selected_answer:
         questions.insert(
             0,
-            f"What made '{_trim(selected_answer, MAX_SNIPPET_LENGTH)}' feel correct?",
+            f"Ce te-a facut sa alegi '{_trim(selected_answer, MAX_SNIPPET_LENGTH)}'?",
         )
     if test.explanation:
-        questions.append("Which part of the explanation changes your thinking?")
+        questions.append("Ce parte din explicatie iti schimba gandirea?")
 
     questions = _pick_questions(_dedupe(questions))
     return BaseServiceResult.ok(
@@ -106,7 +106,7 @@ def build_code_socratic_followups(
         if expected and actual:
             questions.insert(
                 0,
-                f"What should happen when output is '{expected}' instead of '{actual}'?",
+                f"Ce ar trebui sa se intample cand rezultatul este '{expected}', nu '{actual}'?",
             )
         questions = _pick_questions(_dedupe(questions))
         return BaseServiceResult.ok(data={"questions": questions})
@@ -115,7 +115,7 @@ def build_code_socratic_followups(
     if lesson is not None:
         fallback.insert(
             0,
-            f"Which concept from '{lesson.title}' would you revisit first?",
+            f"Ce idee din '{lesson.title}' ai revedea prima?",
         )
     questions = _pick_questions(_dedupe(fallback))
     return BaseServiceResult.ok(data={"questions": questions})

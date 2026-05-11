@@ -345,18 +345,18 @@ class Lesson(models.Model):
                 [
                     LessonReflectionPrompt(
                         lesson=self,
-                        prompt="Cum te simți după lecție?",
+                        prompt="Cum te-ai simtit dupa lectie?",
                         format=LessonReflectionPrompt.FORMAT_SCALE,
                         scale_labels=[
                             "Am nevoie de ajutor",
-                            "Mă descurc",
-                            "Pot explica și altora",
+                            "Inteleg",
+                            "Pot explica altora",
                         ],
                         order=0,
                     ),
                     LessonReflectionPrompt(
                         lesson=self,
-                        prompt=f"Ce descoperire nouă ai făcut despre tema «{self.title}»?",
+                        prompt=f"Ce idee noua ai descoperit in lectia {self.title}?",
                         format=LessonReflectionPrompt.FORMAT_TEXT,
                         order=1,
                     ),
@@ -876,6 +876,54 @@ class LessonProgress(models.Model):
         else:
             # delegate to mark_completed to ensure XP, streaks, etc. are awarded once
             self.mark_completed(award_xp=award_xp)
+
+
+class LearnerCheckIn(models.Model):
+    MOOD_UNDERSTOOD = "understood"
+    MOOD_NEEDS_HELP = "needs_help"
+    MOOD_CHOICES = [
+        (MOOD_UNDERSTOOD, "Understood"),
+        (MOOD_NEEDS_HELP, "Needs help"),
+    ]
+
+    DIFFICULTY_TOO_EASY = "too_easy"
+    DIFFICULTY_JUST_RIGHT = "just_right"
+    DIFFICULTY_TOO_HARD = "too_hard"
+    DIFFICULTY_CHOICES = [
+        (DIFFICULTY_TOO_EASY, "Too easy"),
+        (DIFFICULTY_JUST_RIGHT, "Just right"),
+        (DIFFICULTY_TOO_HARD, "Too hard"),
+    ]
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="learner_checkins"
+    )
+    lesson = models.ForeignKey(
+        Lesson, on_delete=models.CASCADE, related_name="learner_checkins"
+    )
+    mood = models.CharField(
+        max_length=20, choices=MOOD_CHOICES, default=MOOD_UNDERSTOOD
+    )
+    difficulty = models.CharField(
+        max_length=20, choices=DIFFICULTY_CHOICES, default=DIFFICULTY_JUST_RIGHT
+    )
+    help_requested = models.BooleanField(default=False, db_index=True)
+    note = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("user", "lesson")
+        ordering = ("-updated_at",)
+        indexes = [
+            models.Index(
+                fields=["user", "help_requested"], name="est_lci_user_help_idx"
+            ),
+            models.Index(fields=["lesson", "updated_at"], name="est_lci_lesson_idx"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user.username} - {self.lesson.title}: {self.mood}"
 
 
 class LearningPlan(models.Model):

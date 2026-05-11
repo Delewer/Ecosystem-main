@@ -286,6 +286,7 @@ def robot_lab_level_detail(request, level_id):
         "difficulty": level.get("difficulty") or "easy",
         "allowed_api": level.get("allowed_api") or [],
         "max_steps": int(level.get("max_steps") or 200),
+        "max_sequence_length": int(level.get("max_sequence_length") or 12),
         "time_limit_ms": int(level.get("time_limit_ms") or 800),
         "xp_reward": int(level.get("xp_reward") or 0),
         "starter_code": level.get("starter_code") or "",

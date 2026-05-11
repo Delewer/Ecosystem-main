@@ -3,6 +3,7 @@
 Management command to export analytics data.
 Run with: python manage.py export_analytics --kind event_log --format csv
 """
+
 from __future__ import annotations
 
 import json

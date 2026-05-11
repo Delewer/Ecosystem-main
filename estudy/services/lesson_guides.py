@@ -4,6 +4,15 @@ LESSON_GUIDES: dict[str, dict[str, object]] = {}
 
 
 LESSON_GUIDES["code-1-bun-venit-in-python"] = {
+    "ambience": {
+        "image": "estudy/img/lessons/algorithm-robot-lab.png",
+        "alt": "Robot intr-un laborator luminos, urmand un traseu de comenzi ordonate.",
+        "eyebrow": "Misiune vizuala",
+        "title": "Programul urmeaza pasii in ordine",
+        "caption": "Priveste traseul: Robo nu ghiceste drumul, ci urmeaza fiecare comanda exact in ordinea data.",
+        "junior_prompt": "Spune cu degetul primul pas, apoi urmatorul. Ce s-ar intampla daca le-ai inversa?",
+        "code_prompt": "Citeste imaginea ca pe un program: fiecare placa este o linie care se executa dupa linia de dinainte.",
+    },
     "examples_text": "Uita-te la exemple ca la pasi pe care robotul ii urmeaza in ordine. Fiecare linie are un rol clar: porneste, afiseaza, verifica.",
     "example_cards": [
         {
@@ -162,6 +171,15 @@ LESSON_GUIDES["code-2-variabile-si-date"] = {
 }
 
 LESSON_GUIDES["junior-2-comenzi-pentru-robo"] = {
+    "ambience": {
+        "image": "estudy/img/lessons/algorithm-robot-lab.png",
+        "alt": "Robot intr-un laborator luminos, urmand un traseu de comenzi ordonate.",
+        "eyebrow": "Misiune vizuala",
+        "title": "Traseul comenzilor clare",
+        "caption": "Fiecare sageata este un pas. Daca ordinea se schimba, Robo poate rata terminalul.",
+        "junior_prompt": "Alege primul pas, apoi al doilea. Verifica daca Robo ajunge la final fara sa sara peste nimic.",
+        "code_prompt": "Transforma traseul intr-o lista de instructiuni scurte si verifica ordinea ca la depanare.",
+    },
     "examples_text": "Un algoritm bun este ca o reteta usoara: incepi, urmezi pasii in ordine si ajungi la rezultat fara sa ghicesti nimic.",
     "example_cards": [
         {
@@ -791,6 +809,138 @@ LESSON_GUIDES["code-9-mini-proiect-quiz-robot"] = {
         "Ce ai verifica inainte sa prezinti proiectul altora?",
     ],
 }
+
+
+MASTERY_PACK_LESSON_SLUGS = (
+    "code-1-bun-venit-in-python",
+    "nivel-1-prieteni-cu-variabilele",
+    "code-2-variabile-si-date",
+    "junior-2-comenzi-pentru-robo",
+    "code-3-decizii-cu-if-si-else",
+    "junior-3-alegeri-cu-daca",
+    "nivel-2-aventuri-cu-buclele",
+    "junior-4-repetitii-care-ajuta",
+    "code-5-liste-care-organizeaza",
+    "junior-5-detectivii-de-buguri",
+)
+
+
+MASTERY_PACK = {
+    "code-1-bun-venit-in-python": {
+        "goal": "Pot scrie si explica un program scurt care afiseaza mesaje in ordinea corecta.",
+        "worked_example_focus": "Urmareste ordinea liniilor si spune ce apare prima data in consola.",
+        "mistake_repair": [
+            "Ce linie ruleaza prima?",
+            "Mesajul tau este text clar intre ghilimele?",
+            "Ce s-ar schimba daca ai inversa doua linii?",
+        ],
+        "mastery_check": "Explica in doua propozitii ce face `print()` si de ce ordinea conteaza.",
+        "next_practice": "Scrie trei mesaje de pornire pentru un joc si schimba ordinea lor ca sa observi diferenta.",
+    },
+    "nivel-1-prieteni-cu-variabilele": {
+        "goal": "Pot recunoaste numele si valoarea unei variabile simple.",
+        "worked_example_focus": "Cauta eticheta cutiei si valoarea pe care o tine minte.",
+        "mistake_repair": [
+            "Care este numele variabilei?",
+            "Care este valoarea din cutie acum?",
+            "Se schimba valoarea sau doar o afisam?",
+        ],
+        "mastery_check": "Da un exemplu de variabila pentru scor, nume sau vieti.",
+        "next_practice": "Alege un personaj si creeaza trei variabile pentru el: nume, scor si energie.",
+    },
+    "code-2-variabile-si-date": {
+        "goal": "Pot alege un tip potrivit de valoare pentru text, numar sau stare.",
+        "worked_example_focus": "Observa daca valoarea trebuie afisata, calculata sau verificata ca adevarat/fals.",
+        "mistake_repair": [
+            "Vrei sa calculezi cu aceasta valoare?",
+            "Este informatia un text, un numar sau o stare?",
+            "Numele variabilei spune clar ce pastreaza?",
+        ],
+        "mastery_check": "Alege tipul potrivit pentru nume_robot, energie si robot_activ.",
+        "next_practice": "Construieste un panou de control cu o variabila text, una numerica si una de stare.",
+    },
+    "junior-2-comenzi-pentru-robo": {
+        "goal": "Pot pune pasi simpli in ordine ca Robo sa ajunga la final.",
+        "worked_example_focus": "Verifica primul pas, pasul de mijloc si pasul de oprire.",
+        "mistake_repair": [
+            "Unde incepe Robo?",
+            "Care pas trebuie facut inainte de intoarcere?",
+            "Ce pas lipseste ca Robo sa se opreasca?",
+        ],
+        "mastery_check": "Spune un algoritm in trei pasi pentru un traseu foarte scurt.",
+        "next_practice": "Deseneaza un traseu de trei pasi si roaga pe cineva sa il urmeze exact.",
+    },
+    "code-3-decizii-cu-if-si-else": {
+        "goal": "Pot explica o regula if/else si cele doua drumuri posibile.",
+        "worked_example_focus": "Uita-te ce conditie se verifica si ce se intampla cand este falsa.",
+        "mistake_repair": [
+            "Care este conditia verificata?",
+            "Ce se intampla daca regula este adevarata?",
+            "Ai pregatit si varianta else?",
+        ],
+        "mastery_check": "Scrie o regula pentru un robot care porneste doar daca are energie.",
+        "next_practice": "Creeaza o decizie cu doua rezultate: acces permis sau acces blocat.",
+    },
+    "junior-3-alegeri-cu-daca": {
+        "goal": "Pot lega o regula simpla de actiunea potrivita pentru Robo.",
+        "worked_example_focus": "Observa ce vede Robo si ce raspuns trebuie sa aleaga.",
+        "mistake_repair": [
+            "Ce intrebare pune regula?",
+            "Ce face Robo daca raspunsul este da?",
+            "Ce face Robo daca raspunsul este nu?",
+        ],
+        "mastery_check": "Explica o alegere de tip semafor: verde inseamna merge, rosu inseamna stop.",
+        "next_practice": "Inventeaza doua reguli pentru Robo: una pentru drum liber si una pentru obstacol.",
+    },
+    "nivel-2-aventuri-cu-buclele": {
+        "goal": "Pot alege o bucla atunci cand acelasi pas se repeta.",
+        "worked_example_focus": "Cauta ce se repeta si cum stie programul cand sa se opreasca.",
+        "mistake_repair": [
+            "Ce instructiune se repeta?",
+            "De cate ori se repeta sau ce conditie o opreste?",
+            "Se schimba ceva ca bucla sa nu mearga la nesfarsit?",
+        ],
+        "mastery_check": "Spune cand ai folosi for si cand ai folosi while.",
+        "next_practice": "Scrie o rutina in care Robo repeta o miscare de trei ori si apoi se opreste.",
+    },
+    "junior-4-repetitii-care-ajuta": {
+        "goal": "Pot observa o repetitie si pot spune de cate ori apare.",
+        "worked_example_focus": "Numara miscarea repetata si marcheaza momentul de oprire.",
+        "mistake_repair": [
+            "Care pas apare de mai multe ori?",
+            "De cate ori trebuie repetat?",
+            "Cum stii ca repetitia s-a terminat?",
+        ],
+        "mastery_check": "Da un exemplu de miscare pe care Robo o repeta de trei ori.",
+        "next_practice": "Alege o miscare de dans si descrie repetitia: pas, numar, stop.",
+    },
+    "code-5-liste-care-organizeaza": {
+        "goal": "Pot folosi o lista pentru a grupa valori de acelasi fel.",
+        "worked_example_focus": "Observa elementele listei si cum bucla trece prin ele pe rand.",
+        "mistake_repair": [
+            "Valorile sunt de acelasi fel?",
+            "Este mai clar sa le tii intr-o lista?",
+            "Cum accesezi sau parcurgi fiecare element?",
+        ],
+        "mastery_check": "Construieste o lista cu trei obiecte din inventarul unui joc.",
+        "next_practice": "Creeaza lista `inventar` si descrie ce mesaj ai afisa pentru fiecare obiect.",
+    },
+    "junior-5-detectivii-de-buguri": {
+        "goal": "Pot gasi o greseala comparand ce asteptam cu ce s-a intamplat.",
+        "worked_example_focus": "Cauta indiciul: rezultat gresit, pas lipsa sau ordine gresita.",
+        "mistake_repair": [
+            "Ce trebuia sa se intample?",
+            "Ce s-a intamplat de fapt?",
+            "Ce verifici prima data, fara sa schimbi totul?",
+        ],
+        "mastery_check": "Spune in trei pasi cum cauti un bug simplu.",
+        "next_practice": "Ia un plan de trei pasi, strica un pas, apoi explica exact cum il repari.",
+    },
+}
+
+
+for slug, mastery in MASTERY_PACK.items():
+    LESSON_GUIDES.setdefault(slug, {})["mastery"] = mastery
 
 
 def get_lesson_learning_guide(slug: str) -> dict[str, object]:

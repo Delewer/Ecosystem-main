@@ -8,7 +8,7 @@ from ..services.gamification import (
     get_badge_summary,
     get_mission_context,
 )
-from ..services.recommendations import calculate_recommendations
+from ..services.today_learning import build_today_learning_plan
 
 
 def build_student_dashboard(user) -> Dict[str, Any]:
@@ -16,7 +16,8 @@ def build_student_dashboard(user) -> Dict[str, Any]:
     progress = build_overall_progress(user)
     badges = get_badge_summary(user)
     missions = get_mission_context(user)
-    recommendations = calculate_recommendations(user, limit=3)
+    today_plan = build_today_learning_plan(user)
+    recommendations = today_plan["recommendations"]
     primary_recommendation = recommendations[0] if recommendations else None
     highlighted_badges = (
         badges.get("highlighted", []) if isinstance(badges, dict) else []
@@ -37,6 +38,10 @@ def build_student_dashboard(user) -> Dict[str, Any]:
         "progress": progress,
         "badges": badges,
         "missions": missions,
+        "today_plan": today_plan,
+        "practice_plan": today_plan["practice_tasks"],
+        "age_track": today_plan["age_track"],
+        "recent_mistakes": today_plan["recent_mistakes"],
         "recommendations": recommendations,
         "recent_projects": submissions,
         "challenges": challenges,

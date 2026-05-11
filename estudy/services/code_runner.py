@@ -59,7 +59,7 @@ class CodeRunner:
         total = len(test_cases)
         error: Optional[str] = None
 
-        # Ensure code prints result based on stdin; we can't enforce structure
+        # Ensure code prints result based on stdin; we can't enforce structure.
         for test in test_cases:
             try:
                 proc = subprocess.run(
@@ -107,11 +107,11 @@ class CodeRunner:
         if not error:
             return ""
         if "SyntaxError" in error:
-            return "Проверьте синтаксис: скобки, кавычки и отступы."
+            return "Verifica sintaxa: paranteze, ghilimele si indentare."
         if "NameError" in error:
-            return "Похоже, вы используете имя, которое не определено."
+            return "Pare ca folosesti un nume care nu a fost definit."
         if "IndentationError" in error:
-            return "В Python важно соблюдать отступы."
+            return "In Python, indentarea corecta este importanta."
         if "Timeout" in error:
-            return "Ваш код работает слишком долго — проверьте циклы и условия."
-        return "Попробуйте упростить решение и вывести только требуемый результат."
+            return "Codul ruleaza prea mult timp - verifica buclele si conditiile."
+        return "Incearca sa simplifici solutia si sa afisezi doar rezultatul cerut."

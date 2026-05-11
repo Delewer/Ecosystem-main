@@ -114,9 +114,9 @@ class AdaptiveLearningEngine:
             "correct_attempts": correct_attempts,
             "completed_lessons": completed_lessons,
             "total_lessons": total_lessons,
-            "completion_rate": (completed_lessons / total_lessons * 100)
-            if total_lessons > 0
-            else 0,
+            "completion_rate": (
+                (completed_lessons / total_lessons * 100) if total_lessons > 0 else 0
+            ),
             "weak_topics": weak_topics[:5],  # Top 5 weak topics
         }
 
