@@ -1,0 +1,17 @@
+[tool.black]
+extend-exclude = '''
+/(
+    \.claude
+  | myenv
+  | staticfiles
+  | media
+  | migrations
+)/
+| USAGE_EXAMPLES\.py
+| estudy/(admin_old|forms_old)\.py
+'''
+
+[tool.isort]
+profile = "black"
+skip = [".claude", "myenv", "staticfiles", "media", "USAGE_EXAMPLES.py"]
+extend_skip_glob = ["*/migrations/*", "*/admin_old.py", "*/forms_old.py"]
