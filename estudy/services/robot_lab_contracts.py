@@ -114,9 +114,9 @@ def normalize_robot_lab_payload(raw_payload: dict[str, Any]) -> dict[str, Any]:
         "student_requested_solution": bool(
             payload.get("student_requested_solution", False)
         ),
-        "history": payload.get("history")
-        if isinstance(payload.get("history"), list)
-        else [],
+        "history": (
+            payload.get("history") if isinstance(payload.get("history"), list) else []
+        ),
         "level_metadata": {
             "max_steps": max(1, _safe_int(level_metadata.get("max_steps"), 200)),
             "allowed_api": [str(item) for item in allowed_api],

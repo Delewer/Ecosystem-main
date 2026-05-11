@@ -15,9 +15,9 @@ class InregistrareFormular(UserCreationForm):
         (UserProfile.ROLE_PROFESSOR, "Mentor (profesor)"),
     ]
 
-    email = forms.EmailField(label="Adresă de email", required=True)
+    email = forms.EmailField(label="Adresa de email", required=True)
     age = forms.IntegerField(
-        label="Vârstă",
+        label="Varsta",
         min_value=6,
         max_value=100,
         required=True,
@@ -36,10 +36,10 @@ class InregistrareFormular(UserCreationForm):
         help_text="Profesorii introduc codul primit de la echipa UnITex pentru a valida contul.",
     )
     accept_terms = forms.BooleanField(
-        label="Accept Termenii și condițiile",
+        label="Accept Termenii si conditiile",
         required=True,
         error_messages={
-            "required": "Trebuie să accepți Termenii și condițiile pentru a crea contul."
+            "required": "Trebuie sa accepti Termenii si conditiile pentru a crea contul."
         },
     )
 
@@ -78,8 +78,8 @@ class InregistrareFormular(UserCreationForm):
         }
         labels = {
             "username": "Nume de utilizator",
-            "password1": "Parolă",
-            "password2": "Confirmă parola",
+            "password1": "Parola",
+            "password2": "Confirma parola",
         }
         for field in text_inputs:
             if field in self.fields:
@@ -93,11 +93,11 @@ class InregistrareFormular(UserCreationForm):
                 self.fields[name].label = label
         self.fields[
             "role"
-        ].help_text = "Selectează cum vei folosi platforma. Poți modifica alegerea ulterior din profil."
+        ].help_text = "Selecteaza cum vei folosi platforma. Poti modifica alegerea ulterior din profil."
         self.fields["role"].widget.attrs.setdefault("class", "role-radio")
-        self.fields["accept_terms"].help_text = (
-            "Contul se activează doar după acceptarea termenilor platformei."
-        )
+        self.fields[
+            "accept_terms"
+        ].help_text = "Contul se activeaza doar dupa acceptarea termenilor platformei."
 
     def clean(self):
         cleaned = super().clean()
@@ -109,15 +109,15 @@ class InregistrareFormular(UserCreationForm):
                 raise forms.ValidationError(
                     (
                         "Codul de verificare pentru profesori nu este configurat. "
-                        "Contactează administratorul platformei."
+                        "Contacteaza administratorul platformei."
                     )
                 )
             if teacher_code != expected:
                 self.add_error(
                     "teacher_code",
                     (
-                        "Codul introdus nu este valid. Verifică emailul primit de la UnITex "
-                        "sau contactează administratorul."
+                        "Codul introdus nu este valid. Verifica emailul primit de la UnITex "
+                        "sau contacteaza administratorul."
                     ),
                 )
         return cleaned
@@ -151,7 +151,7 @@ class LoginFormular(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["username"].label = "Nume de utilizator"
-        self.fields["password"].label = "Parolă"
+        self.fields["password"].label = "Parola"
         self.fields["username"].widget.attrs.update(
             {"placeholder": "nume utilizator", "class": "input-control"}
         )
@@ -170,9 +170,9 @@ class ProfileForm(forms.ModelForm):
         fields = ["name", "email", "phone_number", "age", "bio"]
         labels = {
             "name": "Nume complet",
-            "email": "Adresă de email",
+            "email": "Adresa de email",
             "phone_number": "Telefon",
-            "age": "Vârstă",
+            "age": "Varsta",
             "bio": "Despre mine",
         }
         widgets = {
@@ -197,7 +197,7 @@ class ProfileForm(forms.ModelForm):
                 attrs={
                     "class": "input-control",
                     "rows": 4,
-                    "placeholder": "Spune pe scurt ce îți place să înveți pe platformă.",
+                    "placeholder": "Spune pe scurt ce iti place sa inveti pe platforma.",
                 }
             ),
         }

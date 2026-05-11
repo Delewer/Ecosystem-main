@@ -5,6 +5,7 @@
     if (!root) return;
 
     const slug = root.dataset.lessonSlug || '';
+    const initialLessonCompleted = root.dataset.lessonCompleted === 'true';
     const steps = Array.from(root.querySelectorAll('.lesson-step'));
     const dots = Array.from(root.querySelectorAll('.lesson-hud__dot'));
     const xpEl = root.querySelector('[data-ls-xp-val]');
@@ -63,6 +64,9 @@
             if (s.completedSteps) completedSteps = new Set(s.completedSteps);
             if (typeof s.earnedXp === 'number') earnedXp = s.earnedXp;
             if (typeof s.currentStep === 'number') currentStep = Math.min(s.currentStep, steps.length - 1);
+            if (Array.isArray(s.earnedAchievements)) {
+                s.earnedAchievements.forEach(id => earnedAchievements.add(id));
+            }
         } catch (e) {}
     }
     function saveState() {
@@ -71,6 +75,7 @@
                 completedSteps: [...completedSteps],
                 earnedXp: earnedXp,
                 currentStep: currentStep,
+                earnedAchievements: [...earnedAchievements],
             }));
         } catch (e) {}
     }
@@ -164,19 +169,14 @@
     function showCheerToast() {
         const msg = cheerMessages[Math.floor(Math.random() * cheerMessages.length)];
         const toast = document.createElement('div');
+        toast.className = 'ls-cheer-toast';
         toast.textContent = msg;
-        toast.style.cssText =
-            'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:9999;' +
-            'padding:14px 28px;border-radius:16px;font-family:Nunito,sans-serif;' +
-            'font-weight:800;font-size:18px;color:#FFF;pointer-events:none;' +
-            'background:linear-gradient(135deg,#7C3AED,#EC4899);' +
-            'box-shadow:0 8px 24px rgba(124,58,237,0.35);';
         document.body.appendChild(toast);
         toast.animate([
-            { transform: 'translateX(-50%) translateY(20px) scale(0.8)', opacity: 0 },
-            { transform: 'translateX(-50%) translateY(0) scale(1)', opacity: 1 },
-            { transform: 'translateX(-50%) translateY(0) scale(1)', opacity: 1 },
-            { transform: 'translateX(-50%) translateY(-20px) scale(0.8)', opacity: 0 },
+            { transform: 'translateY(20px) scale(0.8)', opacity: 0 },
+            { transform: 'translateY(0) scale(1)', opacity: 1 },
+            { transform: 'translateY(0) scale(1)', opacity: 1 },
+            { transform: 'translateY(-20px) scale(0.8)', opacity: 0 },
         ], { duration: 1800, easing: 'ease-out' }).onfinish = () => toast.remove();
     }
 
@@ -233,7 +233,7 @@
                 const isCorrect = answer === correctAnswer;
 
                 opts.forEach(o => {
-                    if (o.dataset.lsAnswer === correctAnswer) o.classList.add('is-correct');
+                    if (isCorrect && o.dataset.lsAnswer === correctAnswer) o.classList.add('is-correct');
                     else if (o === selectedOpt && !isCorrect) o.classList.add('is-wrong');
                 });
 
@@ -247,7 +247,7 @@
                         LessonAudio.correct();
                     } else {
                         fbEl.className = 'ls-quiz-fb ls-quiz-fb--no';
-                        fbEl.innerHTML = '<strong>Nu chiar.</strong> Raspunsul corect e evidentiat. ' + explanation;
+                        fbEl.innerHTML = '<strong>Nu chiar.</strong> Foloseste intrebarile de mai jos si incearca din nou.';
                         shakeElement(selectedOpt);
                         LessonAudio.wrong();
                     }
@@ -260,7 +260,10 @@
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrfToken },
                         body: 'answer=' + encodeURIComponent(answer) + '&time_taken_ms=0',
-                    }).catch(() => {});
+                    })
+                        .then(resp => resp.ok ? resp.json() : null)
+                        .then(data => enhanceQuizFeedback(fbEl, data, explanation))
+                        .catch(() => {});
                 }
             });
         }
@@ -494,6 +497,32 @@
         return '';
     }
 
+    function escapeHtml(value) {
+        return String(value || '').replace(/[&<>"']/g, ch => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+        }[ch]));
+    }
+
+    function enhanceQuizFeedback(fbEl, data, fallbackExplanation) {
+        if (!fbEl || !data || data.is_correct) return;
+        const explanationText = data.mistake_explanation || data.explanation || fallbackExplanation || '';
+        const questions = Array.isArray(data.socratic_questions)
+            ? data.socratic_questions.filter(Boolean).slice(0, 3)
+            : [];
+        let html = '<strong>Nu chiar.</strong> Repara pasul inainte sa alegi din nou.';
+        if (explanationText) html += ' ' + escapeHtml(explanationText);
+        if (questions.length) {
+            html += '<div class="ls-socratic"><div class="ls-socratic__title">Intrebari care te ajuta sa repari pasul:</div><ol>';
+            html += questions.map(q => '<li>' + escapeHtml(q) + '</li>').join('');
+            html += '</ol></div>';
+        }
+        fbEl.innerHTML = html;
+    }
+
     // --- Feature 10: Text-to-Speech ---
     const ttsBtn = root.querySelector('[data-ls-tts]');
     const ttsTextEl = root.querySelector('.ls-tts-text');
@@ -641,12 +670,13 @@
             const explanation = quizForm.dataset.lsExplanation || '';
             const fbEl = quizForm.querySelector('[data-ls-quiz-fb]');
             let selectedOpt = null;
+            let activeSubmitBtn = submitBtn;
 
             const newClickHandler = (opt) => () => {
-                opts.forEach(o => o.classList.remove('is-selected'));
+                quizForm.querySelectorAll('.ls-quiz-opt').forEach(o => o.classList.remove('is-selected'));
                 opt.classList.add('is-selected');
                 selectedOpt = opt;
-                if (submitBtn) submitBtn.disabled = false;
+                if (activeSubmitBtn) activeSubmitBtn.disabled = false;
             };
 
             opts.forEach(opt => {
@@ -658,13 +688,14 @@
             if (submitBtn) {
                 const newSubmit = submitBtn.cloneNode(true);
                 submitBtn.parentNode.replaceChild(newSubmit, submitBtn);
+                activeSubmitBtn = newSubmit;
                 newSubmit.addEventListener('click', () => {
                     const sel = quizForm.querySelector('.ls-quiz-opt.is-selected');
                     if (!sel) return;
                     const answer = sel.dataset.lsAnswer || '';
                     const isCorrect = answer === correctAnswer;
                     quizForm.querySelectorAll('.ls-quiz-opt').forEach(o => {
-                        if (o.dataset.lsAnswer === correctAnswer) o.classList.add('is-correct');
+                        if (isCorrect && o.dataset.lsAnswer === correctAnswer) o.classList.add('is-correct');
                         else if (o === sel && !isCorrect) o.classList.add('is-wrong');
                     });
                     if (fbEl) {
@@ -676,12 +707,24 @@
                             emitConfetti(newSubmit);
                         } else {
                             fbEl.className = 'ls-quiz-fb ls-quiz-fb--no';
-                            fbEl.innerHTML = '<strong>Nu chiar.</strong> Raspunsul corect e evidentiat. ' + explanation;
+                            fbEl.innerHTML = '<strong>Nu chiar.</strong> Foloseste intrebarile de mai jos si incearca din nou.';
                             shakeElement(sel);
                             if (retryPanel) {
                                 setTimeout(() => { retryPanel.hidden = false; }, 300);
                             }
                         }
+                    }
+                    const testId = quizForm.dataset.lsTestId;
+                    const csrfToken = getCsrf();
+                    if (testId && csrfToken) {
+                        fetch('/estudy/tests/' + testId + '/submit/', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrfToken },
+                            body: 'answer=' + encodeURIComponent(answer) + '&time_taken_ms=0',
+                        })
+                            .then(resp => resp.ok ? resp.json() : null)
+                            .then(data => enhanceQuizFeedback(fbEl, data, explanation))
+                            .catch(() => {});
                     }
                 });
             }
@@ -830,6 +873,7 @@
     // --- Achievement Badges ---
     const achievementsEl = root.querySelector('[data-ls-achievements]');
     const earnedAchievements = new Set();
+    let achievementToastShownThisPage = false;
 
     const ACHIEVEMENTS = [
         { id: 'first_step',   icon: '🚀', title: 'Prima miscare!',    desc: 'Ai completat primul pas',         check: () => completedSteps.size >= 1 },
@@ -843,11 +887,16 @@
     ];
 
     function checkAchievements() {
+        if (initialLessonCompleted) {
+            return;
+        }
+
         ACHIEVEMENTS.forEach(a => {
             if (earnedAchievements.has(a.id)) return;
             try {
                 if (a.check()) {
                     earnedAchievements.add(a.id);
+                    saveState();
                     showAchievement(a);
                 }
             } catch (e) {}
@@ -858,27 +907,31 @@
         if (!achievementsEl) return;
         achievementsEl.hidden = false;
 
-        // Toast notification
-        const toast = document.createElement('div');
-        toast.className = 'ls-achievement-toast';
-        toast.innerHTML =
-            '<span class="ls-achievement-toast__icon">' + a.icon + '</span>' +
-            '<div class="ls-achievement-toast__body">' +
-                '<div class="ls-achievement-toast__label">Realizare deblocata!</div>' +
-                '<div class="ls-achievement-toast__title">' + a.title + '</div>' +
-                '<div class="ls-achievement-toast__desc">' + a.desc + '</div>' +
-            '</div>';
-        document.body.appendChild(toast);
-        toast.animate([
-            { transform: 'translateX(120%)', opacity: 0 },
-            { transform: 'translateX(0)', opacity: 1 },
-        ], { duration: 500, easing: 'cubic-bezier(0.22,1,0.36,1)', fill: 'forwards' });
-        setTimeout(() => {
+        const shouldToast = !achievementToastShownThisPage && !initialLessonCompleted;
+        let toast = null;
+        if (shouldToast) {
+            achievementToastShownThisPage = true;
+            toast = document.createElement('div');
+            toast.className = 'ls-achievement-toast';
+            toast.innerHTML =
+                '<span class="ls-achievement-toast__icon">' + a.icon + '</span>' +
+                '<div class="ls-achievement-toast__body">' +
+                    '<div class="ls-achievement-toast__label">Realizare deblocata!</div>' +
+                    '<div class="ls-achievement-toast__title">' + a.title + '</div>' +
+                    '<div class="ls-achievement-toast__desc">' + a.desc + '</div>' +
+                '</div>';
+            document.body.appendChild(toast);
             toast.animate([
-                { transform: 'translateX(0)', opacity: 1 },
                 { transform: 'translateX(120%)', opacity: 0 },
-            ], { duration: 400, easing: 'ease-in', fill: 'forwards' }).onfinish = () => toast.remove();
-        }, 3500);
+                { transform: 'translateX(0)', opacity: 1 },
+            ], { duration: 500, easing: 'cubic-bezier(0.22,1,0.36,1)', fill: 'forwards' });
+            setTimeout(() => {
+                toast.animate([
+                    { transform: 'translateX(0)', opacity: 1 },
+                    { transform: 'translateX(120%)', opacity: 0 },
+                ], { duration: 400, easing: 'ease-in', fill: 'forwards' }).onfinish = () => toast.remove();
+            }, 3500);
+        }
 
         // Add badge to achievement wall
         const badge = document.createElement('div');
@@ -889,8 +942,10 @@
         achievementsEl.appendChild(badge);
         badge.style.animation = 'lk-pop 0.5s cubic-bezier(0.22,1,0.36,1)';
 
-        emitConfetti(toast);
-        LessonAudio.achievement();
+        if (toast) {
+            emitConfetti(toast);
+            LessonAudio.achievement();
+        }
     }
 
     // Check achievements periodically and on key events
@@ -937,20 +992,8 @@
 
     // --- Mascot typing animation ---
     function typewriterEffect(el, speed) {
-        const html = el.innerHTML;
-        const text = el.textContent;
-        if (!text || text.length < 10) return;
-        el.textContent = '';
+        if (!el) return;
         el.style.visibility = 'visible';
-        let i = 0;
-        const interval = setInterval(() => {
-            i++;
-            el.textContent = text.slice(0, i);
-            if (i >= text.length) {
-                clearInterval(interval);
-                el.innerHTML = html; // restore original HTML
-            }
-        }, speed || 18);
     }
 
     // Apply to first visible mentor bubble

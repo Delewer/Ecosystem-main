@@ -3,6 +3,7 @@
 Management command to seed demo content.
 Run with: python manage.py seed_demo_data
 """
+
 from django.core.management.base import BaseCommand
 
 from estudy.services.seed_demo_data import seed_demo_data

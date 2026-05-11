@@ -100,6 +100,113 @@ def _sanitize_mini_project(value: dict[str, object] | None) -> dict[str, Any]:
     return {}
 
 
+def _sanitize_lesson_ambience(
+    value: dict[str, object] | None, *, is_junior_track: bool
+) -> dict[str, str]:
+    if not isinstance(value, dict):
+        return {}
+
+    image = _sanitize_display_text(str(value.get("image", "")), "")
+    if not image:
+        return {}
+
+    prompt_key = "junior_prompt" if is_junior_track else "code_prompt"
+    track_prompt = _sanitize_display_text(str(value.get(prompt_key, "")), "")
+    fallback_prompt = _sanitize_display_text(str(value.get("prompt", "")), "")
+
+    ambience = {
+        "image": image,
+        "alt": _sanitize_display_text(
+            str(value.get("alt", "")),
+            "Ilustratie pentru contextul lectiei.",
+        ),
+        "eyebrow": _sanitize_display_text(
+            str(value.get("eyebrow", "")),
+            "Context vizual",
+        ),
+        "title": _sanitize_display_text(
+            str(value.get("title", "")),
+            "Misiunea lectiei",
+        ),
+        "caption": _sanitize_display_text(str(value.get("caption", "")), ""),
+        "prompt": track_prompt or fallback_prompt,
+    }
+    if ambience["caption"] or ambience["prompt"]:
+        return ambience
+    return {}
+
+
+def _sanitize_lesson_mastery(value: dict[str, object] | None) -> dict[str, Any]:
+    if not isinstance(value, dict):
+        return {}
+
+    mastery = {
+        "goal": _sanitize_display_text(str(value.get("goal", "")), ""),
+        "worked_example_focus": _sanitize_display_text(
+            str(value.get("worked_example_focus", "")),
+            "",
+        ),
+        "mistake_repair": _sanitize_display_list(
+            [
+                str(question)
+                for question in value.get("mistake_repair", [])
+                if question is not None
+            ],
+            [],
+        )[:3],
+        "mastery_check": _sanitize_display_text(
+            str(value.get("mastery_check", "")),
+            "",
+        ),
+        "next_practice": _sanitize_display_text(
+            str(value.get("next_practice", "")),
+            "",
+        ),
+    }
+    if any(mastery.values()):
+        return mastery
+    return {}
+
+
+def _build_default_reflection_prompts(lesson: Lesson) -> list[dict[str, Any]]:
+    lesson_title = _sanitize_display_text(lesson.title, "lectie")
+    return [
+        {
+            "prompt": "Cum te-ai simtit dupa lectie?",
+            "format": "scale",
+            "scale_labels": [
+                "Am nevoie de ajutor",
+                "Inteleg",
+                "Pot explica altora",
+            ],
+        },
+        {
+            "prompt": f"Ce idee noua ai descoperit in lectia {lesson_title}?",
+            "format": "text",
+            "scale_labels": [],
+        },
+    ]
+
+
+def _sanitize_reflection_prompts(lesson: Lesson) -> list[dict[str, Any]]:
+    prompts: list[dict[str, Any]] = []
+    for prompt in lesson.reflection_prompts.order_by("order", "id"):
+        clean_prompt = _sanitize_display_text(getattr(prompt, "prompt", ""), "")
+        if not clean_prompt:
+            continue
+        prompts.append(
+            {
+                "prompt": clean_prompt,
+                "format": getattr(prompt, "format", "text"),
+                "scale_labels": _sanitize_display_list(
+                    getattr(prompt, "scale_labels", None),
+                    [],
+                ),
+            }
+        )
+    return prompts or _build_default_reflection_prompts(lesson)
+
+
 class BlockingLessonRequired(Exception):
     def __init__(self, blocking_slug: str, blocking_title: str | None = None):
         super().__init__(f"Blocking lesson required: {blocking_slug}")
@@ -538,6 +645,11 @@ def build_lesson_detail_payload(
     lesson_mini_project = _sanitize_mini_project(
         learning_guide.get("mini_project"),
     )
+    lesson_ambience = _sanitize_lesson_ambience(
+        learning_guide.get("ambience"),
+        is_junior_track=is_junior_track,
+    )
+    lesson_mastery = _sanitize_lesson_mastery(learning_guide.get("mastery"))
     lesson_fun_fact = _sanitize_display_text(lesson.fun_fact, "")
     guided_code_snippet = _sanitize_display_text(
         str(learning_guide.get("guided_code", "")),
@@ -639,9 +751,11 @@ def build_lesson_detail_payload(
     example_section_description = (
         "Robot Lab apare aici doar pentru 11+ si se controleaza prin cod Python."
         if show_full_code_lab
-        else "Pentru 8-10 ani avem activitati vizuale, simple si cu putin text."
-        if is_junior_track
-        else "Vezi modelul lectiei, apoi treci la exercitiu."
+        else (
+            "Pentru 8-10 ani avem activitati vizuale, simple si cu putin text."
+            if is_junior_track
+            else "Vezi modelul lectiei, apoi treci la exercitiu."
+        )
     )
     practice_section_title = "Puzzle si potriviri" if is_junior_track else "Practica"
     practice_section_description = (
@@ -715,7 +829,7 @@ def build_lesson_detail_payload(
 
     lesson_hints = list(lesson.hints.order_by("section", "hint_level", "order"))
     lesson_easter_eggs = list(lesson.easter_eggs.all())
-    reflection_prompts = list(lesson.reflection_prompts.order_by("order", "id"))
+    reflection_prompts = _sanitize_reflection_prompts(lesson)
 
     return {
         "progress": progress,
@@ -759,6 +873,8 @@ def build_lesson_detail_payload(
         "lesson_vocabulary": lesson_vocabulary,
         "lesson_common_mistakes": lesson_common_mistakes,
         "lesson_mini_project": lesson_mini_project,
+        "lesson_ambience": lesson_ambience,
+        "lesson_mastery": lesson_mastery,
         "lesson_fun_fact": lesson_fun_fact,
         "guided_code_snippet": guided_code_snippet,
         "practice_context": practice_context,

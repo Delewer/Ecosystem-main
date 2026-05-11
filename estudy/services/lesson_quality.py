@@ -110,9 +110,9 @@ class LessonQualityAnalyzer:
             "total_views": total_views,
             "completions": completions,
             "completion_rate": round(completion_rate, 1),
-            "video_completion_rate": round(video_completion_rate, 1)
-            if video_url
-            else None,
+            "video_completion_rate": (
+                round(video_completion_rate, 1) if video_url else None
+            ),
         }
 
     @staticmethod

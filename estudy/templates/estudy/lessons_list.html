@@ -38,6 +38,17 @@
         </div>
     </section>
 
+    {% if python_entry_slug %}
+    <section class="lessons-python-callout" data-animate>
+        <div>
+            <span class="lessons-python-callout__eyebrow">Programare</span>
+            <h2>Python adaptat varstei</h2>
+            <p>{{ python_mode_label }}</p>
+        </div>
+        <a class="btn btn--primary" href="{% url 'estudy:lesson_detail' slug=python_entry_slug %}">Intra in modul</a>
+    </section>
+    {% endif %}
+
     <section class="catalog-filters" aria-labelledby="catalog-filters-title" data-filters>
         <div class="container catalog-filters__container">
             <header class="catalog-filters__header">

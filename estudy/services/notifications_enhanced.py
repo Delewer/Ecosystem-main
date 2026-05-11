@@ -1,6 +1,7 @@
 """
-Расширенная система уведомлений с шаблонами и группировкой
+Notification templates and helpers.
 """
+
 from __future__ import annotations
 
 from datetime import timedelta
@@ -8,76 +9,83 @@ from typing import Dict, List
 
 from django.utils import timezone
 
-from ..models import Notification, NotificationPreference, User
+from ..models import Lesson, Notification, NotificationPreference, User
 
 
 class NotificationTemplate:
-    """Шаблоны уведомлений для разных событий"""
+    """Templates for platform notifications."""
 
     TEMPLATES = {
         "streak_milestone": {
-            "title": "🔥 Серия {streak} дней!",
-            "message": "Невероятно! Ты учишься {streak} дней подряд. Продолжай в том же духе!",
+            "title": "Serie de {streak} zile!",
+            "message": (
+                "Excelent! Inveti {streak} zile la rand. Continua in acelasi ritm!"
+            ),
             "category": Notification.CATEGORY_PROGRESS,
         },
         "level_up": {
-            "title": "⬆️ Новый уровень {level}!",
-            "message": "Поздравляем! Теперь ты на уровне {level}. Новые испытания ждут тебя!",
+            "title": "Nivel nou {level}!",
+            "message": (
+                "Felicitari! Acum esti la nivelul {level}. "
+                "Te asteapta provocari noi!"
+            ),
             "category": Notification.CATEGORY_PROGRESS,
         },
         "assignment_due_soon": {
-            "title": "⏰ Задание скоро нужно сдать",
-            "message": 'Задание "{assignment}" нужно сдать через {days} дн. Не забудь!',
+            "title": "Tema trebuie predata curand",
+            "message": 'Tema "{assignment}" trebuie predata peste {days} zile. Nu uita!',
             "category": Notification.CATEGORY_SYSTEM,
         },
         "new_comment": {
-            "title": "💬 Новый комментарий",
-            "message": '{username} прокомментировал твою тему "{thread}"',
+            "title": "Comentariu nou",
+            "message": '{username} a comentat in discutia ta "{thread}"',
             "category": Notification.CATEGORY_COMMUNITY,
         },
         "project_reviewed": {
-            "title": "✅ Проект проверен",
-            "message": 'Твой проект "{project}" проверен! Оценка: {score}/100',
+            "title": "Proiect verificat",
+            "message": 'Proiectul tau "{project}" a fost verificat! Scor: {score}/100',
             "category": Notification.CATEGORY_FEEDBACK,
         },
         "badge_earned": {
-            "title": "🏆 Новый значок!",
-            "message": 'Ты получил значок "{badge}"! {description}',
+            "title": "Insigna noua!",
+            "message": 'Ai primit insigna "{badge}"! {description}',
             "category": Notification.CATEGORY_PROGRESS,
         },
         "daily_reminder": {
-            "title": "📚 Время учиться!",
-            "message": "Привет! У тебя есть {incomplete} незавершенных уроков. Начнем?",
+            "title": "E timpul sa inveti!",
+            "message": ("Salut! Ai {incomplete} lectii nefinalizate. Incepem?"),
             "category": Notification.CATEGORY_SYSTEM,
         },
         "weekly_summary": {
-            "title": "📊 Твои результаты за неделю",
-            "message": "За неделю: {lessons} уроков, {xp} XP, {badges} новых значков!",
+            "title": "Rezultatele tale pe saptamana",
+            "message": (
+                "Saptamana aceasta: {lessons} lectii, {xp} XP, " "{badges} insigne noi!"
+            ),
             "category": Notification.CATEGORY_PROGRESS,
         },
         "teacher_feedback": {
-            "title": "👨‍🏫 Новый отзыв учителя",
-            "message": 'Учитель {teacher} оставил отзыв на "{assignment}"',
+            "title": "Feedback nou de la profesor",
+            "message": 'Profesorul {teacher} a lasat feedback la "{assignment}"',
             "category": Notification.CATEGORY_FEEDBACK,
         },
         "teacher_early_warning": {
-            "title": "Early warning: {count} students need attention",
+            "title": "Atentie: {count} elevi au nevoie de sprijin",
             "message": (
-                "Classroom {classroom} has students at risk: {students}. "
-                "Review progress and plan support."
+                "Clasa {classroom} are elevi cu risc: {students}. "
+                "Verifica progresul si planifica sprijin."
             ),
             "category": Notification.CATEGORY_FEEDBACK,
         },
         "parent_report": {
-            "title": "📈 Отчет о прогрессе ребенка",
-            "message": "{child} завершил {lessons} уроков. Успеваемость: {rate}%",
+            "title": "Raport despre progresul copilului",
+            "message": "{child} a finalizat {lessons} lectii. Reusita: {rate}%",
             "category": Notification.CATEGORY_SYSTEM,
         },
     }
 
     @classmethod
     def create(cls, template_key: str, recipient: User, **kwargs) -> Notification:
-        """Создать уведомление по шаблону"""
+        """Create a notification from a template."""
         template = cls.TEMPLATES.get(template_key)
         if not template:
             raise ValueError(f"Template {template_key} not found")
@@ -97,10 +105,9 @@ class NotificationTemplate:
 def send_bulk_notification(
     users: List[User], title: str, message: str, category: str = None
 ):
-    """Массовая рассылка уведомлений"""
+    """Send one notification to multiple users."""
     notifications = []
     for user in users:
-        # Проверяем настройки пользователя
         pref, _ = NotificationPreference.objects.get_or_create(user=user)
         if pref.in_app_enabled:
             notifications.append(
@@ -112,15 +119,12 @@ def send_bulk_notification(
                 )
             )
 
-    # Bulk create для производительности
     Notification.objects.bulk_create(notifications)
     return len(notifications)
 
 
 def get_notification_digest(user, period: str = "daily") -> Dict:
-    """
-    Получить дайджест уведомлений за период
-    """
+    """Return a notification digest for the selected period."""
     if period == "daily":
         cutoff = timezone.now() - timedelta(days=1)
     elif period == "weekly":
@@ -130,7 +134,6 @@ def get_notification_digest(user, period: str = "daily") -> Dict:
 
     notifications = Notification.objects.filter(recipient=user, created_at__gte=cutoff)
 
-    # Группируем по категориям
     digest = {
         "period": period,
         "total": notifications.count(),
@@ -160,7 +163,6 @@ def enforce_quiet_hours(user, notification: Notification) -> bool:
     now = timezone.localtime().time()
     if quiet_start < quiet_end:
         return quiet_start <= now <= quiet_end
-    # overnight window
     return now >= quiet_start or now <= quiet_end
 
 
@@ -176,7 +178,6 @@ def send_with_quiet_hours(user: User, title: str, message: str, category: str = 
         category=category or Notification.CATEGORY_SYSTEM,
     )
     if enforce_quiet_hours(user, notification):
-        # skip immediate send; caller may schedule later
         return None
     notification.save()
     return notification
@@ -199,7 +200,7 @@ def build_weekly_digest(user: User):
 
 
 def mark_all_as_read(user, category: str = None):
-    """Отметить все уведомления как прочитанные"""
+    """Mark all matching notifications as read."""
     queryset = Notification.objects.filter(recipient=user, read_at__isnull=True)
 
     if category:
@@ -210,26 +211,22 @@ def mark_all_as_read(user, category: str = None):
 
 
 def delete_old_notifications(days: int = 30):
-    """
-    Очистка старых прочитанных уведомлений
-    Используется для регулярного обслуживания БД
-    """
+    """Delete old read notifications."""
     cutoff = timezone.now() - timedelta(days=days)
     deleted = Notification.objects.filter(
         read_at__isnull=False, read_at__lt=cutoff
     ).delete()
-    return deleted[0]  # Количество удаленных
+    return deleted[0]
 
 
 def get_notification_stats(user) -> Dict:
-    """Статистика уведомлений пользователя"""
+    """Return notification statistics for a user."""
     notifications = Notification.objects.filter(recipient=user)
 
     total = notifications.count()
     unread = notifications.filter(read_at__isnull=True).count()
     read = total - unread
 
-    # Средняя скорость чтения
     read_notifs = notifications.filter(read_at__isnull=False)
     avg_read_time = None
     if read_notifs.exists():
@@ -239,7 +236,7 @@ def get_notification_stats(user) -> Dict:
                 delta = (notif.read_at - notif.created_at).total_seconds()
                 times.append(delta)
         if times:
-            avg_read_time = sum(times) / len(times) / 3600  # в часах
+            avg_read_time = sum(times) / len(times) / 3600
 
     return {
         "total": total,
@@ -251,7 +248,7 @@ def get_notification_stats(user) -> Dict:
 
 
 def send_streak_reminder(user):
-    """Напоминание о необходимости сохранить серию"""
+    """Send a reminder before a learning streak expires."""
     profile = user.userprofile
     last_activity = profile.last_activity_at
 
@@ -260,12 +257,15 @@ def send_streak_reminder(user):
 
     hours_since = (timezone.now() - last_activity).total_seconds() / 3600
 
-    # Если не было активности больше 20 часов, но меньше 24
     if 20 <= hours_since < 24 and profile.streak > 0:
+        incomplete_lessons = Lesson.objects.exclude(
+            progress_records__user=user,
+            progress_records__completed=True,
+        ).count()
         return NotificationTemplate.create(
             "daily_reminder",
             recipient=user,
-            incomplete=5,  # TODO: вычислить реальное количество
+            incomplete=incomplete_lessons,
             link_url="/estudy/dashboard/",
         )
 
@@ -273,7 +273,7 @@ def send_streak_reminder(user):
 
 
 def notify_parent_about_child_progress(parent: User, child: User):
-    """Отправка отчета родителю о прогрессе ребенка"""
+    """Send a child progress report to a parent."""
     from ..services.assessment_enhanced import get_student_performance_analytics
 
     analytics = get_student_performance_analytics(child)
@@ -288,20 +288,14 @@ def notify_parent_about_child_progress(parent: User, child: User):
 
 
 def schedule_assignment_reminders():
-    """
-    Запланировать напоминания о приближающихся дедлайнах
-    Вызывается периодически (например, через Celery task)
-    """
+    """Schedule reminders for assignments due tomorrow."""
     from ..models import AssignmentSubmission, ClassAssignment
 
     tomorrow = timezone.now().date() + timedelta(days=1)
-
-    # Находим задания, которые нужно сдать завтра
     assignments = ClassAssignment.objects.filter(due_date=tomorrow)
 
     count = 0
     for assignment in assignments:
-        # Находим студентов, которые еще не сдали
         classroom_members = assignment.classroom.memberships.all()
         submitted_students = AssignmentSubmission.objects.filter(
             assignment=assignment

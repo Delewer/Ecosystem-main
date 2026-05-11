@@ -113,8 +113,10 @@ def classify_robot_lab_typical_error(payload: dict[str, Any]) -> dict[str, Any]:
             "concept_focus": "debugging",
         }
 
-    if primary_error == "hit_wall" and "front_is_clear" in allowed_api and not _uses_call(
-        code, "front_is_clear"
+    if (
+        primary_error == "hit_wall"
+        and "front_is_clear" in allowed_api
+        and not _uses_call(code, "front_is_clear")
     ):
         return {
             "typical_error": "missing_condition_check",

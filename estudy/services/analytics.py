@@ -157,9 +157,9 @@ class LessonAnalyticsService:
             "total_lessons": total_lessons,
             "total_views": total_views,
             "total_completions": total_completions,
-            "completion_rate": (total_completions / total_views * 100)
-            if total_views > 0
-            else 0,
+            "completion_rate": (
+                (total_completions / total_views * 100) if total_views > 0 else 0
+            ),
             "recent_views": recent_views,
             "recent_completions": recent_completions,
             "total_ratings": total_ratings,

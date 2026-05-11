@@ -1,5 +1,5 @@
 """
-Smart hints and contextual help system
+Smart hints and contextual help system.
 """
 
 from typing import Optional
@@ -8,22 +8,20 @@ from ..models import Lesson, LessonHint
 
 
 class SmartHintSystem:
-    """System for providing contextual hints and help"""
+    """System for providing contextual hints and help."""
 
     @staticmethod
     def get_contextual_hint(
         user, lesson: Lesson, current_section: str, time_spent: int = 0
     ) -> Optional[str]:
-        """Get contextual hint based on user progress and time spent"""
-        # Check if user needs hints
+        """Get contextual hint based on user progress and time spent."""
         try:
             personalization = lesson.personalizations.get(user=user)
             if not personalization.show_hints:
                 return None
         except Exception:
-            pass  # Default to showing hints
+            pass
 
-        # Get hints for this section
         hints = LessonHint.objects.filter(
             lesson=lesson, section=current_section
         ).order_by("hint_level")
@@ -31,7 +29,6 @@ class SmartHintSystem:
         if not hints.exists():
             return None
 
-        # Determine which hint to show based on time spent
         for hint in hints:
             if time_spent >= hint.trigger_after_seconds:
                 return hint.hint_text
@@ -40,44 +37,39 @@ class SmartHintSystem:
 
     @staticmethod
     def get_ai_hint(code: str, error: str, exercise) -> str:
-        """Generate AI-powered hint based on code and error"""
-        # Simple rule-based hint system (can be enhanced with actual AI)
-        if "SyntaxError" in error.lower():
-            return "Проверьте синтаксис: все скобки закрыты? Правильные отступы?"
-        elif "NameError" in error.lower():
-            return "Возможно, вы используете переменную, которая не определена. Проверьте названия переменных."
-        elif "IndentationError" in error.lower():
-            return "Проблема с отступами - в Python это важно! Убедитесь, что отступы consistent."
-        elif "TypeError" in error.lower():
+        """Generate a rule-based hint from the submitted code and error."""
+        error_lower = error.lower()
+        if "syntaxerror" in error_lower:
+            return "Verifica sintaxa: toate parantezele sunt inchise si indentarea este corecta?"
+        if "nameerror" in error_lower:
+            return "Este posibil sa folosesti o variabila care nu este definita. Verifica numele variabilelor."
+        if "indentationerror" in error_lower:
+            return "Problema de indentare: in Python spatiile de la inceputul liniei conteaza."
+        if "typeerror" in error_lower:
+            return "Tipurile de date nu se potrivesc. Verifica ce valori trimiti functiei sau operatiei."
+        if "indexerror" in error_lower:
             return (
-                "Типы данных не совпадают. Проверьте, что вы передаете правильные типы."
+                "Incerci sa accesezi un element din lista cu un index care nu exista."
             )
-        elif "IndexError" in error.lower():
-            return (
-                "Вы пытаетесь обратиться к элементу списка по несуществующему индексу."
-            )
-        elif "KeyError" in error.lower():
-            return "Ключ не найден в словаре. Проверьте правильность написания ключей."
-        else:
-            return "Попробуйте использовать подсказку или посмотрите пример решения. Не сдавайтесь!"
+        if "keyerror" in error_lower:
+            return "Cheia nu a fost gasita in dictionar. Verifica scrierea cheii."
+        return "Foloseste un indiciu sau revizuieste exemplul din lectie. Continua pas cu pas."
 
     @staticmethod
     def suggest_related_lessons(
         current_lesson: Lesson, user=None, limit: int = 3
     ) -> list[Lesson]:
-        """Suggest related lessons based on subject and difficulty"""
+        """Suggest related lessons based on subject and difficulty."""
         related = Lesson.objects.filter(subject=current_lesson.subject).exclude(
             id=current_lesson.id
         )
 
-        # If user provided, consider their progress
         if user:
             completed_ids = Lesson.objects.filter(
                 progress_records__user=user, progress_records__completed=True
             ).values_list("id", flat=True)
             related = related.exclude(id__in=completed_ids)
 
-        # Prefer same or slightly higher difficulty
         difficulty_order = {"beginner": 1, "intermediate": 2, "advanced": 3}
         current_level = difficulty_order.get(current_lesson.difficulty, 2)
 
@@ -93,8 +85,7 @@ class SmartHintSystem:
 
     @staticmethod
     def should_show_hint(user, lesson: Lesson, section: str, attempts: int = 0) -> bool:
-        """Determine if a hint should be shown"""
-        # Check personalization
+        """Determine if a hint should be shown."""
         try:
             personalization = lesson.personalizations.get(user=user)
             if not personalization.show_hints:
@@ -102,7 +93,6 @@ class SmartHintSystem:
         except Exception:
             pass
 
-        # Check hint triggers
         hints = LessonHint.objects.filter(lesson=lesson, section=section)
 
         for hint in hints:
@@ -113,6 +103,5 @@ class SmartHintSystem:
 
     @staticmethod
     def track_hint_usage(user, lesson: Lesson, section: str, hint_text: str) -> None:
-        """Track hint usage for analytics (placeholder for future implementation)"""
-        # Could be used to improve hint system based on usage patterns
+        """Track hint usage for analytics."""
         pass
