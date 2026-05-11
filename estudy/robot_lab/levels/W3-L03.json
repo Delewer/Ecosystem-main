@@ -15,7 +15,7 @@
   "recommended_age": "11-13",
   "world": 3,
   "world_theme": "volcano",
-  "optimal_steps": 12,
+  "optimal_steps": 13,
   "star_conditions": {"one": "reach_goal", "two": "steps_lte_18", "three": "steps_lte_optimal"},
   "collectibles": [{"tile": "C", "label": "Racitor", "icon": "❄", "points": 15}],
   "intro_dialog": "ZIPP: Un racitor! Daca il iau, lava devine sigura!",

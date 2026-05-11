@@ -15,7 +15,7 @@
   "recommended_age": "14-16+",
   "world": 3,
   "world_theme": "volcano",
-  "optimal_steps": 24,
+  "optimal_steps": 23,
   "star_conditions": {"one": "reach_goal", "two": "steps_lte_32", "three": "steps_lte_optimal"},
   "collectibles": [{"tile": "C", "label": "Racitor", "icon": "❄", "points": 15}, {"tile": "B", "label": "Baterie", "icon": "⚡", "points": 10}],
   "intro_dialog": "ZIPP: Inima vulcanului! Ultima misiune aici!",

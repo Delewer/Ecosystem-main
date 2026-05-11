@@ -15,7 +15,7 @@
   "recommended_age": "14-16+",
   "world": 5,
   "world_theme": "core",
-  "optimal_steps": 16,
+  "optimal_steps": 19,
   "star_conditions": {"one": "reach_goal", "two": "steps_lte_22", "three": "steps_lte_optimal"},
   "collectibles": [{"tile": "B", "label": "Baterie", "icon": "⚡", "points": 10}],
   "intro_dialog": "ZIPP: Nucleul Final! Tot ce am invatat va fi necesar!",

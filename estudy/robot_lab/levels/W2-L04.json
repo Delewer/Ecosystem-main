@@ -15,7 +15,7 @@
   "recommended_age": "11-13",
   "world": 2,
   "world_theme": "ice",
-  "optimal_steps": 14,
+  "optimal_steps": 17,
   "star_conditions": {"one": "reach_goal", "two": "steps_lte_20", "three": "steps_lte_optimal"},
   "collectibles": [{"tile": "B", "label": "Baterie", "icon": "⚡", "points": 10}],
   "intro_dialog": "ZIPP: Un labirint de cristal! Trebuie sa fiu atent.",

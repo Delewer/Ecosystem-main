@@ -2,7 +2,8 @@
 'use strict';
 
 const RRBlockEditor = (() => {
-    const MAX_SLOTS = 10;
+    const DEFAULT_MAX_SLOTS = 12;
+    const HARD_MAX_SLOTS = 48;
 
     const BLOCK_DEFS = {
         right:      { label: 'right()',      symbol: '→', category: 'movement' },
@@ -17,10 +18,13 @@ const RRBlockEditor = (() => {
     };
 
     class BlockEditor {
-        constructor(container, { allowedApi, onSequenceChange }) {
+        constructor(container, { allowedApi, maxSlots, onSequenceChange }) {
             this._container = container;
             this._allowedApi = new Set(allowedApi || []);
             this._onSequenceChange = onSequenceChange || (() => {});
+            var parsedMax = parseInt(maxSlots || DEFAULT_MAX_SLOTS, 10);
+            if (!Number.isFinite(parsedMax) || parsedMax < 1) parsedMax = DEFAULT_MAX_SLOTS;
+            this._maxSlots = Math.min(HARD_MAX_SLOTS, parsedMax);
             this._sequence = [];
             this._undoStack = [];
             this._redoStack = [];
@@ -49,7 +53,7 @@ const RRBlockEditor = (() => {
             const seqWrap = document.createElement('div');
             seqWrap.className = 'rr-sequence';
             seqWrap.dataset.rrSequence = '';
-            for (let i = 0; i < MAX_SLOTS; i++) {
+            for (let i = 0; i < this._maxSlots; i++) {
                 const slot = document.createElement('div');
                 slot.className = 'rr-sequence__slot';
                 slot.dataset.slotIndex = i;
@@ -102,7 +106,7 @@ const RRBlockEditor = (() => {
         }
 
         _appendCommand(cmd) {
-            if (this._sequence.length >= MAX_SLOTS) return;
+            if (this._sequence.length >= this._maxSlots) return;
             this._pushUndo();
             this._sequence.push(cmd);
             this._updateSlots();
@@ -110,10 +114,10 @@ const RRBlockEditor = (() => {
         }
 
         _insertAt(index, cmd) {
-            if (this._sequence.length >= MAX_SLOTS) return;
+            if (this._sequence.length >= this._maxSlots) return;
             this._pushUndo();
             this._sequence.splice(index, 0, cmd);
-            if (this._sequence.length > MAX_SLOTS) this._sequence.length = MAX_SLOTS;
+            if (this._sequence.length > this._maxSlots) this._sequence.length = this._maxSlots;
             this._updateSlots();
             this._notify();
         }

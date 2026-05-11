@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="{% static 'estudy/robot_lab/css/robot.css' %}?v=1">
 <link rel="stylesheet" href="{% static 'estudy/robot_lab/css/blocks.css' %}?v=1">
 <link rel="stylesheet" href="{% static 'estudy/robot_lab/css/hud.css' %}?v=1">
+<link rel="stylesheet" href="{% static 'estudy/robot_lab/css/assets.css' %}?v=20260508c">
 <style>
 .rr-code-editor { display:flex; background:#0F172A; border:1px solid #334155; border-radius:8px; overflow:hidden; font-family:monospace; font-size:13px; }
 .rr-code-editor__lines { padding:8px 8px 8px 12px; color:#64748B; text-align:right; border-right:1px solid #334155; user-select:none; line-height:1.6; white-space:pre; overflow:hidden; }
@@ -122,9 +123,9 @@
 <script src="{% static 'estudy/robot_lab/engine/particles.js' %}?v=1" defer></script>
 {# UI #}
 <script src="{% static 'estudy/robot_lab/ui/hud.js' %}?v=1" defer></script>
-<script src="{% static 'estudy/robot_lab/ui/block_editor.js' %}?v=1" defer></script>
+<script src="{% static 'estudy/robot_lab/ui/block_editor.js' %}?v=20260507b" defer></script>
 <script src="{% static 'estudy/robot_lab/ui/code_editor.js' %}?v=1" defer></script>
-<script src="{% static 'estudy/robot_lab/ui/cutscene.js' %}?v=20260422a" defer></script>
+<script src="{% static 'estudy/robot_lab/ui/cutscene.js' %}?v=20260508c" defer></script>
 
 <script defer>
 document.addEventListener('DOMContentLoaded', function() {
@@ -184,6 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (uiStage === 'buttons' || uiStage === 'buttons_code') {
         blockEditor = new RRBlockEditor.BlockEditor(editorArea, {
             allowedApi: level.allowed_api || [],
+            maxSlots: level.max_sequence_length || 12,
             onSequenceChange: function(code) { codeValue = code; }
         });
     } else {

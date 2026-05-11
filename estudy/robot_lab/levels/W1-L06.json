@@ -18,7 +18,7 @@
   "recommended_age": "14-16+",
   "world": 1,
   "world_theme": "garden",
-  "optimal_steps": 14,
+  "optimal_steps": 19,
   "star_conditions": {
     "one": "reach_goal",
     "two": "steps_lte_20",
